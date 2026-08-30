@@ -7,6 +7,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.models import (
+    DraftBoard,
     LeagueAnalysis,
     Meta,
     NewsItem,
@@ -334,6 +335,29 @@ async def odds(
         generated_at=utc_now(),
         warnings=avisos,
     )
+
+
+@router.get(
+    "/draft",
+    response_model=DraftBoard,
+    summary="Tablero del draft: mejores disponibles, huecos y recomendación",
+)
+async def draft_board(
+    service: ServiceDep,
+    scoring: str = Query("ppr"),
+    superflex: bool = Query(False),
+    draft_id: str | None = Query(None, description="Por defecto, el draft de tu liga"),
+    board_size: int = Query(60, ge=10, le=300),
+) -> DraftBoard:
+    scoring = _validate_scoring(scoring)
+    try:
+        board = await service.get_draft_board(scoring, superflex, draft_id)
+    except LeagueNotConfigured as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ServiceUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    board.best_available = board.best_available[:board_size]
+    return board
 
 
 @router.get(

@@ -306,3 +306,35 @@ class TestLeagueAnalysis:
         datos = league_client.get("/api/meta").json()
         assert datos["league_configured"] is True
         assert datos["league_id"] == "999888777666555444"
+
+
+class TestDraft:
+    def test_sin_liga_configurada_explica_como_conectarla(self, client):
+        respuesta = client.get("/api/draft")
+        assert respuesta.status_code == 409
+        assert "SLEEPER_LEAGUE_ID" in respuesta.json()["detail"]
+
+    def test_devuelve_el_tablero(self, league_client):
+        datos = league_client.get("/api/draft").json()
+        assert datos["status"] == "drafting"
+        assert datos["my_slot"] == 2
+        assert datos["best_available"]
+        assert datos["suggestions"]
+
+    def test_cada_recomendacion_explica_el_porque(self, league_client):
+        for sug in league_client.get("/api/draft").json()["suggestions"]:
+            assert sug["reasons"]
+            assert sug["value"] > 0
+
+    def test_los_huecos_reflejan_mi_plantilla(self, league_client):
+        datos = league_client.get("/api/draft").json()
+        needs = {n["position"]: n for n in datos["needs"]}
+        assert needs["QB"]["missing"] == 0  # ya tiene quarterback
+        assert needs["RB"]["missing"] == 2
+
+    def test_se_puede_limitar_el_tablero(self, league_client):
+        datos = league_client.get("/api/draft?board_size=10").json()
+        assert len(datos["best_available"]) == 10
+
+    def test_la_meta_dice_en_que_estado_esta_el_draft(self, league_client):
+        assert league_client.get("/api/meta").json()["draft_status"] == "drafting"

@@ -23,6 +23,17 @@ falta ninguna llave para empezar**: la API de lectura de Sleeper es abierta.
 - Reconoce **qué jugador aparece en cada noticia** y las enlaza con el ranking.
 - Desde la ficha de un jugador ves solo sus noticias.
 
+**Draft en vivo**
+- Se conecta al draft de tu liga en Sleeper y va **tachando solos** a los
+  jugadores que van saliendo.
+- Dice a quién coger, que no es el mejor disponible a secas sino **el mejor para
+  ti**: pesa los huecos titulares que te faltan y los tiers que se están
+  vaciando antes de tu próximo turno.
+- Avisa de las rachas: cuando la sala lleva cinco corredores en diez picks, los
+  que quedan se evaporan.
+- Marca cuándo te toca elegir y cuántos picks faltan, y se refresca solo cada
+  12 segundos mientras el draft está en marcha.
+
 **Tendencias jornada a jornada**
 - Quién sube y quién baja **antes de que se note en los puntos**.
 - La señal es el volumen: objetivos, acarreos y cuota de snaps. Cuando a alguien
@@ -78,6 +89,28 @@ Sobre esa suma se aplican dos ajustes:
 
 Todo esto vive en [`app/ranking.py`](app/ranking.py), con las constantes
 agrupadas arriba del archivo por si quieres cambiar los pesos a tu gusto.
+
+---
+
+## Cómo recomienda en el draft
+
+El ranking dice quién es el mejor jugador. El draft pregunta otra cosa: **quién
+te conviene a ti, ahora**. Sobre la nota del ranking se aplican tres ajustes:
+
+| Ajuste | Efecto |
+|---|---|
+| Hueco titular sin cubrir | ×1,25 (urgente) · ×1,10 (medio) · ×0,88 (ya cubierto) |
+| Cada hueco extra en la misma posición | +7 % más |
+| El tier se vacía antes de tu turno | ×1,15 |
+| Racha de esa posición en los últimos 10 picks | ×1,08 |
+
+Por eso un corredor con nota 62 puede adelantar a un receptor con nota 78 si te
+faltan dos corredores titulares y la sala lleva cinco seguidos. Cada
+recomendación viene con sus motivos escritos, así que la decisión sigue siendo
+tuya.
+
+Antes de que empiece el draft la pestaña funciona igual, como chuleta: el
+ranking completo con sus tiers y tu puesto en el orden de elección.
 
 ---
 
@@ -238,6 +271,7 @@ La aplicación expone su propia API REST. Documentación interactiva en
 | Método | Ruta | Qué devuelve |
 |---|---|---|
 | `GET` | `/api/rankings` | Ranking con filtros y paginación. |
+| `GET` | `/api/draft` | Tablero del draft: disponibles, huecos y recomendación. |
 | `GET` | `/api/trends` | Quién sube y quién baja jornada a jornada. |
 | `GET` | `/api/players/{id}/trend` | Tendencia de un jugador. |
 | `GET` | `/api/odds` | Spread, total y puntos implícitos por equipo. |
@@ -282,6 +316,7 @@ app/
   config.py          Configuración por variables de entorno
   models.py          Modelos de datos (Player, NewsItem, RankedPlayer…)
   ranking.py         Motor de ranking: notas, tiers y filtros
+  draft.py           Tablero de draft: disponibles, huecos y recomendación
   trends.py          Tendencias por uso: quién sube y quién baja
   league_analysis.py Tu equipo vs la liga e intercambios
   matching.py        Reconocer nombres de jugador dentro de una noticia
@@ -295,7 +330,7 @@ app/
   api/routes.py      Endpoints REST
 web/                 Interfaz (HTML, CSS y JS, sin paso de compilación)
 data/demo/           Datos de ejemplo del modo demo
-tests/               269 tests
+tests/               341 tests
 ```
 
 La caché guarda el catálogo de jugadores en `.cache/` (pesa unos MB y cambia
@@ -308,7 +343,7 @@ los últimos datos buenos en lugar de una pantalla en blanco.
 
 ```bash
 pip install -r requirements-dev.txt
-pytest                    # los 269 tests, sin tocar la red
+pytest                    # los 341 tests, sin tocar la red
 pytest --cov=app          # con cobertura (requiere pytest-cov)
 ```
 
@@ -335,6 +370,20 @@ touchdowns junto al resto de su información.
 
 ---
 
+## Qué sirve en cada momento de la temporada
+
+| Momento | Lo que te sirve |
+|---|---|
+| Antes del draft | **Ranking** y **Draft** (como chuleta, con tiers) |
+| Durante el draft | **Draft**, que se actualiza solo con cada pick |
+| Semanas 1-3 | **Ranking**, **Noticias** y **Apuestas**; **Mi equipo** ya funciona |
+| Semana 4 en adelante | Todo, incluidas las **Tendencias**, que ya tienen jornadas suficientes |
+
+Las pestañas que aún no tienen datos lo dicen y te mandan a la que sí los tiene,
+en vez de enseñarte una pantalla vacía.
+
+---
+
 ## Límites conocidos
 
 - Las estadísticas y proyecciones salen de endpoints de Sleeper que no están
@@ -347,6 +396,10 @@ touchdowns junto al resto de su información.
   la primera semana la pestaña sale vacía, y lo dice.
 - Los intercambios que se proponen son de uno por uno. Los paquetes de dos por
   uno todavía no se calculan.
+- El tablero de draft lee los picks de Sleeper, no los envía: para elegir sigues
+  usando la app de Sleeper. Esto es el copiloto, no el volante.
+- Los drafts de subasta se leen, pero la recomendación no tiene en cuenta el
+  presupuesto restante.
 - El emparejamiento de noticias por nombre acierta casi siempre, pero con dos
   jugadores homónimos se queda con el más conocido.
 - No hay datos de calendario ni de rivales, así que el ranking es de temporada

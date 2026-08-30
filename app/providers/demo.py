@@ -52,7 +52,13 @@ def demo_handler(request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=_load_json("stats.json"))
         if path.startswith("/v1/projections/"):
             return httpx.Response(200, json=_load_json("projections.json"))
+        if path.startswith("/v1/draft/"):
+            if path.endswith("/picks"):
+                return httpx.Response(200, json=_load_json("draft_picks.json"))
+            return httpx.Response(200, json=_load_json("draft.json"))
         if path.startswith("/v1/league/"):
+            if path.endswith("/drafts"):
+                return httpx.Response(200, json=_load_json("drafts.json"))
             if path.endswith("/rosters"):
                 return httpx.Response(200, json=_load_json("league_rosters.json"))
             if path.endswith("/users"):

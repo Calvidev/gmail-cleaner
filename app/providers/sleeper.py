@@ -14,6 +14,9 @@ Endpoints usados:
   GET /league/{league_id}                         -> liga (necesita id de liga)
   GET /league/{league_id}/rosters                 -> rosters de la liga
   GET /league/{league_id}/users                   -> managers de la liga
+  GET /league/{league_id}/drafts                  -> drafts de la liga
+  GET /draft/{draft_id}                           -> configuración y orden
+  GET /draft/{draft_id}/picks                     -> picks hechos hasta ahora
 """
 
 from __future__ import annotations
@@ -277,6 +280,43 @@ class SleeperClient:
             self.settings.cache_ttl_state,
             lambda: self._get(f"/league/{league_id}/users"),
         )
+
+    # -- draft ---------------------------------------------------------------
+
+    async def get_league_drafts(self, league_id: str) -> list[dict[str, Any]]:
+        """Drafts de una liga (el más reciente va primero)."""
+        try:
+            data = await self.cache.get_or_set(
+                f"sleeper:league:{league_id}:drafts",
+                self.settings.cache_ttl_state,
+                lambda: self._get(f"/league/{league_id}/drafts"),
+            )
+        except SleeperError:
+            return []
+        return data if isinstance(data, list) else []
+
+    async def get_draft(self, draft_id: str) -> dict[str, Any]:
+        """Configuración del draft: tipo, rondas, orden y estado."""
+        return await self.cache.get_or_set(
+            f"sleeper:draft:{draft_id}",
+            self.settings.cache_ttl_draft,
+            lambda: self._get(f"/draft/{draft_id}"),
+        )
+
+    async def get_draft_picks(self, draft_id: str) -> list[dict[str, Any]]:
+        """Picks hechos hasta ahora.
+
+        Se cachea muy poco: durante un draft en vivo esto cambia cada minuto.
+        """
+        try:
+            data = await self.cache.get_or_set(
+                f"sleeper:draft:{draft_id}:picks",
+                self.settings.cache_ttl_draft_picks,
+                lambda: self._get(f"/draft/{draft_id}/picks"),
+            )
+        except SleeperError:
+            return []
+        return data if isinstance(data, list) else []
 
     async def get_rostered_player_ids(self, league_id: str) -> set[str]:
         """Ids de jugadores ya ocupados en la liga (para filtrar agentes libres)."""

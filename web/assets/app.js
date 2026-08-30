@@ -480,7 +480,7 @@ async function loadMeta() {
 
 /* -------------------------------- eventos -------------------------------- */
 
-const VIEWS = ["rankings", "trends", "team", "odds", "news"];
+const VIEWS = ["rankings", "draft", "trends", "team", "odds", "news"];
 
 function switchView(view) {
   state.view = view;
@@ -492,7 +492,11 @@ function switchView(view) {
 
   // Cada vista se carga la primera vez que se abre, no antes.
   if (view === "news" && !$("#news-grid").children.length) loadNews();
+  if (view === "draft" && !$("#draft-content").children.length) loadDraft();
   if (view === "trends" && !$("#trend-list").children.length) loadTrends();
+
+  // El refresco automático solo tiene sentido mirando el draft.
+  if (view !== "draft") stopDraftRefresh();
   if (view === "team" && !$("#team-content").children.length) loadTeam();
   if (view === "odds" && !$("#odds-content").children.length) loadOdds();
 }
@@ -611,6 +615,18 @@ function bindEvents() {
   $("#trend-list").addEventListener("click", (e) => {
     const card = e.target.closest(".trend-card[data-player-id]");
     if (card) openDrawer(card.dataset.playerId);
+  });
+
+  // --- Draft ---
+  $("#draft-content").addEventListener("click", (e) => {
+    const fila = e.target.closest("[data-player-id]");
+    if (fila) openDrawer(fila.dataset.playerId);
+  });
+
+  // Botones que saltan a otra pestaña (por ejemplo, "ir al draft").
+  document.addEventListener("click", (e) => {
+    const salto = e.target.closest("[data-goto]");
+    if (salto) switchView(salto.dataset.goto);
   });
 
   $("#drawer-close").addEventListener("click", closeDrawer);
@@ -839,6 +855,23 @@ function tradeCardHtml(idea) {
 
 function teamAnalysisHtml(data) {
   const me = data.me;
+
+  // Antes del draft no hay plantillas que comparar: pintar una clasificación
+  // vacía sería ruido. Se manda al usuario a lo que sí le sirve hoy.
+  if (data.pre_draft) {
+    return `
+      <div class="panel">
+        <h2>${esc(data.league_name || "Tu liga")}</h2>
+        <p class="panel-sub">${data.warnings.map(esc).join(" ")}</p>
+        <p style="margin:18px 0 0">
+          <button class="btn" data-goto="draft">Ir al tablero de draft →</button>
+        </p>
+        <p class="panel-sub" style="margin-top:16px; font-size:12.5px; color:var(--text-faint)">
+          En cuanto termine el draft, esta pestaña te dirá en qué posiciones estás
+          flojo comparado con el resto de la liga y qué intercambios te convienen.
+        </p>
+      </div>`;
+  }
   const standings = `
     <div class="panel">
       <h3>Clasificación por valor de plantilla</h3>
@@ -1024,8 +1057,228 @@ async function loadOdds() {
 function invalidateDerivedViews() {
   $("#trend-list").innerHTML = "";
   $("#team-content").innerHTML = "";
+  $("#draft-content").innerHTML = "";
   if (state.view === "trends") loadTrends();
   if (state.view === "team") loadTeam();
+  if (state.view === "draft") loadDraft();
 }
 
 init();
+
+/* ================================= Draft ================================= */
+
+let draftTimer = null;
+
+function stopDraftRefresh() {
+  if (draftTimer) {
+    clearInterval(draftTimer);
+    draftTimer = null;
+  }
+}
+
+/** Mientras el draft esté en marcha se recarga solo: los picks vuelan. */
+function startDraftRefresh() {
+  stopDraftRefresh();
+  draftTimer = setInterval(() => {
+    if (state.view === "draft" && !document.hidden) loadDraft({ quiet: true });
+  }, 12000);
+}
+
+function draftStatusHtml(b) {
+  const progreso = b.total_picks ? `${b.picks_made}/${b.total_picks} picks` : `${b.picks_made} picks`;
+
+  let turno;
+  if (b.status === "pre_draft") {
+    turno = `<div class="draft-waiting">El draft no ha empezado${
+      b.my_slot ? ` · eliges en el puesto ${b.my_slot} de ${b.teams}` : ""
+    }</div>`;
+  } else if (b.status === "complete") {
+    turno = `<div class="draft-waiting">Draft terminado</div>`;
+  } else if (b.is_my_turn) {
+    turno = `<div class="draft-turn">🔥 ¡Te toca elegir!</div>`;
+  } else if (b.picks_until_my_turn !== null && b.picks_until_my_turn !== undefined) {
+    turno = `<div class="draft-waiting">Faltan ${b.picks_until_my_turn} pick${
+      b.picks_until_my_turn === 1 ? "" : "s"
+    } para tu turno${b.my_next_pick_no ? ` (pick #${b.my_next_pick_no})` : ""}</div>`;
+  } else {
+    turno = `<div class="draft-waiting">Draft en marcha</div>`;
+  }
+
+  return `
+    <div class="draft-status ${b.is_my_turn ? "is-my-turn" : ""}">
+      ${turno}
+      <div class="stat-block"><span class="stat-value">${b.current_round ?? "—"}</span><span class="stat-label">Ronda</span></div>
+      <div class="stat-block"><span class="stat-value">${b.my_slot ?? "—"}</span><span class="stat-label">Mi puesto</span></div>
+      <div class="stat-block"><span class="stat-value">${progreso}</span><span class="stat-label">Progreso</span></div>
+      ${
+        b.status === "drafting"
+          ? `<div class="autorefresh"><span class="dot"></span>Actualizando solo cada 12 s</div>`
+          : ""
+      }
+    </div>`;
+}
+
+function suggestionHtml(sug, i) {
+  return `
+    <div class="sug-card ${i === 0 ? "top" : ""}" data-player-id="${esc(sug.player.player_id)}">
+      <div class="sug-order">${i + 1}</div>
+      <div>
+        <div class="sug-name">${esc(sug.player.name)}
+          <span class="pos-tag pos-${esc(positionOf(sug.player))}">${esc(positionOf(sug.player))}</span>
+          <span class="player-meta">${esc(sug.player.team || "—")}${
+            sug.tier ? ` · tier ${sug.tier}` : ""
+          }</span>
+        </div>
+        <ul class="sug-why">${sug.reasons.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+      </div>
+      <div class="sug-value"><b>${sug.value.toFixed(0)}</b><span>Para ti</span></div>
+    </div>`;
+}
+
+function draftHtml(b) {
+  const avisos = b.warnings.length
+    ? `<div class="warnings" style="margin:0 0 16px">${b.warnings
+        .map((w) => `<div class="warning">${esc(w)}</div>`)
+        .join("")}</div>`
+    : "";
+
+  const needs = b.needs.length
+    ? `<h3>Huecos por cubrir</h3>
+       <div class="need-chips">${b.needs
+         .map(
+           (n) =>
+             `<span class="need-chip ${esc(n.urgency)}">${esc(n.position)} ${n.filled}/${
+               n.required
+             }${n.missing ? ` · faltan ${n.missing}` : " ✓"}</span>`
+         )
+         .join("")}</div>`
+    : "";
+
+  const cliffs = b.tiers.length
+    ? `<h3>Tiers que se están vaciando</h3>
+       ${b.tiers
+         .map(
+           (t) =>
+             `<div class="cliff-item">${esc(t.position)} tier ${t.tier}: quedan <b>${
+               t.remaining
+             }</b></div>`
+         )
+         .join("")}`
+    : "";
+
+  const rachas = Object.entries(b.position_run || {})
+    .filter(([, n]) => n >= 3)
+    .sort((a, b2) => b2[1] - a[1]);
+  const rachasHtml = rachas.length
+    ? `<h3>Qué se está llevando la sala</h3>
+       <div class="need-chips">${rachas
+         .map(
+           ([pos, n]) =>
+             `<span class="need-chip ${n >= 4 ? "alta" : "media"}">${esc(pos)}: ${n} de los últimos 10</span>`
+         )
+         .join("")}</div>`
+    : "";
+
+  const miRoster = b.my_roster.length
+    ? `<h3>Mi plantilla (${b.my_roster.length})</h3>
+       ${b.my_roster
+         .map(
+           (p) => `
+        <div class="pick-row mine">
+          <span class="no">R${p.round}</span>
+          <span>${esc(p.player ? p.player.name : "?")}</span>
+          <span class="pos-tag pos-${esc(p.player ? positionOf(p.player) : "UNK")}">${esc(
+            p.player ? positionOf(p.player) : "?"
+          )}</span>
+        </div>`
+         )
+         .join("")}`
+    : `<h3>Mi plantilla</h3><p class="panel-sub">Todavía no has elegido a nadie.</p>`;
+
+  const ultimos = b.recent_picks.length
+    ? `<h3>Últimos picks</h3>
+       ${b.recent_picks
+         .map(
+           (p) => `
+        <div class="pick-row ${p.is_mine ? "mine" : ""}">
+          <span class="no">#${p.pick_no}</span>
+          <span>${esc(p.player ? p.player.name : "?")}</span>
+          <span class="pos-tag pos-${esc(p.player ? positionOf(p.player) : "UNK")}">${esc(
+            p.player ? positionOf(p.player) : "?"
+          )}</span>
+          <span class="who">${esc(p.picked_by_name || (p.is_mine ? "tú" : ""))}</span>
+        </div>`
+         )
+         .join("")}`
+    : "";
+
+  const tablero = b.best_available
+    .map(
+      (e) => `
+      <div class="board-row" data-player-id="${esc(e.player.player_id)}">
+        <span class="r">${e.rank}</span>
+        <span class="n">${esc(e.player.name)}
+          <span class="t">${esc(e.player.team || "—")}${e.tier ? ` · T${e.tier}` : ""}</span>
+        </span>
+        <span class="pos-tag pos-${esc(positionOf(e.player))}">${esc(positionOf(e.player))}${
+          e.position_rank || ""
+        }</span>
+        <span class="s">${e.score.toFixed(1)}</span>
+      </div>`
+    )
+    .join("");
+
+  return `
+    ${avisos}
+    ${draftStatusHtml(b)}
+    <div class="draft-cols">
+      <div>
+        <div class="panel">
+          <h3>${b.is_my_turn ? "Cógelo a él" : "Si te tocara ahora"}</h3>
+          <p class="panel-sub">
+            No es el mejor disponible a secas: es el mejor <em>para ti</em>, contando los huecos
+            que te faltan y los tiers que se están vaciando.
+          </p>
+          ${b.suggestions.map(suggestionHtml).join("")}
+        </div>
+        <div class="panel">
+          ${needs}
+          ${rachasHtml}
+          ${cliffs}
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h3>Mejores disponibles</h3>
+          <div class="board-list">${tablero}</div>
+        </div>
+        <div class="panel">
+          ${miRoster}
+          ${ultimos}
+        </div>
+      </div>
+    </div>`;
+}
+
+async function loadDraft({ quiet = false } = {}) {
+  const box = $("#draft-content");
+  if (!quiet) box.innerHTML = `<div class="panel"><div class="skeleton" style="height:90px"></div></div>`;
+  try {
+    const board = await api("/api/draft", {
+      scoring: state.scoring,
+      superflex: state.superflex,
+      board_size: 80,
+    });
+    box.innerHTML = draftHtml(board);
+    if (board.status === "drafting") startDraftRefresh();
+    else stopDraftRefresh();
+  } catch (error) {
+    stopDraftRefresh();
+    if (quiet) return; // un fallo puntual no borra lo que ya se ve
+    box.innerHTML =
+      error.status === 409
+        ? setupTeamHtml(error.message)
+        : `<div class="panel"><p class="empty">${esc(error.message)}</p></div>`;
+  }
+}

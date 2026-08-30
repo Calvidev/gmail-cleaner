@@ -390,6 +390,26 @@ def analyze_league(
         analyze_team(roster, ranked_by_id, roster_positions, users_by_id)
         for roster in rosters or []
     ]
+
+    # Antes del draft las plantillas están vacías: no hay nada que comparar y
+    # fingir un análisis sería peor que decirlo.
+    if teams and not any(team.player_count for team in teams):
+        return LeagueAnalysis(
+            league_id=str(league.get("league_id") or ""),
+            league_name=league.get("name"),
+            season=str(league.get("season") or "") or None,
+            scoring=scoring,
+            roster_positions=list(roster_positions),
+            teams=[],
+            me=None,
+            trade_ideas=[],
+            generated_at=datetime.now(timezone.utc),
+            warnings=[
+                "Las plantillas de esta liga están vacías: todavía no se ha hecho el draft. "
+                "Hasta entonces, la pestaña Draft es la que te sirve."
+            ],
+            pre_draft=True,
+        )
     add_league_context(teams, roster_positions)
     for team in teams:
         team.surplus = find_surplus(team, teams)

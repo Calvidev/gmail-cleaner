@@ -294,3 +294,42 @@ class TestServicioIdentificaAlUsuario:
         analisis = await servicio.get_league_analysis()
         assert analisis.me is not None
         assert analisis.me.team_name == "Los Fantasmas"
+
+
+class TestAntesDelDraft:
+    """El caso del día antes del draft: la liga existe pero está vacía."""
+
+    LIGA = {
+        "league_id": "1", "name": "Mi Liga", "season": "2026",
+        "roster_positions": ["QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "DEF", "BN"],
+    }
+
+    @pytest.fixture
+    def ranked(self):
+        return [jugador("p1", "Estrella", "WR", 90), jugador("p2", "Otro", "RB", 80)]
+
+    def test_una_liga_sin_plantillas_se_marca_como_pre_draft(self, ranked):
+        # Sleeper crea los rosters al crear la liga, con `players` a null.
+        rosters = [{"roster_id": i, "owner_id": f"u{i}", "players": None} for i in range(1, 5)]
+        users = [{"user_id": f"u{i}", "display_name": f"Manager {i}"} for i in range(1, 5)]
+        analisis = analyze_league(self.LIGA, rosters, users, ranked, my_user_id="u1")
+        assert analisis.pre_draft is True
+        assert analisis.me is None
+        assert analisis.teams == []
+        assert analisis.trade_ideas == []
+        assert any("draft" in w.lower() for w in analisis.warnings)
+
+    def test_una_lista_de_jugadores_vacia_cuenta_igual(self, ranked):
+        rosters = [{"roster_id": i, "owner_id": f"u{i}", "players": []} for i in range(1, 3)]
+        analisis = analyze_league(self.LIGA, rosters, [], ranked)
+        assert analisis.pre_draft is True
+
+    def test_en_cuanto_hay_un_jugador_ya_se_analiza(self, ranked):
+        rosters = [
+            {"roster_id": 1, "owner_id": "u1", "players": ["p1"]},
+            {"roster_id": 2, "owner_id": "u2", "players": None},
+        ]
+        users = [{"user_id": "u1", "display_name": "Yo"}]
+        analisis = analyze_league(self.LIGA, rosters, users, ranked, my_user_id="u1")
+        assert analisis.pre_draft is False
+        assert len(analisis.teams) == 2

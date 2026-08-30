@@ -124,6 +124,8 @@ class Meta(BaseModel):
     scoring_formats: list[str] = ["ppr", "half_ppr", "standard"]
     league_configured: bool = False
     league_id: str | None = None
+    # "pre_draft", "drafting" o "complete": la interfaz cambia según esto.
+    draft_status: str | None = None
     player_count: int = 0
     news_sources: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
@@ -245,6 +247,8 @@ class LeagueAnalysis(BaseModel):
     teams: list[TeamAnalysis] = Field(default_factory=list)
     me: TeamAnalysis | None = None
     trade_ideas: list[TradeIdea] = Field(default_factory=list)
+    # True cuando la liga existe pero aún no se ha hecho el draft.
+    pre_draft: bool = False
     generated_at: datetime
     warnings: list[str] = Field(default_factory=list)
 
@@ -306,3 +310,82 @@ class OddsResponse(BaseModel):
 
 # `PlayerDetail` apunta a modelos definidos más abajo en este mismo archivo.
 PlayerDetail.model_rebuild()
+
+
+class DraftPick(BaseModel):
+    """Un pick ya hecho en el draft."""
+
+    pick_no: int
+    round: int
+    draft_slot: int | None = None
+    roster_id: int | None = None
+    picked_by: str | None = None
+    picked_by_name: str | None = None
+    is_mine: bool = False
+    player: Player | None = None
+    score: float | None = None
+    rank: int | None = None
+
+
+class DraftNeed(BaseModel):
+    """Un hueco titular que todavía no tengo cubierto."""
+
+    position: str
+    required: int
+    filled: int
+    missing: int
+    urgency: str = "media"  # "alta", "media" o "baja"
+
+
+class TierSummary(BaseModel):
+    """Cuántos jugadores quedan de cada tier en una posición."""
+
+    position: str
+    tier: int
+    remaining: int
+    best_available_rank: int | None = None
+    cliff: bool = False  # quedan tan pocos que puede vaciarse antes de tu turno
+
+
+class DraftSuggestion(BaseModel):
+    """Un jugador recomendado, con el motivo."""
+
+    player: Player
+    rank: int
+    score: float
+    tier: int | None = None
+    value: float  # nota ajustada por necesidad y escasez
+    reasons: list[str] = Field(default_factory=list)
+
+
+class DraftBoard(BaseModel):
+    """Estado completo del draft: lo que queda, lo que necesito y qué hacer."""
+
+    draft_id: str
+    status: str  # "pre_draft", "drafting", "complete" o "paused"
+    type: str | None = None  # snake, linear, auction
+    rounds: int | None = None
+    teams: int | None = None
+    season: str | None = None
+    scoring: str = "ppr"
+
+    my_slot: int | None = None
+    my_roster_id: int | None = None
+    picks_made: int = 0
+    total_picks: int | None = None
+    current_round: int | None = None
+    on_the_clock_slot: int | None = None
+    is_my_turn: bool = False
+    picks_until_my_turn: int | None = None
+    my_next_pick_no: int | None = None
+
+    my_roster: list[DraftPick] = Field(default_factory=list)
+    recent_picks: list[DraftPick] = Field(default_factory=list)
+    needs: list[DraftNeed] = Field(default_factory=list)
+    suggestions: list[DraftSuggestion] = Field(default_factory=list)
+    best_available: list[RankedPlayer] = Field(default_factory=list)
+    by_position: dict[str, list[RankedPlayer]] = Field(default_factory=dict)
+    tiers: list[TierSummary] = Field(default_factory=list)
+    position_run: dict[str, int] = Field(default_factory=dict)
+    generated_at: datetime
+    warnings: list[str] = Field(default_factory=list)

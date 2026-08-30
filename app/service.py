@@ -12,9 +12,11 @@ import httpx
 
 from app.cache import TTLCache
 from app.config import Settings, get_settings
+from app.draft import build_board
 from app.league_analysis import analyze_league
 from app.models import (
     FANTASY_POSITIONS,
+    DraftBoard,
     GameOdds,
     LeagueAnalysis,
     Meta,
@@ -270,6 +272,73 @@ class FantasyService:
             )
         return {"league": league, "rosters": rosters, "users": users}
 
+    # -- draft ---------------------------------------------------------------
+
+    async def resolve_my_user_id(self) -> str | None:
+        """Mi `user_id`, preguntándoselo a Sleeper si solo tengo el nombre."""
+        if self.settings.sleeper_user_id:
+            return self.settings.sleeper_user_id
+        if self.settings.sleeper_username:
+            return await self.sleeper.resolve_user_id(self.settings.sleeper_username)
+        return None
+
+    async def get_draft_board(
+        self,
+        scoring: str = "ppr",
+        superflex: bool = False,
+        draft_id: str | None = None,
+    ) -> DraftBoard:
+        """Tablero del draft: mejores disponibles, huecos y recomendación."""
+        league_id = self.settings.sleeper_league_id
+        if not draft_id and not league_id:
+            raise LeagueNotConfigured(
+                "Falta SLEEPER_LEAGUE_ID en el archivo .env para encontrar tu draft."
+            )
+
+        if not draft_id:
+            drafts = await self.sleeper.get_league_drafts(league_id)
+            if not drafts:
+                raise ServiceUnavailable(
+                    f"La liga {league_id} no tiene ningún draft creado todavía."
+                )
+            # El primero es el más reciente.
+            draft_id = str(drafts[0].get("draft_id") or "")
+            if not draft_id:
+                raise ServiceUnavailable("Sleeper devolvió un draft sin identificador.")
+
+        try:
+            draft = await self.sleeper.get_draft(draft_id)
+        except SleeperError as exc:
+            raise ServiceUnavailable(
+                f"No se pudo leer el draft {draft_id}. Detalle: {exc}"
+            ) from exc
+
+        picks = await self.sleeper.get_draft_picks(draft_id)
+        ranked = await self.get_ranking(scoring, superflex)
+        my_user_id = await self.resolve_my_user_id()
+
+        # Los nombres de los mánagers y la alineación exacta salen de la liga,
+        # pero son un extra: sin ellos el tablero funciona igual.
+        users: list[dict] = []
+        roster_positions = None
+        if league_id:
+            try:
+                info = await self.get_league_info()
+                users = info["users"]
+                roster_positions = info["league"].get("roster_positions")
+            except (ServiceUnavailable, LeagueNotConfigured):
+                pass
+
+        return build_board(
+            draft,
+            picks,
+            ranked,
+            users,
+            my_user_id=my_user_id,
+            league_roster_positions=roster_positions,
+            scoring=scoring,
+        )
+
     # -- metadatos -----------------------------------------------------------
 
     async def get_meta(self) -> Meta:
@@ -293,6 +362,15 @@ class FantasyService:
         except SleeperError as exc:
             warnings.append(f"No se pudo leer el estado de la temporada: {exc}")
 
+        draft_status = None
+        if self.settings.sleeper_league_id:
+            try:
+                drafts = await self.sleeper.get_league_drafts(self.settings.sleeper_league_id)
+                if drafts:
+                    draft_status = drafts[0].get("status")
+            except SleeperError:
+                draft_status = None
+
         if not self.settings.league_configured:
             warnings.append(
                 "Liga de Sleeper sin configurar: añade SLEEPER_LEAGUE_ID (y opcionalmente "
@@ -309,6 +387,7 @@ class FantasyService:
             teams=teams,
             league_configured=self.settings.league_configured,
             league_id=self.settings.sleeper_league_id,
+            draft_status=draft_status,
             player_count=len(players),
             news_sources=["ESPN"] + [u for u in self.settings.news_feeds],
             warnings=warnings,

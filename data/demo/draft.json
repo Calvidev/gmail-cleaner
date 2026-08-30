@@ -1,0 +1,31 @@
+{
+ "draft_id": "1312141721378758657",
+ "league_id": "999888777666555444",
+ "type": "snake",
+ "status": "drafting",
+ "season": "2025",
+ "sport": "nfl",
+ "draft_order": {
+  "100001": 2,
+  "100002": 1,
+  "100003": 3,
+  "100004": 4
+ },
+ "slot_to_roster_id": {
+  "1": 2,
+  "2": 1,
+  "3": 3,
+  "4": 4
+ },
+ "settings": {
+  "teams": 4,
+  "rounds": 12,
+  "slots_qb": 1,
+  "slots_rb": 2,
+  "slots_wr": 2,
+  "slots_te": 1,
+  "slots_flex": 1,
+  "slots_def": 1,
+  "slots_bn": 4
+ }
+}

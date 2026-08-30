@@ -83,6 +83,8 @@ class Settings(BaseSettings):
     cache_ttl_week_stats: int = 60 * 60 * 6  # jornadas cerradas: 6 h
     cache_ttl_state: int = 60 * 30  # estado de la temporada: 30 min
     cache_ttl_odds: int = 60 * 20  # cuotas: 20 min
+    cache_ttl_draft: int = 60 * 5  # configuración del draft: 5 min
+    cache_ttl_draft_picks: int = 10  # picks en vivo: 10 s
 
     # --- Red ---
     http_timeout: float = 20.0
