@@ -18,8 +18,11 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 class Settings(BaseSettings):
     """Ajustes de la aplicación."""
 
+    # Se leen dos archivos, en este orden:
+    #   .env.defaults  valores versionados y no secretos (la liga, por ejemplo)
+    #   .env           tus llaves y tus cambios; manda sobre el anterior
     model_config = SettingsConfigDict(
-        env_file=str(ROOT_DIR / ".env"),
+        env_file=(str(ROOT_DIR / ".env.defaults"), str(ROOT_DIR / ".env")),
         env_file_encoding="utf-8",
         env_prefix="",
         extra="ignore",

@@ -187,3 +187,110 @@ class TestFindTrades:
 
         equipo = TeamAnalysis(roster_id=1, weaknesses=[], strengths=["WR"])
         assert find_trades(equipo, [equipo], DEFAULT_ROSTER_POSITIONS) == []
+
+
+class TestIdentificarMiEquipo:
+    """Encontrar cuál de los equipos es el tuyo.
+
+    Es el punto más frágil con datos reales: en Sleeper el nombre que se ve en
+    la liga (`display_name`) no tiene por qué coincidir con el del login
+    (`username`), y las mayúsculas no son de fiar.
+    """
+
+    @pytest.fixture
+    def liga(self):
+        return {"league_id": "1", "name": "Liga", "roster_positions": ["QB", "RB", "BN"]}
+
+    @pytest.fixture
+    def rosters(self):
+        return [
+            {"roster_id": 1, "owner_id": "u1", "players": ["p1", "p2"]},
+            {"roster_id": 2, "owner_id": "u2", "players": ["p3", "p4"]},
+        ]
+
+    @pytest.fixture
+    def ranked(self):
+        return [
+            jugador("p1", "QB Uno", "QB", 80),
+            jugador("p2", "RB Uno", "RB", 70),
+            jugador("p3", "QB Dos", "QB", 60),
+            jugador("p4", "RB Dos", "RB", 50),
+        ]
+
+    def test_el_user_id_manda(self, liga, rosters, ranked):
+        users = [
+            {"user_id": "u1", "display_name": "otro_nombre", "username": "otro"},
+            {"user_id": "u2", "display_name": "yo", "username": "yo"},
+        ]
+        analisis = analyze_league(liga, rosters, users, ranked, my_user_id="u1")
+        assert analisis.me.roster_id == 1
+
+    def test_empareja_por_el_nombre_visible(self, liga, rosters, ranked):
+        users = [
+            {"user_id": "u1", "display_name": "Calvi99"},
+            {"user_id": "u2", "display_name": "otro"},
+        ]
+        analisis = analyze_league(liga, rosters, users, ranked, my_username="Calvi99")
+        assert analisis.me.roster_id == 1
+
+    def test_empareja_por_el_nombre_del_login(self, liga, rosters, ranked):
+        # El nombre visible es distinto del de la cuenta: debe encontrarlo igual.
+        users = [
+            {"user_id": "u1", "display_name": "El Rey del Draft", "username": "Calvi99"},
+            {"user_id": "u2", "display_name": "otro", "username": "otro"},
+        ]
+        analisis = analyze_league(liga, rosters, users, ranked, my_username="Calvi99")
+        assert analisis.me.roster_id == 1
+
+    def test_no_distingue_mayusculas_ni_espacios(self, liga, rosters, ranked):
+        users = [
+            {"user_id": "u1", "display_name": "calvi99"},
+            {"user_id": "u2", "display_name": "otro"},
+        ]
+        analisis = analyze_league(liga, rosters, users, ranked, my_username="  CALVI99 ")
+        assert analisis.me.roster_id == 1
+
+    def test_un_nombre_vacio_no_empareja_con_nadie(self, liga, rosters, ranked):
+        users = [
+            {"user_id": "u1", "display_name": ""},
+            {"user_id": "u2", "display_name": "otro"},
+        ]
+        analisis = analyze_league(liga, rosters, users, ranked, my_username="")
+        assert analisis.me is None
+
+    def test_si_no_te_encuentra_dice_quienes_hay(self, liga, rosters, ranked):
+        users = [
+            {"user_id": "u1", "display_name": "Marcos"},
+            {"user_id": "u2", "display_name": "Ana"},
+        ]
+        analisis = analyze_league(liga, rosters, users, ranked, my_username="Calvi99")
+        assert analisis.me is None
+        aviso = " ".join(analisis.warnings)
+        assert "Marcos" in aviso and "Ana" in aviso  # para poder corregirlo de un vistazo
+
+    def test_la_liga_entera_se_ve_aunque_no_te_encuentre(self, liga, rosters, ranked):
+        users = [{"user_id": "u1", "display_name": "Marcos"}]
+        analisis = analyze_league(liga, rosters, users, ranked, my_username="Calvi99")
+        assert len(analisis.teams) == 2
+        assert all(t.total_score > 0 for t in analisis.teams)
+
+
+class TestServicioIdentificaAlUsuario:
+    async def test_traduce_el_nombre_de_usuario_a_id(self, league_settings, cache, http_client):
+        """Con solo el nombre de usuario, el servicio pregunta el id a Sleeper."""
+        from app.providers.news import NewsProvider
+        from app.providers.odds import OddsProvider
+        from app.providers.sleeper import SleeperClient
+        from app.service import FantasyService
+
+        ajustes = league_settings.model_copy(update={"sleeper_user_id": None})
+        servicio = FantasyService(
+            settings=ajustes,
+            cache=cache,
+            sleeper=SleeperClient(ajustes, cache, http_client),
+            news=NewsProvider(ajustes, cache, http_client),
+            odds=OddsProvider(ajustes, cache, http_client),
+        )
+        analisis = await servicio.get_league_analysis()
+        assert analisis.me is not None
+        assert analisis.me.team_name == "Los Fantasmas"

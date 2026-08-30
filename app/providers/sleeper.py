@@ -241,6 +241,22 @@ class SleeperClient:
             lambda: self._get(f"/user/{username}"),
         )
 
+    async def resolve_user_id(self, username: str) -> str | None:
+        """`user_id` a partir del nombre de usuario, o None si no se puede.
+
+        Es la vía fiable para saber cuál de los equipos de la liga es el tuyo:
+        el nombre que se ve en la liga (`display_name`) puede no coincidir con
+        el del login, pero el `user_id` no falla.
+        """
+        if not username:
+            return None
+        try:
+            user = await self.get_user(username)
+        except SleeperError:
+            return None
+        user_id = (user or {}).get("user_id")
+        return str(user_id) if user_id else None
+
     async def get_league(self, league_id: str) -> dict[str, Any]:
         return await self.cache.get_or_set(
             f"sleeper:league:{league_id}",

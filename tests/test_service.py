@@ -110,3 +110,54 @@ class TestBuildService:
     def test_fuera_del_modo_demo_usa_la_red(self):
         servicio = build_service(Settings(fantasy_demo=False))
         assert not isinstance(servicio._shared_client._transport, httpx.MockTransport)
+
+
+class TestErroresDeLiga:
+    """La liga es lo único que depende de datos que el usuario teclea a mano,
+    así que sus fallos tienen que explicarse bien."""
+
+    def _servicio(self, cache, handler, **extra):
+        from app.providers.news import NewsProvider
+        from app.providers.odds import OddsProvider
+
+        ajustes = Settings(
+            fantasy_demo=True, sleeper_league_id="123456789", **extra
+        )
+        cliente = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        return FantasyService(
+            settings=ajustes,
+            cache=cache,
+            sleeper=SleeperClient(ajustes, cache, cliente),
+            news=NewsProvider(ajustes, cache, cliente),
+            odds=OddsProvider(ajustes, cache, cliente),
+        )
+
+    async def test_un_id_de_liga_que_no_existe_lo_dice_claro(self, cache):
+        servicio = self._servicio(cache, lambda r: httpx.Response(404))
+        with pytest.raises(ServiceUnavailable) as error:
+            await servicio.get_league_info()
+        assert "no encuentra la liga" in str(error.value)
+        assert "sleeper.com/leagues" in str(error.value)  # dónde mirar el número
+
+    async def test_si_sleeper_no_responde_se_distingue_del_id_erroneo(self, cache):
+        servicio = self._servicio(cache, lambda r: httpx.Response(503))
+        with pytest.raises(ServiceUnavailable) as error:
+            await servicio.get_league_info()
+        assert "no encuentra la liga" not in str(error.value)
+        assert "No se pudo consultar tu liga" in str(error.value)
+
+    async def test_una_liga_sin_equipos_lo_dice(self, cache):
+        def handler(request: httpx.Request) -> httpx.Response:
+            if request.url.path.endswith("/rosters"):
+                return httpx.Response(200, json=[])
+            return httpx.Response(200, json={"league_id": "123456789", "name": "Vacía"})
+
+        servicio = self._servicio(cache, handler)
+        with pytest.raises(ServiceUnavailable) as error:
+            await servicio.get_league_info()
+        assert "no tiene equipos" in str(error.value)
+
+    async def test_el_analisis_no_revienta_si_sleeper_esta_caido(self, cache):
+        servicio = self._servicio(cache, lambda r: httpx.Response(503))
+        with pytest.raises(ServiceUnavailable):
+            await servicio.get_league_analysis()

@@ -369,11 +369,20 @@ def analyze_league(
     users_by_id = {str(u.get("user_id")): u for u in users or []}
 
     warnings: list[str] = []
+    # ¿Se ha pedido identificar a alguien? Distinguirlo de "no encontrado" es lo
+    # que permite dar el aviso correcto más abajo.
+    identidad_pedida = bool(my_user_id or (my_username or "").strip())
 
-    # Si no me dan el id de usuario, se intenta deducir del nombre.
+    # Si no me dan el id de usuario, se deduce del nombre. Se comparan tanto
+    # el nombre visible en la liga como el del login: no siempre coinciden.
     if not my_user_id and my_username:
+        buscado = my_username.strip().lower()
         for user in users or []:
-            if str(user.get("display_name", "")).lower() == my_username.lower():
+            nombres = {
+                str(user.get(campo, "")).strip().lower()
+                for campo in ("display_name", "username")
+            }
+            if buscado in nombres and buscado:
                 my_user_id = str(user.get("user_id"))
                 break
 
@@ -392,15 +401,28 @@ def analyze_league(
                 team.is_me = True
                 me = team
                 break
-        if me is None:
-            warnings.append(
-                "No encontré tu equipo en la liga: revisa SLEEPER_USER_ID o SLEEPER_USERNAME."
+
+    if me is None:
+        if identidad_pedida:
+            # Se dio un usuario pero no aparece en la liga. Listar los mánagers
+            # reales permite ver el fallo de un vistazo: casi siempre es que el
+            # nombre visible en la liga no es el del login.
+            managers = sorted(
+                {
+                    str(u.get("display_name") or u.get("username") or "?")
+                    for u in users or []
+                }
             )
-    else:
-        warnings.append(
-            "Sin SLEEPER_USERNAME ni SLEEPER_USER_ID solo puedo mostrar la liga entera, "
-            "no señalar cuál es tu equipo."
-        )
+            warnings.append(
+                "No encontré tu equipo en esta liga. Los mánagers que veo son: "
+                + (", ".join(managers) if managers else "ninguno")
+                + ". Revisa SLEEPER_USERNAME, o pon directamente tu SLEEPER_USER_ID."
+            )
+        else:
+            warnings.append(
+                "Sin SLEEPER_USERNAME ni SLEEPER_USER_ID solo puedo mostrar la liga entera, "
+                "no señalar cuál es tu equipo."
+            )
 
     trade_ideas: list[TradeIdea] = []
     if me is not None:

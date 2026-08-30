@@ -199,12 +199,20 @@ class FantasyService:
         """Compara tu equipo con el resto de la liga y propone intercambios."""
         info = await self.get_league_info()  # lanza LeagueNotConfigured si falta
         ranked = await self.get_ranking(scoring, superflex)
+
+        # El id de usuario es la vía fiable para saber cuál es tu equipo. Si
+        # solo hay nombre de usuario, se traduce a id preguntando a Sleeper; si
+        # eso falla, `analyze_league` aún puede emparejarte por el nombre.
+        my_user_id = self.settings.sleeper_user_id
+        if not my_user_id and self.settings.sleeper_username:
+            my_user_id = await self.sleeper.resolve_user_id(self.settings.sleeper_username)
+
         return analyze_league(
             info["league"],
             info["rosters"],
             info["users"],
             ranked,
-            my_user_id=self.settings.sleeper_user_id,
+            my_user_id=my_user_id,
             my_username=self.settings.sleeper_username,
             scoring=scoring,
             max_trade_ideas=max_trade_ideas,
@@ -237,11 +245,29 @@ class FantasyService:
                 "Falta SLEEPER_LEAGUE_ID en el archivo .env. "
                 "Añade el id de tu liga de Sleeper para activar esta sección."
             )
-        league, rosters, users = await asyncio.gather(
-            self.sleeper.get_league(league_id),
-            self.sleeper.get_league_rosters(league_id),
-            self.sleeper.get_league_users(league_id),
-        )
+        try:
+            league, rosters, users = await asyncio.gather(
+                self.sleeper.get_league(league_id),
+                self.sleeper.get_league_rosters(league_id),
+                self.sleeper.get_league_users(league_id),
+            )
+        except SleeperError as exc:
+            # Un 404 significa que ese id no existe; cualquier otro fallo es de
+            # conexión. Merece la pena distinguirlo: el remedio no es el mismo.
+            if "404" in str(exc):
+                raise ServiceUnavailable(
+                    f"Sleeper no encuentra la liga {league_id}. Comprueba el número: "
+                    "es el que aparece en la URL de tu liga, en "
+                    "sleeper.com/leagues/<NÚMERO>/team."
+                ) from exc
+            raise ServiceUnavailable(
+                f"No se pudo consultar tu liga en Sleeper. Detalle: {exc}"
+            ) from exc
+
+        if not rosters:
+            raise ServiceUnavailable(
+                f"La liga {league_id} existe pero no tiene equipos todavía."
+            )
         return {"league": league, "rosters": rosters, "users": users}
 
     # -- metadatos -----------------------------------------------------------

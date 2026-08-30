@@ -9,8 +9,15 @@ from app.main import app
 
 @pytest.fixture
 def client(monkeypatch):
+    """Cliente SIN liga conectada.
+
+    Se vacían a mano las variables de liga: `.env.defaults` trae una de verdad
+    y los tests no pueden depender de la configuración de quien los ejecute.
+    """
     monkeypatch.setenv("FANTASY_DEMO", "1")
-    monkeypatch.delenv("SLEEPER_LEAGUE_ID", raising=False)
+    monkeypatch.setenv("SLEEPER_LEAGUE_ID", "")
+    monkeypatch.setenv("SLEEPER_USERNAME", "")
+    monkeypatch.setenv("SLEEPER_USER_ID", "")
     get_settings.cache_clear()
     with TestClient(app) as test_client:
         yield test_client

@@ -183,32 +183,50 @@ FANTASY_DEMO=1 ./run.sh
 
 ---
 
-## Conectar tu liga de Sleeper
+## La liga de Sleeper
 
-El ranking y las noticias funcionan sin configurar nada. Para las funciones de
-liga —ver tu roster y filtrar **solo agentes libres**— hay que decirle cuál es
-tu liga:
+La configuración vive en dos archivos que se leen en este orden:
 
-1. Copia el archivo de ejemplo: `cp .env.example .env`
-2. Rellena estas dos líneas:
+| Archivo | Qué lleva | ¿Va a git? |
+|---|---|---|
+| `.env.defaults` | Valores no secretos: la liga y el usuario | Sí |
+| `.env` | Tus llaves y cualquier cambio; manda sobre el anterior | No |
+
+La liga ya viene configurada en [`.env.defaults`](.env.defaults), así que las
+funciones de liga (tu roster, el filtro de agentes libres y la pestaña **Mi
+equipo**) están activas desde el primer arranque.
+
+**Sobre las llaves:** la API de lectura de Sleeper no pide autenticación, así
+que para esto **no hay ninguna llave que pegar**, solo el id de la liga, que es
+público: aparece en la URL `https://sleeper.com/leagues/<ID>/team`. Por eso
+puede ir versionado sin problema.
+
+### Apuntar a otra liga
+
+Crea un `.env` (git lo ignora) con lo que quieras cambiar:
 
 ```ini
-SLEEPER_USERNAME=tu_usuario
-SLEEPER_LEAGUE_ID=123456789012345678
+SLEEPER_LEAGUE_ID=otro_id
+SLEEPER_USERNAME=otro_usuario
 ```
 
-El **id de liga** está en la URL de la web de Sleeper cuando entras en ella:
-`https://sleeper.com/leagues/`**`123456789012345678`**`/team`.
+### Si no encuentra tu equipo
 
-3. Reinicia el servidor.
+La herramienta te localiza dentro de la liga por tres vías, de más a menos
+fiable:
 
-Mientras no esté configurado, la interfaz avisa arriba y el filtro de agentes
-libres aparece desactivado; nada más se resiente.
+1. `SLEEPER_USER_ID`, si lo pones.
+2. Traduciendo tu `SLEEPER_USERNAME` a id preguntándole a Sleeper.
+3. Comparando el nombre con el de los mánagers de la liga, tanto el visible
+   (`display_name`) como el de la cuenta (`username`), sin distinguir mayúsculas.
 
-> **Sobre las llaves:** la API de lectura de Sleeper no pide autenticación, así
-> que para esto **no hay ninguna llave que pegar**, solo el id de tu liga. El
-> campo `SLEEPER_API_KEY` de `.env.example` está reservado por si más adelante
-> se añade un proveedor de datos de pago.
+Si aun así no te encuentra, la pestaña **Mi equipo** lista los mánagers que sí ve
+para que puedas ver el desajuste. El arreglo definitivo es poner tu id numérico,
+que sale de `https://api.sleeper.app/v1/user/TU_USUARIO`:
+
+```ini
+SLEEPER_USER_ID=987654321098765432
+```
 
 ---
 

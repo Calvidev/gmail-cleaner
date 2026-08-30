@@ -138,3 +138,29 @@ class TestSleeperClient:
         transporte = httpx.MockTransport(lambda r: httpx.Response(404))
         cliente = SleeperClient(settings, cache, httpx.AsyncClient(transport=transporte))
         assert await cliente.get_rostered_player_ids("123") == set()
+
+
+class TestResolveUserId:
+    """Traducir el nombre de usuario a `user_id`, que es lo que identifica
+    de verdad a un equipo dentro de una liga."""
+
+    async def test_traduce_el_nombre_a_id(self, sleeper):
+        assert await sleeper.resolve_user_id("calvidev") == "100001"
+
+    async def test_un_usuario_que_no_existe_devuelve_None(self, settings, cache):
+        transporte = httpx.MockTransport(lambda r: httpx.Response(404))
+        cliente = SleeperClient(settings, cache, httpx.AsyncClient(transport=transporte))
+        assert await cliente.resolve_user_id("nadie") is None
+
+    async def test_si_la_red_falla_devuelve_None(self, settings, cache):
+        transporte = httpx.MockTransport(lambda r: httpx.Response(500))
+        cliente = SleeperClient(settings, cache, httpx.AsyncClient(transport=transporte))
+        assert await cliente.resolve_user_id("calvidev") is None
+
+    async def test_nombre_vacio(self, sleeper):
+        assert await sleeper.resolve_user_id("") is None
+
+    async def test_una_respuesta_sin_user_id_devuelve_None(self, settings, cache):
+        transporte = httpx.MockTransport(lambda r: httpx.Response(200, json={"username": "x"}))
+        cliente = SleeperClient(settings, cache, httpx.AsyncClient(transport=transporte))
+        assert await cliente.resolve_user_id("x") is None
