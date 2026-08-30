@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+ <channel>
+  <title>Demo NFL Wire</title>
+  <link>https://demo.fantasytool.local</link>
+  <description>Noticias de ejemplo para el modo demo de Fantasy Tool</description>
+  <item>
+   <title>Jalen Hurts vuelve a correr para dos touchdowns ante Dallas</title>
+   <link>https://demo.fantasytool.local/nfl/0</link>
+   <description>El quarterback de Philadelphia suma su cuarto partido con dos anotaciones terrestres.</description>
+   <pubDate>Sat, 29 Aug 2026 23:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-0</guid>
+  </item>
+  <item>
+   <title>Amon-Ra St. Brown, otra vez por encima de las 100 yardas</title>
+   <link>https://demo.fantasytool.local/nfl/1</link>
+   <description>Detroit se apoya en su receptor en las cadenas cortas y St. Brown responde con 9 recepciones.</description>
+   <pubDate>Sat, 29 Aug 2026 20:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-1</guid>
+  </item>
+  <item>
+   <title>Rhamondre Stevenson recupera el rol de titular en Nueva Inglaterra</title>
+   <link>https://demo.fantasytool.local/nfl/2</link>
+   <description>El cuerpo técnico confirma que el corredor volverá a llevar la carga ofensiva.</description>
+   <pubDate>Sat, 29 Aug 2026 18:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-2</guid>
+  </item>
+  <item>
+   <title>Davante Adams, duda para el domingo por los isquiotibiales</title>
+   <link>https://demo.fantasytool.local/nfl/3</link>
+   <description>Los Rams gestionan la carga de trabajo del veterano receptor.</description>
+   <pubDate>Sat, 29 Aug 2026 16:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-3</guid>
+  </item>
+  <item>
+   <title>Puka Nacua lidera la NFL en yardas tras la recepción</title>
+   <link>https://demo.fantasytool.local/nfl/4</link>
+   <description>El receptor de Los Ángeles encadena tres partidos de más de 120 yardas.</description>
+   <pubDate>Sat, 29 Aug 2026 13:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-4</guid>
+  </item>
+  <item>
+   <title>Brandon Aubrey acierta un field goal de 63 yardas</title>
+   <link>https://demo.fantasytool.local/nfl/5</link>
+   <description>El pateador de Dallas vuelve a ser el kicker mejor valorado en fantasy.</description>
+   <pubDate>Sat, 29 Aug 2026 10:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-5</guid>
+  </item>
+  <item>
+   <title>La defensa de Denver fuerza cinco pérdidas de balón</title>
+   <link>https://demo.fantasytool.local/nfl/6</link>
+   <description>Los Broncos son la unidad defensiva más añadida en las ligas de fantasy esta semana.</description>
+   <pubDate>Sat, 29 Aug 2026 06:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-6</guid>
+  </item>
+  <item>
+   <title>Ladd McConkey se consolida como el receptor favorito de Justin Herbert</title>
+   <link>https://demo.fantasytool.local/nfl/7</link>
+   <description>El novato acumula 24 objetivos en los últimos tres partidos.</description>
+   <pubDate>Sat, 29 Aug 2026 02:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-7</guid>
+  </item>
+  <item>
+   <title>Dalton Kincaid, duda por la rodilla de cara a la semana 11</title>
+   <link>https://demo.fantasytool.local/nfl/8</link>
+   <description>Buffalo espera contar con su ala cerrada, pero no ha entrenado con normalidad.</description>
+   <pubDate>Fri, 28 Aug 2026 18:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-8</guid>
+  </item>
+  <item>
+   <title>De'Von Achane firma su mejor partido de la temporada</title>
+   <link>https://demo.fantasytool.local/nfl/9</link>
+   <description>El corredor de Miami suma 178 yardas totales y dos touchdowns.</description>
+   <pubDate>Fri, 28 Aug 2026 12:44:30 +0000</pubDate>
+   <guid isPermaLink="false">demo-9</guid>
+  </item>
+ </channel>
+</rss>

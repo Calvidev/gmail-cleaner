@@ -1,0 +1,280 @@
+{
+ "4046": {
+  "gp": 10,
+  "pts_ppr": 208.0,
+  "pts_half_ppr": 193.4,
+  "pts_std": 178.9
+ },
+ "6904": {
+  "gp": 12,
+  "pts_ppr": 259.2,
+  "pts_half_ppr": 241.1,
+  "pts_std": 222.9
+ },
+ "4984": {
+  "gp": 10,
+  "pts_ppr": 239.0,
+  "pts_half_ppr": 222.3,
+  "pts_std": 205.5
+ },
+ "6770": {
+  "gp": 13,
+  "pts_ppr": 232.7,
+  "pts_half_ppr": 216.4,
+  "pts_std": 200.1
+ },
+ "4881": {
+  "gp": 14,
+  "pts_ppr": 345.8,
+  "pts_half_ppr": 321.6,
+  "pts_std": 297.4
+ },
+ "8183": {
+  "gp": 14,
+  "pts_ppr": 240.8,
+  "pts_half_ppr": 223.9,
+  "pts_std": 207.1
+ },
+ "11560": {
+  "gp": 12,
+  "pts_ppr": 184.8,
+  "pts_half_ppr": 171.9,
+  "pts_std": 158.9
+ },
+ "7564": {
+  "gp": 13,
+  "pts_ppr": 196.3,
+  "pts_half_ppr": 182.6,
+  "pts_std": 168.8
+ },
+ "4034": {
+  "gp": 13,
+  "pts_ppr": 239.2,
+  "pts_half_ppr": 222.5,
+  "pts_std": 205.7
+ },
+ "9509": {
+  "gp": 14,
+  "pts_ppr": 281.4,
+  "pts_half_ppr": 261.7,
+  "pts_std": 242.0
+ },
+ "9756": {
+  "gp": 11,
+  "pts_ppr": 216.7,
+  "pts_half_ppr": 201.5,
+  "pts_std": 186.4
+ },
+ "8155": {
+  "gp": 11,
+  "pts_ppr": 160.6,
+  "pts_half_ppr": 149.4,
+  "pts_std": 138.1
+ },
+ "6813": {
+  "gp": 11,
+  "pts_ppr": 184.8,
+  "pts_half_ppr": 171.9,
+  "pts_std": 158.9
+ },
+ "7588": {
+  "gp": 12,
+  "pts_ppr": 142.8,
+  "pts_half_ppr": 132.8,
+  "pts_std": 122.8
+ },
+ "11566": {
+  "gp": 10,
+  "pts_ppr": 173.0,
+  "pts_half_ppr": 160.9,
+  "pts_std": 148.8
+ },
+ "4098": {
+  "gp": 11,
+  "pts_ppr": 147.4,
+  "pts_half_ppr": 137.1,
+  "pts_std": 126.8
+ },
+ "9997": {
+  "gp": 14,
+  "pts_ppr": 183.4,
+  "pts_half_ppr": 170.6,
+  "pts_std": 157.7
+ },
+ "12507": {
+  "gp": 14,
+  "pts_ppr": 114.8,
+  "pts_half_ppr": 106.8,
+  "pts_std": 98.7
+ },
+ "5967": {
+  "gp": 9,
+  "pts_ppr": 84.6,
+  "pts_half_ppr": 78.7,
+  "pts_std": 72.8
+ },
+ "6794": {
+  "gp": 12,
+  "pts_ppr": 256.8,
+  "pts_half_ppr": 238.8,
+  "pts_std": 220.8
+ },
+ "8112": {
+  "gp": 12,
+  "pts_ppr": 237.6,
+  "pts_half_ppr": 221.0,
+  "pts_std": 204.3
+ },
+ "9500": {
+  "gp": 13,
+  "pts_ppr": 236.6,
+  "pts_half_ppr": 220.0,
+  "pts_std": 203.5
+ },
+ "11624": {
+  "gp": 10,
+  "pts_ppr": 136.0,
+  "pts_half_ppr": 126.5,
+  "pts_std": 117.0
+ },
+ "6786": {
+  "gp": 11,
+  "pts_ppr": 207.9,
+  "pts_half_ppr": 193.3,
+  "pts_std": 178.8
+ },
+ "4866": {
+  "gp": 13,
+  "pts_ppr": 184.6,
+  "pts_half_ppr": 171.7,
+  "pts_std": 158.8
+ },
+ "5849": {
+  "gp": 13,
+  "pts_ppr": 209.3,
+  "pts_half_ppr": 194.6,
+  "pts_std": 180.0
+ },
+ "8146": {
+  "gp": 11,
+  "pts_ppr": 151.8,
+  "pts_half_ppr": 141.2,
+  "pts_std": 130.5
+ },
+ "11631": {
+  "gp": 9,
+  "pts_ppr": 147.6,
+  "pts_half_ppr": 137.3,
+  "pts_std": 126.9
+ },
+ "11635": {
+  "gp": 14,
+  "pts_ppr": 142.8,
+  "pts_half_ppr": 132.8,
+  "pts_std": 122.8
+ },
+ "8137": {
+  "gp": 13,
+  "pts_ppr": 191.1,
+  "pts_half_ppr": 177.7,
+  "pts_std": 164.3
+ },
+ "6801": {
+  "gp": 9,
+  "pts_ppr": 110.7,
+  "pts_half_ppr": 103.0,
+  "pts_std": 95.2
+ },
+ "12512": {
+  "gp": 11,
+  "pts_ppr": 155.1,
+  "pts_half_ppr": 144.2,
+  "pts_std": 133.4
+ },
+ "7525": {
+  "gp": 11,
+  "pts_ppr": 193.6,
+  "pts_half_ppr": 180.0,
+  "pts_std": 166.5
+ },
+ "3321": {
+  "gp": 11,
+  "pts_ppr": 140.8,
+  "pts_half_ppr": 130.9,
+  "pts_std": 121.1
+ },
+ "6826": {
+  "gp": 11,
+  "pts_ppr": 163.9,
+  "pts_half_ppr": 152.4,
+  "pts_std": 141.0
+ },
+ "4034b": {
+  "gp": 11,
+  "pts_ppr": 114.4,
+  "pts_half_ppr": 106.4,
+  "pts_std": 98.4
+ },
+ "8130": {
+  "gp": 12,
+  "pts_ppr": 164.4,
+  "pts_half_ppr": 152.9,
+  "pts_std": 141.4
+ },
+ "7002": {
+  "gp": 13,
+  "pts_ppr": 157.3,
+  "pts_half_ppr": 146.3,
+  "pts_std": 135.3
+ },
+ "11604": {
+  "gp": 13,
+  "pts_ppr": 145.6,
+  "pts_half_ppr": 135.4,
+  "pts_std": 125.2
+ },
+ "9601": {
+  "gp": 13,
+  "pts_ppr": 111.8,
+  "pts_half_ppr": 104.0,
+  "pts_std": 96.1
+ },
+ "4195": {
+  "gp": 11,
+  "pts_ppr": 100.1,
+  "pts_half_ppr": 93.1,
+  "pts_std": 86.1
+ },
+ "8259": {
+  "gp": 12,
+  "pts_ppr": 127.2,
+  "pts_half_ppr": 118.3,
+  "pts_std": 109.4
+ },
+ "2747": {
+  "gp": 11,
+  "pts_ppr": 95.7,
+  "pts_half_ppr": 89.0,
+  "pts_std": 82.3
+ },
+ "DEN": {
+  "gp": 12,
+  "pts_ppr": 112.8
+ },
+ "BAL": {
+  "gp": 12,
+  "pts_ppr": 105.6
+ },
+ "PHI": {
+  "gp": 12,
+  "pts_ppr": 102.0
+ },
+ "PIT": {
+  "gp": 12,
+  "pts_ppr": 97.2
+ },
+ "HOU": {
+  "gp": 12,
+  "pts_ppr": 91.2
+ }
+}

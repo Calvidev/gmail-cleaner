@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fantasy Tool — Ranking y noticias NFL</title>
+  <meta name="description" content="Ranking de jugadores de la NFL del mejor al peor y noticias de cada jugador.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🏈</text></svg>">
+  <link rel="stylesheet" href="/static/assets/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">🏈</span>
+      <div>
+        <h1>Fantasy Tool</h1>
+        <p class="brand-sub" id="season-line">Cargando temporada…</p>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-view="rankings" role="tab">Ranking</button>
+      <button class="tab" data-view="news" role="tab">Noticias</button>
+    </nav>
+
+    <div class="topbar-actions">
+      <label class="field">
+        <span>Formato</span>
+        <select id="scoring">
+          <option value="ppr">PPR</option>
+          <option value="half_ppr">Media PPR</option>
+          <option value="standard">Estándar</option>
+        </select>
+      </label>
+      <label class="toggle" title="Sube el valor de los QB (liga con dos quarterbacks)">
+        <input type="checkbox" id="superflex">
+        <span>Superflex</span>
+      </label>
+      <button class="btn-ghost" id="refresh" title="Vaciar caché y volver a descargar">↻</button>
+    </div>
+  </header>
+
+  <div id="warnings" class="warnings" hidden></div>
+
+  <!-- ============================ RANKING ============================ -->
+  <main id="view-rankings" class="view">
+    <section class="filters">
+      <input type="search" id="search" placeholder="Buscar jugador, equipo o universidad…" autocomplete="off">
+
+      <div class="chips" id="position-chips">
+        <button class="chip is-active" data-position="ALL">Todos</button>
+        <button class="chip" data-position="QB">QB</button>
+        <button class="chip" data-position="RB">RB</button>
+        <button class="chip" data-position="WR">WR</button>
+        <button class="chip" data-position="TE">TE</button>
+        <button class="chip" data-position="K">K</button>
+        <button class="chip" data-position="DEF">DEF</button>
+      </div>
+
+      <select id="team"><option value="ALL">Todos los equipos</option></select>
+
+      <label class="toggle">
+        <input type="checkbox" id="hide-injured">
+        <span>Ocultar lesionados</span>
+      </label>
+      <label class="toggle" id="fa-toggle-wrap" title="Necesita el id de tu liga de Sleeper">
+        <input type="checkbox" id="free-agents" disabled>
+        <span>Solo agentes libres</span>
+      </label>
+    </section>
+
+    <p class="result-line" id="result-line"></p>
+
+    <div class="table-wrap">
+      <table class="ranking">
+        <thead>
+          <tr>
+            <th class="col-rank">#</th>
+            <th class="col-player">Jugador</th>
+            <th class="col-pos">Pos</th>
+            <th class="col-score">Nota</th>
+            <th class="col-stat">Pts/PJ</th>
+            <th class="col-stat">Total</th>
+            <th class="col-trend">Tendencia</th>
+            <th class="col-status">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-body"></tbody>
+      </table>
+    </div>
+
+    <div class="load-more">
+      <button class="btn" id="load-more" hidden>Cargar 100 más</button>
+      <p class="empty" id="ranking-empty" hidden>No hay jugadores con esos filtros.</p>
+    </div>
+  </main>
+
+  <!-- ============================ NOTICIAS ============================ -->
+  <main id="view-news" class="view" hidden>
+    <section class="filters">
+      <input type="search" id="news-search" placeholder="Buscar en las noticias…" autocomplete="off">
+      <label class="toggle">
+        <input type="checkbox" id="news-only-players" checked>
+        <span>Solo noticias con jugador identificado</span>
+      </label>
+    </section>
+
+    <div class="news-grid" id="news-grid"></div>
+    <p class="empty" id="news-empty" hidden>No hay noticias que encajen con la búsqueda.</p>
+  </main>
+
+  <!-- ============================ FICHA ============================ -->
+  <aside id="drawer" class="drawer" hidden aria-label="Ficha del jugador">
+    <button class="drawer-close" id="drawer-close" aria-label="Cerrar">✕</button>
+    <div id="drawer-content"></div>
+  </aside>
+  <div id="scrim" class="scrim" hidden></div>
+
+  <footer class="footer">
+    <span>Datos de <a href="https://docs.sleeper.com" target="_blank" rel="noopener">Sleeper</a> · noticias de ESPN, CBS, Yahoo y Fox Sports</span>
+    <span id="footer-meta"></span>
+  </footer>
+
+  <script src="/static/assets/app.js"></script>
+</body>
+</html>

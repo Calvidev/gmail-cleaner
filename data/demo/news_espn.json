@@ -1,0 +1,225 @@
+{
+ "header": "NFL",
+ "articles": [
+  {
+   "headline": "Ja'Marr Chase supera las 150 yardas y sostiene el ataque de Cincinnati",
+   "description": "El receptor de los Bengals firmó 11 recepciones para 164 yardas y dos touchdowns en la victoria del domingo.",
+   "published": "2026-08-30T00:14:30Z",
+   "lastModified": "2026-08-30T00:14:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo5"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4362628,
+      "description": "Ja'Marr"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Christian McCaffrey, limitado en el entrenamiento por el tendón de Aquiles",
+   "description": "San Francisco lo listó como duda para el domingo. El cuerpo técnico insiste en que es precaución.",
+   "published": "2026-08-29T22:44:30Z",
+   "lastModified": "2026-08-29T22:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo20"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 3117251,
+      "description": "Christian"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Jonathan Taylor se perderá el próximo partido por el tobillo",
+   "description": "Indianápolis confirmó que el corredor estará fuera al menos una semana.",
+   "published": "2026-08-29T21:44:30Z",
+   "lastModified": "2026-08-29T21:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo30"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4242335,
+      "description": "Jonathan"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Tyrone Tracy Jr. se queda con los acarreos de los Giants",
+   "description": "El novato lidera el backfield tras la lesión del titular y es el jugador más añadido de la semana.",
+   "published": "2026-08-29T19:44:30Z",
+   "lastModified": "2026-08-29T19:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo50"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4360761,
+      "description": "Tyrone"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Tyreek Hill pasa a la lista de lesionados tras operarse la muñeca",
+   "description": "Miami pierde a su receptor estrella para el resto de la temporada regular.",
+   "published": "2026-08-29T17:44:30Z",
+   "lastModified": "2026-08-29T17:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo70"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 3116406,
+      "description": "Tyreek"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Lamar Jackson firma otro partido de cuatro touchdowns",
+   "description": "El quarterback de Baltimore vuelve a colocarse como el mejor QB del año en fantasy.",
+   "published": "2026-08-29T15:44:30Z",
+   "lastModified": "2026-08-29T15:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo90"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 3916387,
+      "description": "Lamar"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Brock Bowers ya es el ala cerrada más productivo de la liga",
+   "description": "El sophomore de Las Vegas acumula 78 recepciones y supera a Kelce en objetivos por partido.",
+   "published": "2026-08-29T12:44:30Z",
+   "lastModified": "2026-08-29T12:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo120"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4432665,
+      "description": "Brock"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Malik Nabers, 12 objetivos por segunda semana consecutiva",
+   "description": "Nueva York sigue apoyándose en su receptor de segundo año pese al cambio de quarterback.",
+   "published": "2026-08-29T08:44:30Z",
+   "lastModified": "2026-08-29T08:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo160"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4432773,
+      "description": "Malik"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Bijan Robinson mantiene el primer puesto del ranking de corredores",
+   "description": "Atlanta le dio 24 toques y el corredor respondió con 137 yardas totales.",
+   "published": "2026-08-29T04:44:30Z",
+   "lastModified": "2026-08-29T04:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo200"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4430807,
+      "description": "Bijan"
+     }
+    }
+   ]
+  },
+  {
+   "headline": "Rome Odunze sube en el depth chart de Chicago",
+   "description": "Con Caleb Williams asentado, el receptor pasa a ser la segunda opción del ataque.",
+   "published": "2026-08-28T22:44:30Z",
+   "lastModified": "2026-08-28T22:44:30Z",
+   "type": "Story",
+   "images": [],
+   "links": {
+    "web": {
+     "href": "https://www.espn.com/nfl/story/_/id/demo260"
+    }
+   },
+   "categories": [
+    {
+     "type": "athlete",
+     "athlete": {
+      "id": 4430878,
+      "description": "Rome"
+     }
+    }
+   ]
+  }
+ ]
+}
