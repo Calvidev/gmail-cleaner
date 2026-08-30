@@ -1,0 +1,19 @@
+# Ejemplo de proxy con HTTPS automático para Fantasy Tool.
+# Cópialo a /etc/caddy/Caddyfile (o inclúyelo) y recarga Caddy.
+#
+# Caddy pide y renueva el certificado de Let's Encrypt él solo; lo único que
+# necesitas es que fantasy.calvi.dev apunte con un registro A a la IP del
+# servidor y que los puertos 80 y 443 estén abiertos.
+
+fantasy.calvi.dev {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8000
+
+	# La interfaz es estática y el contenido cambia solo por la API.
+	@estaticos path /static/*
+	header @estaticos Cache-Control "public, max-age=3600"
+
+	log {
+		output file /var/log/caddy/fantasy.log
+	}
+}

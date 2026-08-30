@@ -1,0 +1,36 @@
+# Fantasy Tool en un servidor, detrás de un proxy con HTTPS.
+#
+#   docker compose up -d
+#
+# El proxy (Caddy, nginx, Traefik…) escucha en el 443 y reenvía al 8000.
+# Ejemplo de Caddyfile para fantasy.calvi.dev:
+#
+#   fantasy.calvi.dev {
+#       reverse_proxy 127.0.0.1:8000
+#   }
+#
+# Hay un ejemplo completo en deploy/Caddyfile.example
+
+services:
+  fantasy-tool:
+    build: .
+    image: fantasy-tool
+    container_name: fantasy-tool
+    restart: unless-stopped
+    # Solo escucha en localhost: quien da la cara a internet es el proxy.
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      # Tu dominio, para que ninguna otra web pueda llamar a la API.
+      CORS_ORIGINS: '["https://fantasy.calvi.dev"]'
+      # Clave para poder vaciar la caché. Ponla en un archivo .env junto a este.
+      ADMIN_TOKEN: ${ADMIN_TOKEN:-}
+      # Opcional: líneas de apuestas por jugador.
+      ODDS_API_KEY: ${ODDS_API_KEY:-}
+    volumes:
+      # El catálogo de jugadores pesa varios MB y cambia poco: guardarlo entre
+      # reinicios evita descargarlo cada vez.
+      - fantasy-cache:/app/.cache
+
+volumes:
+  fantasy-cache:

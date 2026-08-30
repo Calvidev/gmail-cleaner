@@ -338,3 +338,44 @@ class TestDraft:
 
     def test_la_meta_dice_en_que_estado_esta_el_draft(self, league_client):
         assert league_client.get("/api/meta").json()["draft_status"] == "drafting"
+
+
+class TestRefreshProtegido:
+    """Cuando la herramienta está publicada en internet, vaciar la caché no
+    puede quedar abierto: forzaría descargas repetidas contra Sleeper."""
+
+    @pytest.fixture
+    def client_protegido(self, monkeypatch):
+        monkeypatch.setenv("FANTASY_DEMO", "1")
+        monkeypatch.setenv("SLEEPER_LEAGUE_ID", "")
+        monkeypatch.setenv("SLEEPER_USERNAME", "")
+        monkeypatch.setenv("SLEEPER_USER_ID", "")
+        monkeypatch.setenv("ADMIN_TOKEN", "clave-secreta")
+        get_settings.cache_clear()
+        with TestClient(app) as test_client:
+            yield test_client
+        get_settings.cache_clear()
+
+    def test_sin_token_no_deja(self, client_protegido):
+        respuesta = client_protegido.post("/api/refresh")
+        assert respuesta.status_code == 401
+        assert "X-Admin-Token" in respuesta.json()["detail"]
+
+    def test_con_un_token_erroneo_tampoco(self, client_protegido):
+        respuesta = client_protegido.post(
+            "/api/refresh", headers={"X-Admin-Token": "me-lo-invento"}
+        )
+        assert respuesta.status_code == 401
+
+    def test_con_el_token_correcto_funciona(self, client_protegido):
+        respuesta = client_protegido.post(
+            "/api/refresh", headers={"X-Admin-Token": "clave-secreta"}
+        )
+        assert respuesta.status_code == 200
+
+    def test_el_resto_de_la_api_sigue_abierta(self, client_protegido):
+        # La herramienta es de solo lectura: el token protege el vaciado, no la consulta.
+        assert client_protegido.get("/api/rankings?limit=1").status_code == 200
+
+    def test_sin_token_configurado_no_pide_nada(self, client):
+        assert client.post("/api/refresh").status_code == 200

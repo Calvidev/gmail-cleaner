@@ -370,6 +370,74 @@ touchdowns junto al resto de su información.
 
 ---
 
+## Publicarla en internet
+
+La herramienta va bien en local, pero también se puede dejar corriendo en un
+servidor con tu propio dominio. Dos cosas cambian respecto al uso local:
+
+| En local | Publicada |
+|---|---|
+| CORS abierto a cualquier origen | Solo tu dominio (`CORS_ORIGINS`) |
+| Vaciar la caché está abierto | Protegido con `ADMIN_TOKEN` |
+
+Lo segundo importa: sin protección, cualquiera podría llamar a `/api/refresh` en
+bucle y forzar la descarga del catálogo entero una y otra vez, hasta que Sleeper
+limitara la IP del servidor. El resto de la API es de solo lectura y puede
+quedarse abierta.
+
+### Con Docker (lo más sencillo)
+
+```bash
+# 1. En el servidor, con el repositorio clonado
+echo "ADMIN_TOKEN=$(openssl rand -hex 24)" > .env
+
+# 2. Arrancar
+docker compose up -d
+```
+
+Escucha en `127.0.0.1:8000`; quien da la cara a internet es un proxy. Con
+[Caddy](https://caddyserver.com) el HTTPS es automático:
+
+```caddy
+fantasy.calvi.dev {
+    reverse_proxy 127.0.0.1:8000
+}
+```
+
+Hay un ejemplo más completo en [`deploy/Caddyfile.example`](deploy/Caddyfile.example).
+Antes de nada, haz que `fantasy.calvi.dev` apunte con un registro **A** a la IP
+del servidor.
+
+### Sin Docker
+
+```bash
+sudo git clone -b <rama> <repositorio> /opt/fantasy-tool
+cd /opt/fantasy-tool
+sudo python3 -m venv .venv && sudo .venv/bin/pip install -r requirements.txt
+sudo useradd --system --home /opt/fantasy-tool fantasy
+sudo chown -R fantasy:fantasy /opt/fantasy-tool
+
+sudo cp deploy/fantasy-tool.service /etc/systemd/system/
+sudo systemctl enable --now fantasy-tool
+```
+
+El archivo de servicio está en [`deploy/fantasy-tool.service`](deploy/fantasy-tool.service).
+
+### Cosas a tener en cuenta
+
+- **La caché en disco vale oro.** El catálogo de jugadores pesa varios MB; si se
+  pierde en cada reinicio, cada arranque vuelve a descargarlo. Con Docker eso lo
+  resuelve el volumen `fantasy-cache`.
+- **Servidores sin disco persistente** (algunas plataformas *serverless*) pueden
+  funcionar, pero cada arranque en frío tarda más porque rehacen esa descarga.
+- **No hay usuarios ni contraseñas.** Todo lo que muestra es información pública
+  de Sleeper; si publicas la URL, cualquiera que la conozca verá tu liga.
+- **Consumo de la API de Sleeper**: con las cachés por defecto, una instalación
+  normal hace unas pocas decenas de llamadas por hora, muy por debajo de lo que
+  Sleeper pide (menos de 1000 por minuto).
+
+---
+
 ## Qué sirve en cada momento de la temporada
 
 | Momento | Lo que te sirve |

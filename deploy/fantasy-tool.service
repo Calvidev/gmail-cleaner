@@ -1,0 +1,37 @@
+# Fantasy Tool como servicio del sistema, sin Docker.
+#
+#   sudo cp deploy/fantasy-tool.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now fantasy-tool
+#
+# Ajusta User, WorkingDirectory y las rutas si no lo instalas en /opt.
+
+[Unit]
+Description=Fantasy Tool — ranking y noticias de la NFL
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+User=fantasy
+Group=fantasy
+WorkingDirectory=/opt/fantasy-tool
+Environment=HOST=127.0.0.1
+Environment=PORT=8000
+# Tu dominio y la clave para vaciar la caché. Lo secreto, mejor en un archivo
+# aparte con permisos 600, que es lo que hace EnvironmentFile.
+Environment=CORS_ORIGINS=["https://fantasy.calvi.dev"]
+EnvironmentFile=-/opt/fantasy-tool/.env
+ExecStart=/opt/fantasy-tool/.venv/bin/python -m uvicorn app.main:app --host ${HOST} --port ${PORT}
+Restart=on-failure
+RestartSec=5
+
+# El servicio no necesita casi nada del sistema: se le quita todo lo demás.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/fantasy-tool/.cache
+
+[Install]
+WantedBy=multi-user.target

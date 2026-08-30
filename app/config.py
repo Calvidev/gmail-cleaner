@@ -29,9 +29,19 @@ class Settings(BaseSettings):
     )
 
     # --- Servidor ---
-    host: str = "127.0.0.1"
+    host: str = "127.0.0.1"  # en un contenedor, 0.0.0.0
     port: int = 8000
     debug: bool = False
+
+    # Orígenes que pueden llamar a la API desde un navegador. En local vale
+    # cualquiera; si publicas la herramienta en internet, pon tu dominio:
+    #   CORS_ORIGINS=["https://fantasy.calvi.dev"]
+    cors_origins: list[str] = Field(default_factory=lambda: ["*"])
+
+    # Si se define, vaciar la caché (`POST /api/refresh`) exige esta clave en la
+    # cabecera `X-Admin-Token`. Sin ella, cualquiera podría forzar descargas
+    # repetidas del catálogo entero y hacer que Sleeper limite tu IP.
+    admin_token: str | None = None
 
     # Modo demo: usa los datos de `data/demo/` en vez de salir a internet.
     # Útil para probar la interfaz sin conexión (FANTASY_DEMO=1).

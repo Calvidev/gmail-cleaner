@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 
 from app.models import (
     DraftBoard,
@@ -391,7 +391,23 @@ async def league(service: ServiceDep) -> dict:
 
 
 @router.post("/refresh", summary="Vacía la caché y vuelve a descargar")
-async def refresh(service: ServiceDep) -> dict[str, str]:
+async def refresh(
+    service: ServiceDep,
+    x_admin_token: str | None = Header(default=None),
+) -> dict[str, str]:
+    """Vacía la caché.
+
+    Si hay `ADMIN_TOKEN` configurado (recomendado cuando la herramienta está
+    publicada en internet), hay que enviarlo en la cabecera `X-Admin-Token`.
+    Sin protección, cualquiera podría forzar la descarga del catálogo completo
+    una y otra vez hasta que Sleeper limitara la IP del servidor.
+    """
+    esperado = service.settings.admin_token
+    if esperado and x_admin_token != esperado:
+        raise HTTPException(
+            status_code=401,
+            detail="Falta la cabecera X-Admin-Token o no es correcta.",
+        )
     service.refresh()
     return {"status": "cache vaciada"}
 

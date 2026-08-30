@@ -552,7 +552,17 @@ function bindEvents() {
     button.disabled = true;
     button.textContent = "…";
     try {
-      await fetch("/api/refresh", { method: "POST" });
+      const respuesta = await fetch("/api/refresh", { method: "POST" });
+      if (respuesta.status === 401) {
+        // Instalación publicada con ADMIN_TOKEN: el botón no puede vaciar la
+        // caché desde el navegador, pero los datos se refrescan solos por TTL.
+        showWarnings([
+          "Vaciar la caché está protegido en esta instalación. Los datos se " +
+            "actualizan solos igualmente: el catálogo cada 12 h, las noticias cada " +
+            "10 min y los picks del draft cada 10 s.",
+        ]);
+        return;
+      }
       await loadMeta();
       await loadNewsCounts();
       await loadRankings();
