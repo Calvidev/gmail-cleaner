@@ -11,12 +11,15 @@ import asyncio
 import gzip
 import hashlib
 import json
+import logging
 import time
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any, TypeVar
 
 T = TypeVar("T")
+
+logger = logging.getLogger("fantasy-tool.cache")
 
 
 class TTLCache:
@@ -25,9 +28,33 @@ class TTLCache:
     def __init__(self, cache_dir: Path | None = None) -> None:
         self._memory: dict[str, tuple[float, Any]] = {}
         self._locks: dict[str, asyncio.Lock] = {}
-        self._cache_dir = cache_dir
-        if cache_dir is not None:
+        self._cache_dir = cache_dir if self._directorio_escribible(cache_dir) else None
+
+    @staticmethod
+    def _directorio_escribible(cache_dir: Path | None) -> bool:
+        """¿Se puede escribir de verdad en el directorio de caché?
+
+        En un contenedor con disco persistente el volumen se monta como root, y
+        si la aplicación corre con otro usuario no podría escribir. Comprobarlo
+        al arrancar y avisar evita perder la caché en silencio y volver a
+        descargar el catálogo entero en cada reinicio.
+        """
+        if cache_dir is None:
+            return False
+        try:
             cache_dir.mkdir(parents=True, exist_ok=True)
+            prueba = cache_dir / ".escritura"
+            prueba.write_bytes(b"ok")
+            prueba.unlink()
+        except OSError as exc:
+            logger.warning(
+                "No se puede escribir en %s (%s). La caché funcionará solo en "
+                "memoria: cada reinicio volverá a descargar el catálogo de jugadores.",
+                cache_dir,
+                exc,
+            )
+            return False
+        return True
 
     # -- utilidades internas -------------------------------------------------
 

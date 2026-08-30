@@ -22,12 +22,15 @@ COPY app/ ./app/
 COPY web/ ./web/
 COPY data/ ./data/
 COPY .env.defaults ./
+COPY docker-entrypoint.sh /usr/local/bin/
 
-# El proceso no corre como root, y la caché necesita ser suya.
+# La aplicación no corre como root. El contenedor sí arranca como root, solo lo
+# justo para ceder el volumen de caché al usuario, y baja de privilegios antes
+# de ejecutar nada: los discos persistentes se montan siempre como root.
 RUN useradd --create-home --uid 10001 fantasy \
     && mkdir -p /app/.cache \
-    && chown -R fantasy:fantasy /app
-USER fantasy
+    && chown -R fantasy:fantasy /app \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000
 
@@ -36,4 +39,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
     CMD python -c "import urllib.request,os; urllib.request.urlopen(f'http://127.0.0.1:{os.environ.get(\"PORT\", 8000)}/api/health').read()"
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["sh", "-c", "python -m uvicorn app.main:app --host $HOST --port $PORT"]

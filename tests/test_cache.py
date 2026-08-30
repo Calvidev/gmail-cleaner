@@ -106,3 +106,47 @@ class TestGetOrSet:
 
         with pytest.raises(RuntimeError):
             await cache.get_or_set("k", 60, factory)
+
+
+class TestDirectorioNoEscribible:
+    """En un contenedor con disco persistente, el volumen se monta como root.
+    Si la aplicación corre con otro usuario, no podría escribir la caché."""
+
+    def test_si_no_se_puede_escribir_avisa_y_sigue_en_memoria(
+        self, tmp_path, caplog, monkeypatch
+    ):
+        import logging
+        from pathlib import Path
+
+        # Se simula el fallo de escritura en vez de usar permisos: los tests
+        # también se ejecutan como root, y root escribe en cualquier sitio.
+        def sin_permiso(self, *args, **kwargs):
+            raise PermissionError(13, "Permission denied")
+
+        monkeypatch.setattr(Path, "write_bytes", sin_permiso)
+
+        with caplog.at_level(logging.WARNING):
+            cache = TTLCache(tmp_path)
+
+        assert any("solo en memoria" in r.getMessage() for r in caplog.records)
+
+        # Y aun así la aplicación funciona: la caché se queda en memoria.
+        monkeypatch.undo()
+        cache.set("k", {"a": 1}, use_disk=True)
+        assert cache.get("k", ttl=60) == {"a": 1}
+        assert list(tmp_path.iterdir()) == []  # no ha tocado el disco
+
+    def test_un_directorio_escribible_si_usa_el_disco(self, tmp_path):
+        cache = TTLCache(tmp_path)
+        cache.set("k", {"a": 1}, use_disk=True)
+        # Una instancia nueva, sin memoria, tiene que encontrarlo en disco.
+        assert TTLCache(tmp_path).get("k", ttl=60, use_disk=True) == {"a": 1}
+
+    def test_el_directorio_se_crea_si_no_existe(self, tmp_path):
+        destino = tmp_path / "nuevo" / "anidado"
+        TTLCache(destino)
+        assert destino.is_dir()
+
+    def test_no_deja_rastro_de_la_comprobacion(self, tmp_path):
+        TTLCache(tmp_path)
+        assert list(tmp_path.iterdir()) == []

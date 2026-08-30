@@ -400,7 +400,45 @@ bucle y forzar la descarga del catálogo entero una y otra vez, hasta que Sleepe
 limitara la IP del servidor. El resto de la API es de solo lectura y puede
 quedarse abierta.
 
-### Con Docker (lo más sencillo)
+### Con Fly.io (sin servidor que mantener)
+
+Es la vía más corta si no tienes ya un servidor: despliega el `Dockerfile` de
+este repositorio, da HTTPS gratis en tu dominio y la máquina se apaga sola
+cuando no la usas.
+
+```bash
+# 1. Instalar la herramienta de Fly y crear la cuenta
+brew install flyctl          # Linux: curl -L https://fly.io/install.sh | sh
+fly auth signup              # o `fly auth login` si ya tienes cuenta
+
+# 2. Crear la aplicación. El nombre de fly.toml tiene que ser único en todo
+#    Fly; si te lo rechaza, cámbialo en el archivo y repite.
+fly apps create fantasy-tool-calvi
+
+# 3. El disco donde vive la caché del catálogo de jugadores
+fly volumes create fantasy_cache --size 1 --region mad --yes
+
+# 4. La clave para poder vaciar la caché desde fuera
+fly secrets set ADMIN_TOKEN="$(openssl rand -hex 24)"
+
+# 5. Desplegar
+fly deploy
+
+# 6. Tu dominio. Fly te dirá qué registros DNS añadir.
+fly certs add fantasy.calvi.dev
+```
+
+El paso 6 te pedirá crear en tu DNS un registro **CNAME** de `fantasy` que
+apunte a `fantasy-tool-calvi.fly.dev` (o un par de registros A/AAAA, según lo
+que te indique). En cuanto propague, Fly emite el certificado solo.
+
+Comprueba que va con `fly logs` y `fly status`.
+
+> **Región:** `mad` es Madrid. Cámbiala en `fly.toml` y en el paso 3 por la más
+> cercana a ti: `cdg` París, `iad` Virginia, `qro` Querétaro, `gru` São Paulo,
+> `bog` Bogotá, `scl` Santiago.
+
+### Con Docker en tu propio servidor
 
 ```bash
 # 1. En el servidor, con el repositorio clonado
@@ -423,6 +461,11 @@ Hay un ejemplo más completo en [`deploy/Caddyfile.example`](deploy/Caddyfile.ex
 Antes de nada, haz que `fantasy.calvi.dev` apunte con un registro **A** a la IP
 del servidor.
 
+El contenedor arranca como root solo el tiempo justo de ceder el disco de caché
+al usuario de la aplicación, y baja de privilegios antes de ejecutar nada. Eso
+lo hace [`docker-entrypoint.sh`](docker-entrypoint.sh), porque los volúmenes se
+montan siempre como root y si no la caché se quedaría sin poder escribirse.
+
 ### Sin Docker
 
 ```bash
@@ -440,9 +483,13 @@ El archivo de servicio está en [`deploy/fantasy-tool.service`](deploy/fantasy-t
 
 ### Cosas a tener en cuenta
 
-- **La caché en disco vale oro.** El catálogo de jugadores pesa varios MB; si se
-  pierde en cada reinicio, cada arranque vuelve a descargarlo. Con Docker eso lo
-  resuelve el volumen `fantasy-cache`.
+- **La caché en disco vale oro.** El catálogo de jugadores pesa unos 7 MB; si se
+  pierde en cada reinicio, cada arranque vuelve a descargarlo. De eso se encargan
+  el volumen `fantasy-cache` (Docker) o `fantasy_cache` (Fly). Si por lo que sea
+  no se puede escribir, la aplicación sigue funcionando con la caché en memoria
+  y lo avisa en los logs.
+- **Memoria:** medido con el catálogo completo, el proceso llega a unos 100 MB de
+  pico. Con 512 MB va sobrado y hasta 256 MB debería bastar.
 - **Servidores sin disco persistente** (algunas plataformas *serverless*) pueden
   funcionar, pero cada arranque en frío tarda más porque rehacen esa descarga.
 - **No hay usuarios ni contraseñas.** Todo lo que muestra es información pública

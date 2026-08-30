@@ -1,0 +1,50 @@
+# Fantasy Tool en Fly.io.
+#
+# Despliega desde el Dockerfile del repositorio, da HTTPS gratis en tu dominio
+# y no hay servidor que mantener. Los pasos están en el README, sección
+# "Publicarla en internet".
+
+# El nombre tiene que ser único en todo Fly: cámbialo si te lo rechaza.
+app = "fantasy-tool-calvi"
+
+# Elige la región más cercana a ti. Algunas: mad (Madrid), cdg (París),
+# iad (Virginia), qro (Querétaro), gru (São Paulo), bog (Bogotá), scl (Santiago).
+primary_region = "mad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8000"
+  # Solo tu dominio puede llamar a la API desde un navegador.
+  CORS_ORIGINS = '["https://fantasy.calvi.dev"]'
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  # La máquina se apaga sola cuando no la usas y arranca al primer visitante:
+  # así solo se paga por el rato que está encendida. Durante un draft, con la
+  # pestaña abierta refrescando cada 12 s, se mantiene despierta.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[http_service.checks]]
+  method = "GET"
+  path = "/api/health"
+  interval = "30s"
+  timeout = "5s"
+  # El primer arranque descarga el catálogo de jugadores: hay que darle margen.
+  grace_period = "60s"
+
+# El catálogo de Sleeper pesa varios MB y cambia poco. Guardarlo en un disco
+# que sobreviva a los reinicios evita descargarlo en cada arranque.
+[[mounts]]
+  source = "fantasy_cache"
+  destination = "/app/.cache"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  # Medido con el catálogo completo: 100 MB de pico. 512 va sobrado.
+  memory = "512mb"
