@@ -13,10 +13,12 @@ import httpx
 from app.cache import TTLCache
 from app.config import Settings, get_settings
 from app.draft import build_board
+from app.external_rankings import index_by_player, load_ranking_files
 from app.league_analysis import analyze_league
 from app.models import (
     FANTASY_POSITIONS,
     DraftBoard,
+    ExternalRanking,
     GameOdds,
     LeagueAnalysis,
     Meta,
@@ -55,6 +57,7 @@ class FantasyService:
         self._ranking_lock = asyncio.Lock()
         self._trends_cache: dict[str, list[PlayerTrend]] = {}
         self._trends_lock = asyncio.Lock()
+        self._external: list[ExternalRanking] | None = None
         self.warnings: list[str] = []
 
     async def aclose(self) -> None:
@@ -78,6 +81,15 @@ class FantasyService:
                 "No se pudo obtener el catálogo de jugadores de Sleeper. "
                 f"Detalle: {exc}"
             ) from exc
+
+    # -- rankings importados de otras fuentes ---------------------------------
+
+    async def get_external_rankings(self) -> list[ExternalRanking]:
+        """Rankings de otros analistas, leídos de `data/rankings/`."""
+        if self._external is None:
+            players = await self.get_players()
+            self._external = load_ranking_files(self.settings.rankings_dir, players)
+        return self._external
 
     # -- ranking -------------------------------------------------------------
 
@@ -117,6 +129,18 @@ class FantasyService:
                 scoring=scoring,
                 superflex=superflex,
             )
+
+            # Se cuelga de cada jugador su puesto en los rankings importados y
+            # la diferencia con el nuestro, que es lo que hay que mirar.
+            externos = index_by_player(await self.get_external_rankings())
+            if externos:
+                for entrada in ranked:
+                    puestos = externos.get(entrada.player.player_id)
+                    if not puestos:
+                        continue
+                    entrada.external_ranks = puestos
+                    medio = sum(puestos.values()) / len(puestos)
+                    entrada.external_delta = int(round(entrada.rank - medio))
             self._ranking_cache[key] = ranked
             self.cache.set(key, True)
             return ranked
@@ -390,6 +414,9 @@ class FantasyService:
             draft_status=draft_status,
             player_count=len(players),
             news_sources=["ESPN"] + [u for u in self.settings.news_feeds],
+            external_rankings=[r.source for r in await self.get_external_rankings()]
+            if players
+            else [],
             warnings=warnings,
         )
 
@@ -400,6 +427,7 @@ class FantasyService:
         self.cache.invalidate()
         self._ranking_cache.clear()
         self._trends_cache.clear()
+        self._external = None
 
 
 class ServiceUnavailable(RuntimeError):

@@ -8,6 +8,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request
 
 from app.models import (
     DraftBoard,
+    ExternalRanking,
     LeagueAnalysis,
     Meta,
     NewsItem,
@@ -70,6 +71,13 @@ async def rankings(
     hide_injured: bool = Query(False, description="Oculta lesiones graves (IR, Out)"),
     injured_only: bool = Query(False, description="Solo jugadores con parte de lesión"),
     max_age: int | None = Query(None, ge=18, le=50),
+    sort: str = Query(
+        "rank",
+        description=(
+            "rank (el nuestro), disagreement (donde más discrepamos con las "
+            "fuentes importadas)"
+        ),
+    ),
     limit: int = Query(100, ge=1, le=1000),
     offset: int = Query(0, ge=0),
 ) -> RankingResponse:
@@ -102,6 +110,11 @@ async def rankings(
         injured_only=injured_only,
         hide_injured=hide_injured,
     )
+
+    if sort == "disagreement":
+        # Primero los jugadores donde nuestra nota y la de fuera más se separan.
+        con_externo = [r for r in filtered if r.external_delta is not None]
+        filtered = sorted(con_externo, key=lambda r: -abs(r.external_delta or 0))
 
     page = filtered[offset : offset + limit]
     meta_info = await service.get_meta()
@@ -376,6 +389,23 @@ async def league_analysis(
         return await service.get_league_analysis(scoring, superflex, max_trade_ideas)
     except LeagueNotConfigured as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except ServiceUnavailable as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+
+@router.get(
+    "/external",
+    response_model=list[ExternalRanking],
+    summary="Rankings importados de otras fuentes",
+)
+async def external_rankings(service: ServiceDep) -> list[ExternalRanking]:
+    """Listas de otros analistas cargadas desde `data/rankings/`.
+
+    Incluye los nombres que no se pudieron emparejar, que es lo que hace falta
+    para corregir el archivo.
+    """
+    try:
+        return await service.get_external_rankings()
     except ServiceUnavailable as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 

@@ -41,6 +41,16 @@ def strip_html(text: str) -> str:
     return _TAG_RE.sub(" ", text or "")
 
 
+def collapse_name(name: str) -> str:
+    """Como `normalize_name`, pero uniendo lo que separa un apóstrofo o guion.
+
+    En las listas de otros la gente escribe "JaMarr Chase" o "DeVon Achane" sin
+    el apóstrofo. Con la normalización normal quedarían como "ja marr chase" y
+    no casarían con nada, así que se indexa también esta forma unida.
+    """
+    return normalize_name(re.sub(r"['\u2019\-]", "", name or ""))
+
+
 def normalize_name(name: str) -> str:
     """Clave canónica de un nombre: sin acentos, sin puntuación, sin sufijos."""
     if not name:
@@ -59,6 +69,9 @@ def name_variants(player: Player) -> set[str]:
     full = normalize_name(player.name)
     if full:
         variants.add(full)
+    unido = collapse_name(player.name)
+    if unido:
+        variants.add(unido)
 
     first = normalize_name(player.first_name or "")
     last = normalize_name(player.last_name or "")

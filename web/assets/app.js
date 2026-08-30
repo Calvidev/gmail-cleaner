@@ -16,6 +16,8 @@ const state = {
   newsSearch: "",
   newsOnlyPlayers: true,
   newsCountByPlayer: {},
+  externalSources: [],
+  disagreement: false,
 };
 
 const $ = (sel) => document.querySelector(sel);
@@ -107,6 +109,34 @@ function statusCell(player) {
   return '<span class="badge badge-ok">Sano</span>';
 }
 
+/** Puesto en los rankings importados y cuánto se separa del nuestro. */
+function externalCell(entry) {
+  if (!state.externalSources.length) return "";
+  const puestos = entry.external_ranks || {};
+  const fuentes = Object.entries(puestos);
+  if (!fuentes.length) return `<td class="num">—</td>`;
+
+  const media = fuentes.reduce((a, [, r]) => a + r, 0) / fuentes.length;
+  const delta = entry.external_delta ?? 0;
+  // delta = nuestro puesto - el suyo. Positivo significa que ellos lo colocan
+  // por delante de donde lo colocamos nosotros.
+  // Diferencias de dos puestos o menos son ruido: se marcan como coincidencia
+  // en vez de enseñar un número que invita a leer algo donde no lo hay.
+  const coincide = Math.abs(delta) <= 2;
+  const clase = coincide ? "same" : delta > 0 ? "higher" : "lower";
+  const marca = coincide ? "=" : `${delta > 0 ? "▲" : "▼"} ${Math.abs(delta)}`;
+  const titulo =
+    fuentes.map(([f, r]) => `${f}: #${r}`).join(" · ") +
+    (coincide ? " · coinciden con nosotros" : delta > 0 ? " · les gusta más" : " · les gusta menos");
+
+  return `<td title="${esc(titulo)}">
+    <span class="ext-cell">
+      <span class="ext-rank">#${Math.round(media)}</span>
+      <span class="ext-delta ${clase}">${marca}</span>
+    </span>
+  </td>`;
+}
+
 function rowHtml(entry) {
   const p = entry.player;
   const pos = positionOf(p);
@@ -153,6 +183,7 @@ function rowHtml(entry) {
       <td class="num">${entry.points_per_game ? entry.points_per_game.toFixed(1) : "—"}</td>
       <td class="num">${entry.points ? entry.points.toFixed(1) : "—"}</td>
       <td>${trend}</td>
+      ${externalCell(entry)}
       <td>${statusCell(p)}</td>
     </tr>`;
 }
@@ -179,6 +210,7 @@ async function loadRankings({ append = false } = {}) {
       search: state.search,
       hide_injured: state.hideInjured,
       free_agents_only: state.freeAgents,
+      sort: state.disagreement ? "disagreement" : "rank",
       limit: PAGE_SIZE,
       offset: state.offset,
     });
@@ -401,6 +433,27 @@ function drawerHtml(detail) {
     <h3>Por qué está aquí</h3>
     <ul class="reason-list">${ranked.reasons.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
 
+    ${
+      Object.keys(ranked.external_ranks || {}).length
+        ? `<h3>En otros rankings</h3>
+           <div class="ext-sources">${Object.entries(ranked.external_ranks)
+             .map(
+               ([fuente, puesto]) =>
+                 `<span class="ext-source">${esc(fuente)}: <b>#${puesto}</b></span>`
+             )
+             .join("")}</div>
+           <p class="panel-sub" style="font-size:12.5px;margin-top:8px">
+             Nosotros lo tenemos el <b>#${ranked.rank}</b>.${
+               ranked.external_delta
+                 ? ranked.external_delta > 0
+                   ? ` Fuera le gustan ${ranked.external_delta} puestos más que a nosotros.`
+                   : ` Fuera le gustan ${Math.abs(ranked.external_delta)} puestos menos que a nosotros.`
+                 : ""
+             }
+           </p>`
+        : ""
+    }
+
     ${drawerTrendHtml(trend)}
     ${drawerVegasHtml(vegas, props)}
 
@@ -467,6 +520,16 @@ async function loadMeta() {
       $("#fa-toggle-wrap").title = `Liga ${meta.league_id || ""}`;
       $("#trend-fa-wrap").title = `Liga ${meta.league_id || ""}`;
     }
+    state.externalSources = meta.external_rankings || [];
+    const hayFuentes = state.externalSources.length > 0;
+    $("#th-external").hidden = !hayFuentes;
+    $("#disagree-wrap").hidden = !hayFuentes;
+    if (hayFuentes) {
+      $("#th-external").textContent =
+        state.externalSources.length === 1 ? state.externalSources[0] : "Otros";
+      $("#th-external").title = state.externalSources.join(" · ");
+    }
+
     $("#footer-meta").textContent = meta.league_configured
       ? `Liga conectada: ${meta.league_id}`
       : "Liga de Sleeper sin conectar";
@@ -522,6 +585,10 @@ function bindEvents() {
   });
   $("#free-agents").addEventListener("change", (e) => {
     state.freeAgents = e.target.checked;
+    loadRankings();
+  });
+  $("#disagreement").addEventListener("change", (e) => {
+    state.disagreement = e.target.checked;
     loadRankings();
   });
   $("#team").addEventListener("change", (e) => {

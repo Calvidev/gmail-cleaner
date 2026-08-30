@@ -71,6 +71,11 @@
         <input type="checkbox" id="free-agents" disabled>
         <span>Solo agentes libres</span>
       </label>
+      <label class="toggle" id="disagree-wrap" hidden
+             title="Ordena por la diferencia entre nuestro ranking y el importado">
+        <input type="checkbox" id="disagreement">
+        <span>Dónde discrepamos</span>
+      </label>
     </section>
 
     <p class="result-line" id="result-line"></p>
@@ -86,6 +91,7 @@
             <th class="col-stat">Pts/PJ</th>
             <th class="col-stat">Total</th>
             <th class="col-trend">Tendencia</th>
+            <th class="col-ext" id="th-external" hidden>Otros</th>
             <th class="col-status">Estado</th>
           </tr>
         </thead>

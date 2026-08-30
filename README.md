@@ -58,6 +58,18 @@ falta ninguna llave para empezar**: la API de lectura de Sleeper es abierta.
   importa.
 - Con una llave gratuita, añade las líneas por jugador.
 
+**Comparar con otros rankings**
+- Importa la lista de cualquier analista pegándola en un archivo de texto en
+  [`data/rankings/`](data/rankings/) y aparece como una columna más.
+- No sustituye al ranking propio: lo pone al lado y marca **dónde discrepáis**,
+  que es lo único que hay que decidir. Si dos listas coinciden en que alguien es
+  el número tres, no hay nada que pensar; si una lo pone quince puestos por
+  delante, ahí hay una opinión que mirar.
+- El formato es indulgente: acepta lo que copies de un vídeo o una web, con o
+  sin numeración, con la posición y el equipo pegados al nombre, y reconoce a
+  los jugadores aunque estén escritos sin apóstrofos ("JaMarr Chase").
+- Los nombres que no reconozca los dice, en lugar de descartarlos en silencio.
+
 **Ficha del jugador**
 - Puesto general y por posición, nota, tier y desglose de los seis componentes.
 - Su tendencia de las últimas jornadas y lo que dice el mercado de su partido.
@@ -290,6 +302,7 @@ La aplicación expone su propia API REST. Documentación interactiva en
 | `GET` | `/api/trends` | Quién sube y quién baja jornada a jornada. |
 | `GET` | `/api/players/{id}/trend` | Tendencia de un jugador. |
 | `GET` | `/api/odds` | Spread, total y puntos implícitos por equipo. |
+| `GET` | `/api/external` | Rankings importados y nombres sin emparejar. |
 | `GET` | `/api/league/analysis` | Tu equipo vs la liga + intercambios. |
 | `GET` | `/api/players/{id}` | Ficha completa: ranking + noticias. |
 | `GET` | `/api/players/{id}/news` | Solo las noticias de ese jugador. |
@@ -334,6 +347,7 @@ app/
   draft.py           Tablero de draft: disponibles, huecos y recomendación
   trends.py          Tendencias por uso: quién sube y quién baja
   league_analysis.py Tu equipo vs la liga e intercambios
+  external_rankings.py Importar rankings de otros analistas
   matching.py        Reconocer nombres de jugador dentro de una noticia
   cache.py           Caché con TTL en memoria y disco
   service.py         Orquesta proveedores y ranking
@@ -345,7 +359,8 @@ app/
   api/routes.py      Endpoints REST
 web/                 Interfaz (HTML, CSS y JS, sin paso de compilación)
 data/demo/           Datos de ejemplo del modo demo
-tests/               341 tests
+data/rankings/       Rankings importados de otras fuentes (uno por archivo)
+tests/               376 tests
 ```
 
 La caché guarda el catálogo de jugadores en `.cache/` (pesa unos MB y cambia
@@ -358,7 +373,7 @@ los últimos datos buenos en lugar de una pantalla en blanco.
 
 ```bash
 pip install -r requirements-dev.txt
-pytest                    # los 341 tests, sin tocar la red
+pytest                    # los 376 tests, sin tocar la red
 pytest --cov=app          # con cobertura (requiere pytest-cov)
 ```
 

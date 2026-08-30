@@ -86,6 +86,8 @@ class Settings(BaseSettings):
 
     # --- Caché ---
     cache_dir: Path = ROOT_DIR / ".cache"
+    # Rankings de otros analistas, un archivo de texto por fuente.
+    rankings_dir: Path = ROOT_DIR / "data" / "rankings"
     cache_ttl_players: int = 60 * 60 * 12  # catálogo de jugadores: 12 h
     cache_ttl_trending: int = 60 * 15  # tendencias: 15 min
     cache_ttl_news: int = 60 * 10  # noticias: 10 min

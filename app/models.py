@@ -74,6 +74,32 @@ class RankedPlayer(BaseModel):
     points_per_game: float | None = None
     games: int | None = None
     projected_points: float | None = None
+    # Puesto de este jugador en cada ranking importado: {fuente: puesto}.
+    external_ranks: dict[str, int] = Field(default_factory=dict)
+    # Nuestro puesto menos el suyo. Positivo significa que nuestro número es
+    # mayor, es decir peor puesto: la fuente externa lo pone POR DELANTE y le
+    # gusta más que a nosotros. Negativo, al revés.
+    external_delta: int | None = None
+
+
+class ExternalRankingEntry(BaseModel):
+    """Un jugador dentro de un ranking ajeno."""
+
+    rank: int
+    player_id: str
+    name: str
+    source_name: str  # cómo venía escrito en la lista original
+
+
+class ExternalRanking(BaseModel):
+    """Un ranking importado de otra fuente."""
+
+    source: str
+    description: str | None = None
+    entries: list[ExternalRankingEntry] = Field(default_factory=list)
+    # Nombres de la lista que no se pudieron emparejar con ningún jugador.
+    unmatched: list[str] = Field(default_factory=list)
+    total: int = 0
 
 
 class NewsItem(BaseModel):
@@ -128,6 +154,8 @@ class Meta(BaseModel):
     draft_status: str | None = None
     player_count: int = 0
     news_sources: list[str] = Field(default_factory=list)
+    # Nombres de los rankings importados desde `data/rankings/`.
+    external_rankings: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
 
 
