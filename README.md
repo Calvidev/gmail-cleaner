@@ -177,7 +177,15 @@ exactamente lo que son.
 
 ## Puesta en marcha
 
-Requiere Python 3.11 o superior.
+Requiere **Python 3.10 o superior**.
+
+> **Aviso para macOS:** el Python que trae el sistema (el de las herramientas de
+> Xcode) es la versión 3.9 y **no sirve**. Si al arrancar ves un error del tipo
+> `unsupported operand type(s) for |`, es exactamente eso. `run.sh` lo detecta y
+> te dice cómo instalar uno nuevo; la vía más sencilla es el instalador oficial
+> de <https://www.python.org/downloads/macos/>.
+>
+> Comprueba tu versión con `python3 --version`.
 
 ```bash
 git clone https://github.com/Calvidev/fantasy-tool.git
@@ -191,8 +199,12 @@ cd fantasy-tool
 
 Y abre <http://127.0.0.1:8000>.
 
+`run.sh` se encarga de todo: busca un Python válido, crea el entorno virtual,
+instala las dependencias y arranca el servidor. Si ya había un entorno creado
+con una versión demasiado antigua, lo rehace solo.
+
 <details>
-<summary>Instalación manual (sin el script)</summary>
+<summary>Instalación manual (sin el script, o en Windows)</summary>
 
 ```bash
 python3 -m venv .venv
@@ -200,6 +212,9 @@ source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
+
+En Windows, `run.sh` no funciona directamente porque es un script de bash. Usa
+los comandos de arriba en PowerShell, con `python` en lugar de `python3`.
 </details>
 
 ### Probarla sin conexión
