@@ -104,10 +104,13 @@ class RankingResponse(BaseModel):
 
 
 class PlayerDetail(BaseModel):
-    """Ficha completa de un jugador: ranking + noticias."""
+    """Ficha completa de un jugador: ranking, tendencia, mercado y noticias."""
 
     ranked: RankedPlayer
     news: list[NewsItem] = Field(default_factory=list)
+    trend: "PlayerTrend | None" = None
+    vegas: "TeamOdds | None" = None
+    props: "list[PlayerProp]" = Field(default_factory=list)
 
 
 class Meta(BaseModel):
@@ -124,3 +127,182 @@ class Meta(BaseModel):
     player_count: int = 0
     news_sources: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
+
+
+class WeekUsage(BaseModel):
+    """El uso que tuvo un jugador en una jornada concreta."""
+
+    week: int
+    snaps: int | None = None
+    snap_share: float | None = None  # 0-1
+    targets: int | None = None
+    target_share: float | None = None  # 0-1
+    carries: int | None = None
+    receptions: int | None = None
+    opportunities: int | None = None  # acarreos + objetivos: el volumen real
+    yards: float | None = None
+    touchdowns: float | None = None
+    points: float | None = None
+
+
+class MetricTrend(BaseModel):
+    """Cómo evoluciona una métrica: media reciente contra la anterior."""
+
+    metric: str
+    label: str
+    recent: float | None = None
+    previous: float | None = None
+    delta: float | None = None
+    pct_change: float | None = None
+    slope: float | None = None  # pendiente por jornada
+
+
+class PlayerTrend(BaseModel):
+    """Tendencia de un jugador jornada a jornada."""
+
+    player: Player
+    direction: str  # "alza", "baja", "estable" o "sin datos"
+    trend_score: float  # de -100 (desplome) a +100 (despegue)
+    weeks: list[WeekUsage] = Field(default_factory=list)
+    metrics: dict[str, MetricTrend] = Field(default_factory=dict)
+    signals: list[str] = Field(default_factory=list)
+    games_tracked: int = 0
+    # True cuando la tendencia se apoya en volumen (objetivos, snaps, acarreos)
+    # y no solo en los puntos, que rebotan mucho de una jornada a otra.
+    usage_based: bool = True
+    rank: int | None = None
+    score: float | None = None
+
+
+class TrendsResponse(BaseModel):
+    """Respuesta del endpoint de tendencias."""
+
+    season: str | None = None
+    week: int | None = None
+    weeks_analyzed: list[int] = Field(default_factory=list)
+    scoring: str = "ppr"
+    total: int = 0
+    generated_at: datetime
+    players: list[PlayerTrend] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+
+
+class PositionStrength(BaseModel):
+    """Cómo está un equipo en una posición, comparado con el resto de la liga."""
+
+    position: str
+    starters: list[RankedPlayer] = Field(default_factory=list)
+    bench: list[RankedPlayer] = Field(default_factory=list)
+    starter_score: float = 0.0  # suma de las notas de los titulares
+    avg_score: float = 0.0
+    league_avg: float = 0.0
+    league_best: float = 0.0
+    rank_in_league: int | None = None
+    percentile: float = 0.0  # 0-100
+    verdict: str = "medio"  # "débil", "medio" o "fuerte"
+    gap_to_best: float = 0.0
+
+
+class TeamAnalysis(BaseModel):
+    """Radiografía de un equipo de la liga."""
+
+    roster_id: int
+    owner: str | None = None
+    team_name: str | None = None
+    is_me: bool = False
+    total_score: float = 0.0  # valor de la alineación titular óptima
+    rank_in_league: int | None = None
+    positions: dict[str, PositionStrength] = Field(default_factory=dict)
+    weaknesses: list[str] = Field(default_factory=list)
+    strengths: list[str] = Field(default_factory=list)
+    surplus: list[RankedPlayer] = Field(default_factory=list)
+    lineup: list[RankedPlayer] = Field(default_factory=list)
+    player_count: int = 0
+
+
+class TradeIdea(BaseModel):
+    """Un intercambio que mejora a las dos partes."""
+
+    partner_roster_id: int
+    partner_owner: str | None = None
+    partner_team_name: str | None = None
+    give: list[RankedPlayer] = Field(default_factory=list)
+    get: list[RankedPlayer] = Field(default_factory=list)
+    my_gain: float = 0.0  # cuánto sube mi alineación titular
+    their_gain: float = 0.0  # cuánto sube la suya
+    fairness: float = 0.0  # 0-100: cuanto más alto, más equilibrado
+    rationale: list[str] = Field(default_factory=list)
+
+
+class LeagueAnalysis(BaseModel):
+    """Análisis completo de la liga."""
+
+    league_id: str
+    league_name: str | None = None
+    season: str | None = None
+    scoring: str = "ppr"
+    roster_positions: list[str] = Field(default_factory=list)
+    teams: list[TeamAnalysis] = Field(default_factory=list)
+    me: TeamAnalysis | None = None
+    trade_ideas: list[TradeIdea] = Field(default_factory=list)
+    generated_at: datetime
+    warnings: list[str] = Field(default_factory=list)
+
+
+class PlayerProp(BaseModel):
+    """Una línea de apuesta sobre un jugador (yardas, recepciones, TD…)."""
+
+    market: str  # p.ej. "player_reception_yds"
+    label: str  # p.ej. "Yardas de recepción"
+    line: float | None = None
+    over_price: int | None = None
+    under_price: int | None = None
+    bookmaker: str | None = None
+
+
+class TeamOdds(BaseModel):
+    """Lo que las casas esperan de un equipo esta jornada."""
+
+    team: str
+    opponent: str | None = None
+    is_home: bool | None = None
+    spread: float | None = None  # negativo = favorito
+    total: float | None = None  # puntos totales del partido
+    implied_total: float | None = None  # puntos que se le suponen a este equipo
+    implied_rank: int | None = None  # 1 = el ataque mejor visto de la jornada
+    win_probability: float | None = None  # 0-1
+    verdict: str | None = None
+    kickoff: datetime | None = None
+    source: str | None = None
+
+
+class GameOdds(BaseModel):
+    """Las cuotas de un partido."""
+
+    game_id: str
+    home: str
+    away: str
+    kickoff: datetime | None = None
+    spread: float | None = None  # relativo al local: negativo = local favorito
+    total: float | None = None
+    home_implied: float | None = None
+    away_implied: float | None = None
+    favorite: str | None = None
+    bookmaker: str | None = None
+    source: str = "ESPN"
+
+
+class OddsResponse(BaseModel):
+    """Respuesta del endpoint de apuestas."""
+
+    week: int | None = None
+    season: str | None = None
+    games: list[GameOdds] = Field(default_factory=list)
+    teams: list[TeamOdds] = Field(default_factory=list)
+    props_available: bool = False
+    generated_at: datetime
+    warnings: list[str] = Field(default_factory=list)
+
+
+# `PlayerDetail` apunta a modelos definidos más abajo en este mismo archivo.
+PlayerDetail.model_rebuild()

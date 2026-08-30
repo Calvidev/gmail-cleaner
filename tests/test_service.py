@@ -62,19 +62,9 @@ class TestLiga:
         with pytest.raises(LeagueNotConfigured):
             await service.get_league_info()
 
-    async def test_con_liga_configurada_se_consulta(self, cache):
-        ajustes = Settings(fantasy_demo=True, sleeper_league_id="123456")
-        from app.providers.demo import demo_transport
-
-        cliente = httpx.AsyncClient(transport=demo_transport())
-        servicio = FantasyService(
-            settings=ajustes,
-            cache=cache,
-            sleeper=SleeperClient(ajustes, cache, cliente),
-            news=NewsProvider(ajustes, cache, cliente),
-        )
-        # El modo demo no sirve ligas: devuelve un conjunto vacío en vez de fallar.
-        assert await servicio.get_rostered_ids() == set()
+    async def test_con_liga_configurada_se_consulta(self, league_service):
+        ocupados = await league_service.get_rostered_ids()
+        assert ocupados and len(ocupados) > 40
 
 
 class TestErrores:

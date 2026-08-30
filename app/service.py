@@ -12,9 +12,23 @@ import httpx
 
 from app.cache import TTLCache
 from app.config import Settings, get_settings
-from app.models import FANTASY_POSITIONS, Meta, NewsItem, Player, RankedPlayer
+from app.league_analysis import analyze_league
+from app.models import (
+    FANTASY_POSITIONS,
+    GameOdds,
+    LeagueAnalysis,
+    Meta,
+    NewsItem,
+    Player,
+    PlayerProp,
+    PlayerTrend,
+    RankedPlayer,
+    TeamOdds,
+)
 from app.providers.news import NewsProvider
+from app.providers.odds import OddsProvider
 from app.providers.sleeper import SleeperClient, SleeperError
+from app.trends import compute_trends
 from app.ranking import primary_position, rank_players
 
 
@@ -27,19 +41,26 @@ class FantasyService:
         cache: TTLCache | None = None,
         sleeper: SleeperClient | None = None,
         news: NewsProvider | None = None,
+        odds: OddsProvider | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         self.cache = cache or TTLCache(self.settings.cache_dir)
         self.sleeper = sleeper or SleeperClient(self.settings, self.cache)
         self.news = news or NewsProvider(self.settings, self.cache)
+        self.odds = odds or OddsProvider(self.settings, self.cache)
         self._shared_client: httpx.AsyncClient | None = None
         self._ranking_cache: dict[str, list[RankedPlayer]] = {}
         self._ranking_lock = asyncio.Lock()
+        self._trends_cache: dict[str, list[PlayerTrend]] = {}
+        self._trends_lock = asyncio.Lock()
         self.warnings: list[str] = []
 
     async def aclose(self) -> None:
         await asyncio.gather(
-            self.sleeper.aclose(), self.news.aclose(), return_exceptions=True
+            self.sleeper.aclose(),
+            self.news.aclose(),
+            self.odds.aclose(),
+            return_exceptions=True,
         )
         if self._shared_client is not None:
             await self._shared_client.aclose()
@@ -106,6 +127,88 @@ class FantasyService:
             if entry.player.player_id == player_id:
                 return entry
         return None
+
+    # -- tendencias ----------------------------------------------------------
+
+    async def get_trends(
+        self, scoring: str = "ppr", weeks: int = 6, superflex: bool = False
+    ) -> list[PlayerTrend]:
+        """Tendencia de cada jugador en las últimas jornadas."""
+        weeks = max(3, min(weeks, 12))
+        key = f"trends:{scoring}:{weeks}:{int(superflex)}"
+        if key in self._trends_cache and self.cache.get(key, self.settings.cache_ttl_week_stats):
+            return self._trends_cache[key]
+
+        async with self._trends_lock:
+            if key in self._trends_cache and self.cache.get(
+                key, self.settings.cache_ttl_week_stats
+            ):
+                return self._trends_cache[key]
+
+            players = await self.get_players()
+            season = await self.sleeper.current_season()
+            week = await self.sleeper.current_week() or 18
+
+            weekly = await self.sleeper.get_recent_weeks(season, week, count=weeks)
+            trends = compute_trends(players, weekly, scoring=scoring)
+
+            # Se cuelga el puesto y la nota del ranking, para poder ordenar por
+            # "sube y además es bueno".
+            ranked = {r.player.player_id: r for r in await self.get_ranking(scoring, superflex)}
+            for trend in trends:
+                entry = ranked.get(trend.player.player_id)
+                if entry is not None:
+                    trend.rank = entry.rank
+                    trend.score = entry.score
+
+            self._trends_cache[key] = trends
+            self.cache.set(key, True)
+            return trends
+
+    async def get_player_trend(
+        self, player_id: str, scoring: str = "ppr", weeks: int = 6
+    ) -> PlayerTrend | None:
+        for trend in await self.get_trends(scoring, weeks):
+            if trend.player.player_id == player_id:
+                return trend
+        return None
+
+    # -- apuestas ------------------------------------------------------------
+
+    async def get_odds_games(self, week: int | None = None) -> list[GameOdds]:
+        if week is None:
+            week = await self.sleeper.current_week()
+        return await self.odds.get_games(week)
+
+    async def get_team_odds(self, week: int | None = None) -> dict[str, TeamOdds]:
+        if week is None:
+            week = await self.sleeper.current_week()
+        return await self.odds.get_team_odds(week)
+
+    async def get_player_props(self, player_id: str) -> list[PlayerProp]:
+        if not self.odds.has_api_key:
+            return []
+        players = await self.get_players()
+        return (await self.odds.get_props(players)).get(player_id, [])
+
+    # -- análisis de liga ----------------------------------------------------
+
+    async def get_league_analysis(
+        self, scoring: str = "ppr", superflex: bool = False, max_trade_ideas: int = 12
+    ) -> LeagueAnalysis:
+        """Compara tu equipo con el resto de la liga y propone intercambios."""
+        info = await self.get_league_info()  # lanza LeagueNotConfigured si falta
+        ranked = await self.get_ranking(scoring, superflex)
+        return analyze_league(
+            info["league"],
+            info["rosters"],
+            info["users"],
+            ranked,
+            my_user_id=self.settings.sleeper_user_id,
+            my_username=self.settings.sleeper_username,
+            scoring=scoring,
+            max_trade_ideas=max_trade_ideas,
+        )
 
     # -- noticias ------------------------------------------------------------
 
@@ -191,6 +294,7 @@ class FantasyService:
         """Vacía las cachés para forzar una descarga nueva."""
         self.cache.invalidate()
         self._ranking_cache.clear()
+        self._trends_cache.clear()
 
 
 class ServiceUnavailable(RuntimeError):
@@ -224,6 +328,7 @@ def build_service(settings: Settings | None = None) -> FantasyService:
         cache=cache,
         sleeper=SleeperClient(settings, cache, client),
         news=NewsProvider(settings, cache, client),
+        odds=OddsProvider(settings, cache, client),
     )
     # Sleeper y las noticias comparten un solo cliente HTTP; lo cierra el servicio.
     service._shared_client = client

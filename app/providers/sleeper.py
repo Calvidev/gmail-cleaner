@@ -8,7 +8,7 @@ Endpoints usados:
   GET /state/nfl                                  -> temporada y semana actual
   GET /players/nfl                                -> catálogo completo (~5 MB)
   GET /players/nfl/trending/{add|drop}            -> altas/bajas recientes
-  GET /stats/nfl/{type}/{season}[/{week}]         -> estadísticas
+  GET /stats/nfl/{type}/{season}[/{week}]         -> estadísticas (temporada o semana)
   GET /projections/nfl/{type}/{season}[/{week}]   -> proyecciones
   GET /user/{username}                            -> perfil (necesita usuario)
   GET /league/{league_id}                         -> liga (necesita id de liga)
@@ -172,6 +172,47 @@ class SleeperClient:
         except SleeperError:
             return {}
         return data if isinstance(data, dict) else {}
+
+    async def get_week_stats(
+        self, season: str, week: int
+    ) -> dict[str, dict[str, Any]]:
+        """Estadísticas de UNA jornada, por `player_id`.
+
+        Es la base de las tendencias: comparando semanas se ve si a un jugador
+        le están dando más balón antes de que eso aparezca en los puntos.
+        """
+        season_type = self.settings.sleeper_season_type
+        key = f"sleeper:stats:{season_type}:{season}:w{week}"
+        path = f"/stats/nfl/{season_type}/{season}/{week}"
+        try:
+            data = await self.cache.get_or_set(
+                key,
+                # Una jornada cerrada ya no cambia: se puede cachear mucho más.
+                self.settings.cache_ttl_week_stats,
+                lambda: self._get(path),
+                use_disk=True,
+            )
+        except SleeperError:
+            return {}
+        return data if isinstance(data, dict) else {}
+
+    async def get_recent_weeks(
+        self, season: str, until_week: int, count: int = 6
+    ) -> dict[int, dict[str, dict[str, Any]]]:
+        """Las últimas `count` jornadas disponibles, descargadas en paralelo."""
+        import asyncio
+
+        weeks = [w for w in range(max(1, until_week - count + 1), until_week + 1)]
+        if not weeks:
+            return {}
+        results = await asyncio.gather(
+            *(self.get_week_stats(season, w) for w in weeks), return_exceptions=True
+        )
+        return {
+            week: result
+            for week, result in zip(weeks, results)
+            if isinstance(result, dict) and result
+        }
 
     async def get_season_projections(
         self, season: str | None = None

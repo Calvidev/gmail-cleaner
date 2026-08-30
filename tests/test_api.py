@@ -17,6 +17,19 @@ def client(monkeypatch):
     get_settings.cache_clear()
 
 
+@pytest.fixture
+def league_client(monkeypatch):
+    """Cliente con la liga de ejemplo ya conectada."""
+    monkeypatch.setenv("FANTASY_DEMO", "1")
+    monkeypatch.setenv("SLEEPER_LEAGUE_ID", "999888777666555444")
+    monkeypatch.setenv("SLEEPER_USER_ID", "100001")
+    monkeypatch.setenv("SLEEPER_USERNAME", "calvidev")
+    get_settings.cache_clear()
+    with TestClient(app) as test_client:
+        yield test_client
+    get_settings.cache_clear()
+
+
 class TestHealth:
     def test_responde(self, client):
         assert client.get("/api/health").json() == {"status": "ok"}
@@ -170,3 +183,119 @@ class TestRefresh:
         assert client.post("/api/refresh").status_code == 200
         # Y la aplicación sigue funcionando después.
         assert client.get("/api/rankings?limit=1").status_code == 200
+
+
+class TestTrends:
+    def test_devuelve_las_tendencias_ordenadas(self, client):
+        datos = client.get("/api/trends").json()
+        assert datos["players"]
+        notas = [t["trend_score"] for t in datos["players"]]
+        assert notas == sorted(notas, reverse=True)
+        assert datos["weeks_analyzed"]
+
+    def test_solo_los_que_suben(self, client):
+        datos = client.get("/api/trends?direction=alza").json()
+        assert datos["players"]
+        assert all(t["direction"] == "alza" for t in datos["players"])
+
+    def test_los_que_bajan_salen_del_peor_al_menos_malo(self, client):
+        datos = client.get("/api/trends?direction=baja").json()
+        notas = [t["trend_score"] for t in datos["players"]]
+        assert notas == sorted(notas)  # el que más cae, primero
+
+    def test_cada_tendencia_trae_serie_y_señales(self, client):
+        jugador = client.get("/api/trends?limit=1").json()["players"][0]
+        assert jugador["weeks"]
+        assert jugador["signals"]
+        assert "opportunities" in jugador["metrics"] or "points" in jugador["metrics"]
+
+    def test_filtra_por_posicion(self, client):
+        datos = client.get("/api/trends?position=WR&direction=").json()
+        assert all(t["player"]["position"] == "WR" for t in datos["players"])
+
+    def test_excluye_a_quien_no_tiene_datos_de_volumen(self, client):
+        datos = client.get("/api/trends?usage_only=true&direction=").json()
+        assert all(t["usage_based"] for t in datos["players"])
+
+    def test_se_puede_pedir_menos_jornadas(self, client):
+        datos = client.get("/api/trends?weeks=4&direction=").json()
+        assert len(datos["weeks_analyzed"]) <= 4
+
+    def test_agentes_libres_sin_liga_avisa(self, client):
+        assert client.get("/api/trends?free_agents_only=true").status_code == 409
+
+    def test_tendencia_de_un_jugador(self, client):
+        datos = client.get("/api/players/12507/trend").json()
+        assert datos["player"]["name"] == "Tyrone Tracy Jr."
+        assert datos["direction"] == "alza"
+
+    def test_un_jugador_sin_jornadas_suficientes(self, client):
+        assert client.get("/api/players/000000/trend").status_code == 404
+
+
+class TestOdds:
+    def test_devuelve_partidos_y_equipos(self, client):
+        datos = client.get("/api/odds").json()
+        assert len(datos["games"]) == 13
+        assert len(datos["teams"]) == 26
+
+    def test_los_equipos_van_ordenados_por_ataque(self, client):
+        equipos = client.get("/api/odds").json()["teams"]
+        implicitos = [t["implied_total"] for t in equipos if t["implied_total"]]
+        assert implicitos == sorted(implicitos, reverse=True)
+
+    def test_los_implicitos_suman_el_total_del_partido(self, client):
+        for juego in client.get("/api/odds").json()["games"]:
+            if juego["total"] and juego["home_implied"]:
+                assert juego["home_implied"] + juego["away_implied"] == pytest.approx(juego["total"])
+
+    def test_avisa_de_que_no_hay_llave_para_props(self, client):
+        datos = client.get("/api/odds").json()
+        assert datos["props_available"] is False
+        assert any("ODDS_API_KEY" in w for w in datos["warnings"])
+
+
+class TestPlayerDetailAmpliado:
+    def test_la_ficha_trae_tendencia_y_mercado(self, client):
+        datos = client.get("/api/players/12507").json()
+        assert datos["trend"]["direction"] == "alza"
+        assert datos["vegas"]["team"] == "NYG"
+        assert datos["vegas"]["implied_total"] is not None
+
+    def test_sin_llave_no_hay_props(self, client):
+        assert client.get("/api/players/12507").json()["props"] == []
+
+
+class TestLeagueAnalysis:
+    def test_sin_liga_configurada_explica_como_conectarla(self, client):
+        respuesta = client.get("/api/league/analysis")
+        assert respuesta.status_code == 409
+        assert "SLEEPER_LEAGUE_ID" in respuesta.json()["detail"]
+
+    def test_con_liga_analiza_mi_equipo(self, league_client):
+        datos = league_client.get("/api/league/analysis").json()
+        assert datos["league_name"] == "Liga de Demostración"
+        assert len(datos["teams"]) == 4
+        assert datos["me"]["team_name"] == "Los Fantasmas"
+        assert datos["me"]["weaknesses"]
+
+    def test_propone_intercambios(self, league_client):
+        datos = league_client.get("/api/league/analysis").json()
+        assert datos["trade_ideas"]
+        for idea in datos["trade_ideas"]:
+            assert idea["my_gain"] > 0 and idea["their_gain"] > 0
+
+    def test_se_puede_limitar_el_numero_de_ideas(self, league_client):
+        datos = league_client.get("/api/league/analysis?max_trade_ideas=2").json()
+        assert len(datos["trade_ideas"]) <= 2
+
+    def test_con_liga_se_pueden_filtrar_agentes_libres(self, league_client):
+        respuesta = league_client.get("/api/rankings?free_agents_only=true")
+        assert respuesta.status_code == 200
+        # En la liga de ejemplo están todos fichados: no queda nadie libre.
+        assert respuesta.json()["total"] == 0
+
+    def test_la_meta_refleja_la_liga_conectada(self, league_client):
+        datos = league_client.get("/api/meta").json()
+        assert datos["league_configured"] is True
+        assert datos["league_id"] == "999888777666555444"

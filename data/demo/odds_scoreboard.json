@@ -1,0 +1,439 @@
+{
+ "season": {
+  "year": 2025
+ },
+ "week": {
+  "number": 11
+ },
+ "events": [
+  {
+   "id": "40160000",
+   "date": "2026-09-02T01:03:54Z",
+   "name": "CIN at BAL",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "BAL"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "CIN"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "BAL -3.5",
+       "overUnder": 51.5,
+       "spread": -3.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160001",
+   "date": "2026-09-02T02:03:54Z",
+   "name": "DET at MIN",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "MIN"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "DET"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "MIN -1.5",
+       "overUnder": 49.5,
+       "spread": -1.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160002",
+   "date": "2026-09-02T03:03:54Z",
+   "name": "KC at BUF",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "BUF"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "KC"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "KC -2.5",
+       "overUnder": 47.5,
+       "spread": 2.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160003",
+   "date": "2026-09-02T04:03:54Z",
+   "name": "MIA at NYJ",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "NYJ"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "MIA"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "MIA -1.5",
+       "overUnder": 41.5,
+       "spread": 1.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160004",
+   "date": "2026-09-02T05:03:54Z",
+   "name": "PHI at DAL",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "DAL"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "PHI"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "DAL -2.5",
+       "overUnder": 45.5,
+       "spread": -2.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160005",
+   "date": "2026-09-02T06:03:54Z",
+   "name": "SF at LAR",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "LAR"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "SF"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "LAR -1.5",
+       "overUnder": 48.5,
+       "spread": -1.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160006",
+   "date": "2026-09-02T07:03:54Z",
+   "name": "ATL at NO",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "NO"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "ATL"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "ATL -3.5",
+       "overUnder": 44.5,
+       "spread": 3.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160007",
+   "date": "2026-09-02T08:03:54Z",
+   "name": "LAC at DEN",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "DEN"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "LAC"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "LAC -1.5",
+       "overUnder": 40.5,
+       "spread": 1.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160008",
+   "date": "2026-09-02T09:03:54Z",
+   "name": "HOU at IND",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "IND"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "HOU"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "HOU -2.5",
+       "overUnder": 43.5,
+       "spread": 2.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160009",
+   "date": "2026-09-02T10:03:54Z",
+   "name": "CHI at NYG",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "NYG"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "CHI"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "CHI -4.5",
+       "overUnder": 38.5,
+       "spread": 4.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160010",
+   "date": "2026-09-02T11:03:54Z",
+   "name": "PIT at LV",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "LV"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "PIT"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "PIT -6.5",
+       "overUnder": 36.5,
+       "spread": 6.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160011",
+   "date": "2026-09-02T12:03:54Z",
+   "name": "SEA at ARI",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "ARI"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "SEA"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "ARI -2.5",
+       "overUnder": 46.5,
+       "spread": -2.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "40160012",
+   "date": "2026-09-02T13:03:54Z",
+   "name": "NE at JAX",
+   "competitions": [
+    {
+     "competitors": [
+      {
+       "homeAway": "home",
+       "team": {
+        "abbreviation": "JAX"
+       }
+      },
+      {
+       "homeAway": "away",
+       "team": {
+        "abbreviation": "NE"
+       }
+      }
+     ],
+     "odds": [
+      {
+       "provider": {
+        "name": "ESPN BET"
+       },
+       "details": "NE -1.5",
+       "overUnder": 39.5,
+       "spread": 1.5
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

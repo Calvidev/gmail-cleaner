@@ -61,13 +61,25 @@ class Settings(BaseSettings):
     )
     news_max_items: int = 200
 
+    # --- Apuestas ---
+    # ESPN da spread y total sin pedir llave: es la fuente por defecto.
+    espn_scoreboard_url: str = (
+        "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard"
+    )
+    # The Odds API (opcional, tiene plan gratuito): añade props de jugador.
+    # Consigue una llave en https://the-odds-api.com y ponla en .env
+    odds_api_key: str | None = None
+    odds_api_base_url: str = "https://api.the-odds-api.com/v4"
+
     # --- Caché ---
     cache_dir: Path = ROOT_DIR / ".cache"
     cache_ttl_players: int = 60 * 60 * 12  # catálogo de jugadores: 12 h
     cache_ttl_trending: int = 60 * 15  # tendencias: 15 min
     cache_ttl_news: int = 60 * 10  # noticias: 10 min
     cache_ttl_stats: int = 60 * 60 * 3  # stats/proyecciones: 3 h
+    cache_ttl_week_stats: int = 60 * 60 * 6  # jornadas cerradas: 6 h
     cache_ttl_state: int = 60 * 30  # estado de la temporada: 30 min
+    cache_ttl_odds: int = 60 * 20  # cuotas: 20 min
 
     # --- Red ---
     http_timeout: float = 20.0

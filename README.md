@@ -23,8 +23,33 @@ falta ninguna llave para empezar**: la API de lectura de Sleeper es abierta.
 - Reconoce **qué jugador aparece en cada noticia** y las enlaza con el ranking.
 - Desde la ficha de un jugador ves solo sus noticias.
 
+**Tendencias jornada a jornada**
+- Quién sube y quién baja **antes de que se note en los puntos**.
+- La señal es el volumen: objetivos, acarreos y cuota de snaps. Cuando a alguien
+  empiezan a tirarle más la bola, los puntos llegan una o dos jornadas después.
+- Minigráfico de la serie semanal y frases del tipo *"le tiran más la bola:
+  4,8 → 6,5 objetivos por partido"* o *"cuota de snaps: 62 % → 89 %"*.
+- Avisa de los dos casos que más dinero mueven: el volumen sube pero los puntos
+  todavía no (comprar), y los puntos aguantan pero el volumen cae (vender).
+
+**Mi equipo contra la liga**
+- Cada posición de tu plantilla comparada con la media de los demás equipos:
+  dónde estás flojo, dónde vas sobrado y en qué puesto de la liga caes.
+- El valor parado en tu banquillo: suplentes tuyos que serían titulares en otro
+  equipo, que es la moneda con la que se paga un intercambio.
+- **Intercambios que mejoran a las dos partes**, recalculando las dos
+  alineaciones con el cambio hecho. Si solo ganas tú, no aparece.
+
+**Tendencia de las apuestas**
+- Lo que el mercado espera de cada ataque esta jornada, que es información
+  independiente del consenso de fantasy.
+- Ordena los 32 ataques por **puntos implícitos**, el número que de verdad
+  importa.
+- Con una llave gratuita, añade las líneas por jugador.
+
 **Ficha del jugador**
 - Puesto general y por posición, nota, tier y desglose de los seis componentes.
+- Su tendencia de las últimas jornadas y lo que dice el mercado de su partido.
 - Producción de la temporada, proyección, tendencias de altas/bajas, lesión.
 - Sus últimas noticias.
 
@@ -53,6 +78,67 @@ Sobre esa suma se aplican dos ajustes:
 
 Todo esto vive en [`app/ranking.py`](app/ranking.py), con las constantes
 agrupadas arriba del archivo por si quieres cambiar los pesos a tu gusto.
+
+---
+
+## Cómo se calcula la tendencia
+
+El ranking dice quién es bueno; la tendencia dice **hacia dónde va**. Y para eso
+los puntos llegan tarde: un receptor que pasa de 5 a 10 objetivos ya es otro
+jugador aunque esa semana no anotara. Por eso la tendencia pesa así:
+
+| Métrica | Peso |
+|---|---|
+| Oportunidades (acarreos + objetivos) | 34 % |
+| Cuota de snaps | 24 % |
+| Objetivos | 22 % |
+| Puntos | 20 % |
+
+Se comparan las **dos últimas jornadas contra las tres anteriores** y se mide la
+pendiente de la serie completa. El resultado va de −100 a +100.
+
+Dos detalles que evitan falsos positivos:
+
+- Las jornadas que un jugador no juega **no cuentan como bajón**: se saltan.
+- Los pateadores y las defensas no tienen métricas de volumen, así que su
+  tendencia sale solo de los puntos, que rebotan mucho. Su nota se rebaja a la
+  mitad y la vista los oculta por defecto.
+
+---
+
+## Cómo se analiza tu equipo
+
+Todo cuelga de una sola medida: **el valor de tu alineación titular óptima**. Se
+colocan tus mejores jugadores en los huecos que exige tu liga (leídos de la
+propia configuración de Sleeper, incluidos FLEX y superflex) y se suman sus
+notas. Con eso:
+
+- Una posición es **débil** si tus titulares valen menos que la media de la liga
+  y **fuerte** si valen más. Cada barra va a su propia escala: comparar tus dos
+  receptores titulares con tu único quarterback en el mismo eje no dice nada.
+- Solo se juzgan las posiciones que tu liga **alinea de verdad**. Si no hay hueco
+  de pateador, tus pateadores no cuentan.
+- Un intercambio se propone únicamente si, recalculando las dos alineaciones,
+  **sube la de los dos**. Un cambio que solo te mejora a ti no es una propuesta.
+
+---
+
+## Cómo se leen las apuestas
+
+De dos números públicos —el *spread* y el *total*— sale el que importa:
+
+```
+puntos implícitos del favorito     = (total + |spread|) / 2
+puntos implícitos del no favorito  = (total - |spread|) / 2
+```
+
+Un ataque con 28 puntos implícitos reparte muchos más puntos de fantasy que uno
+con 17, y eso no depende de lo bueno que sea el jugador. Por eso la vista ordena
+los 32 ataques por ese número.
+
+**Las cuotas no se mezclan con la nota del ranking a escondidas.** Van en su
+propia pestaña y en la ficha del jugador, como segunda opinión, que es
+exactamente lo que son.
 
 ---
 
@@ -134,6 +220,10 @@ La aplicación expone su propia API REST. Documentación interactiva en
 | Método | Ruta | Qué devuelve |
 |---|---|---|
 | `GET` | `/api/rankings` | Ranking con filtros y paginación. |
+| `GET` | `/api/trends` | Quién sube y quién baja jornada a jornada. |
+| `GET` | `/api/players/{id}/trend` | Tendencia de un jugador. |
+| `GET` | `/api/odds` | Spread, total y puntos implícitos por equipo. |
+| `GET` | `/api/league/analysis` | Tu equipo vs la liga + intercambios. |
 | `GET` | `/api/players/{id}` | Ficha completa: ranking + noticias. |
 | `GET` | `/api/players/{id}/news` | Solo las noticias de ese jugador. |
 | `GET` | `/api/news` | Noticias agregadas, con jugadores identificados. |
@@ -146,9 +236,19 @@ Parámetros de `/api/rankings`: `scoring` (`ppr`, `half_ppr`, `standard`),
 `superflex`, `position`, `team`, `search`, `hide_injured`, `injured_only`,
 `max_age`, `free_agents_only`, `limit`, `offset`.
 
+Parámetros de `/api/trends`: `direction` (`alza`, `baja`, `estable`), `weeks`
+(3-12), `position`, `team`, `search`, `min_games`, `usage_only`,
+`free_agents_only`.
+
 ```bash
 # Los 10 mejores corredores en media PPR
 curl "http://127.0.0.1:8000/api/rankings?position=RB&scoring=half_ppr&limit=10"
+
+# Receptores que están subiendo en las últimas 6 jornadas
+curl "http://127.0.0.1:8000/api/trends?direction=alza&position=WR&weeks=6"
+
+# Los ataques que mejor ve el mercado esta jornada
+curl "http://127.0.0.1:8000/api/odds"
 
 # Noticias de Ja'Marr Chase
 curl "http://127.0.0.1:8000/api/players/6794/news"
@@ -164,17 +264,20 @@ app/
   config.py          Configuración por variables de entorno
   models.py          Modelos de datos (Player, NewsItem, RankedPlayer…)
   ranking.py         Motor de ranking: notas, tiers y filtros
+  trends.py          Tendencias por uso: quién sube y quién baja
+  league_analysis.py Tu equipo vs la liga e intercambios
   matching.py        Reconocer nombres de jugador dentro de una noticia
   cache.py           Caché con TTL en memoria y disco
   service.py         Orquesta proveedores y ranking
   providers/
     sleeper.py       Cliente de la API de Sleeper
     news.py          Agregador de noticias (ESPN + RSS)
+    odds.py          Cuotas de apuestas (ESPN + The Odds API)
     demo.py          Datos locales para el modo demo
   api/routes.py      Endpoints REST
 web/                 Interfaz (HTML, CSS y JS, sin paso de compilación)
 data/demo/           Datos de ejemplo del modo demo
-tests/               157 tests
+tests/               269 tests
 ```
 
 La caché guarda el catálogo de jugadores en `.cache/` (pesa unos MB y cambia
@@ -187,7 +290,7 @@ los últimos datos buenos en lugar de una pantalla en blanco.
 
 ```bash
 pip install -r requirements-dev.txt
-pytest                    # los 157 tests, sin tocar la red
+pytest                    # los 269 tests, sin tocar la red
 pytest --cov=app          # con cobertura (requiere pytest-cov)
 ```
 
@@ -196,11 +299,36 @@ solo cambia el transporte HTTP, no la lógica.
 
 ---
 
+## Conectar las apuestas por jugador (opcional)
+
+La pestaña de Apuestas funciona sin configurar nada: el spread y el total salen
+de ESPN. Para añadir las **líneas por jugador** hace falta una llave gratuita:
+
+1. Regístrate en [the-odds-api.com](https://the-odds-api.com) (el plan gratuito
+   da 500 peticiones al mes, de sobra para consultar una vez al día).
+2. Añade la llave a tu `.env`:
+
+```ini
+ODDS_API_KEY=tu_llave
+```
+
+Con eso, la ficha de cada jugador muestra sus líneas de yardas, recepciones y
+touchdowns junto al resto de su información.
+
+---
+
 ## Límites conocidos
 
 - Las estadísticas y proyecciones salen de endpoints de Sleeper que no están
   documentados oficialmente; si dejan de responder, el ranking sigue
   funcionando con el resto de componentes.
+- La cuota de objetivos se calcula sumando los de cada equipo jornada a jornada.
+  Si un jugador cambió de equipo a mitad de temporada, sus jornadas antiguas se
+  reparten con el equipo actual: la cuota de esas semanas queda algo desviada.
+- Las tendencias necesitan al menos tres jornadas jugadas; en pretemporada y en
+  la primera semana la pestaña sale vacía, y lo dice.
+- Los intercambios que se proponen son de uno por uno. Los paquetes de dos por
+  uno todavía no se calculan.
 - El emparejamiento de noticias por nombre acierta casi siempre, pero con dos
   jugadores homónimos se queda con el más conocido.
 - No hay datos de calendario ni de rivales, así que el ranking es de temporada

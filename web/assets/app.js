@@ -286,8 +286,64 @@ const BREAKDOWN_LABELS = {
   age_curve: "Edad",
 };
 
+function drawerTrendHtml(trend) {
+  if (!trend) return "";
+  const color = trend.direction === "alza" ? "#35d07f" : trend.direction === "baja" ? "#ff6b6b" : "#8d99ae";
+  const clase = trend.direction === "alza" ? "up" : trend.direction === "baja" ? "down" : "flat";
+  const serie = trend.weeks.map((w) => w.opportunities ?? w.targets ?? w.points);
+
+  return `
+    <h3>Tendencia · últimas ${trend.games_tracked} jornadas</h3>
+    <div class="drawer-rank" style="align-items:center">
+      <div class="trend-score ${clase}" style="min-width:64px">${
+        trend.trend_score > 0 ? "+" : ""
+      }${trend.trend_score.toFixed(0)}</div>
+      <div>
+        ${sparkline(serie, color)}
+        <span class="spark-label">Oportunidades por jornada</span>
+      </div>
+    </div>
+    <ul class="reason-list">${trend.signals.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>`;
+}
+
+function drawerVegasHtml(vegas, props) {
+  if (!vegas && (!props || !props.length)) return "";
+  const bloque = vegas
+    ? `<div class="drawer-rank">
+        <div class="stat-block"><span class="stat-value">${
+          vegas.implied_total?.toFixed(1) ?? "—"
+        }</span><span class="stat-label">Pts implícitos</span></div>
+        <div class="stat-block"><span class="stat-value">${
+          vegas.spread > 0 ? "+" : ""
+        }${vegas.spread?.toFixed(1) ?? "—"}</span><span class="stat-label">Spread</span></div>
+        <div class="stat-block"><span class="stat-value">${
+          vegas.total?.toFixed(1) ?? "—"
+        }</span><span class="stat-label">Total</span></div>
+        <div class="stat-block"><span class="stat-value">${
+          vegas.implied_rank ?? "—"
+        }</span><span class="stat-label">Ataque nº</span></div>
+      </div>
+      <p class="panel-sub" style="font-size:12.5px">${esc(vegas.verdict || "")}${
+        vegas.opponent ? ` · ${vegas.is_home ? "recibe a" : "visita a"} ${esc(vegas.opponent)}` : ""
+      }</p>`
+    : "";
+
+  const lineas = (props || []).length
+    ? `<div class="trend-metrics" style="margin-top:8px">${props
+        .map(
+          (pr) =>
+            `<span class="trend-metric">${esc(pr.label)}: <b>${
+              pr.line ?? "—"
+            }</b>${pr.bookmaker ? ` · ${esc(pr.bookmaker)}` : ""}</span>`
+        )
+        .join("")}</div>`
+    : "";
+
+  return `<h3>Lo que dice el mercado</h3>${bloque}${lineas}`;
+}
+
 function drawerHtml(detail) {
-  const { ranked, news } = detail;
+  const { ranked, news, trend, vegas, props } = detail;
   const p = ranked.player;
   const pos = positionOf(p);
 
@@ -344,6 +400,9 @@ function drawerHtml(detail) {
 
     <h3>Por qué está aquí</h3>
     <ul class="reason-list">${ranked.reasons.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+
+    ${drawerTrendHtml(trend)}
+    ${drawerVegasHtml(vegas, props)}
 
     <h3>Desglose de la nota</h3>
     <div class="breakdown">${breakdown}</div>
@@ -404,7 +463,9 @@ async function loadMeta() {
 
     if (meta.league_configured) {
       $("#free-agents").disabled = false;
+      $("#trend-free-agents").disabled = false;
       $("#fa-toggle-wrap").title = `Liga ${meta.league_id || ""}`;
+      $("#trend-fa-wrap").title = `Liga ${meta.league_id || ""}`;
     }
     $("#footer-meta").textContent = meta.league_configured
       ? `Liga conectada: ${meta.league_id}`
@@ -419,12 +480,21 @@ async function loadMeta() {
 
 /* -------------------------------- eventos -------------------------------- */
 
+const VIEWS = ["rankings", "trends", "team", "odds", "news"];
+
 function switchView(view) {
   state.view = view;
   $$(".tab").forEach((tab) => tab.classList.toggle("is-active", tab.dataset.view === view));
-  $("#view-rankings").hidden = view !== "rankings";
-  $("#view-news").hidden = view !== "news";
+  VIEWS.forEach((name) => {
+    const el = $(`#view-${name}`);
+    if (el) el.hidden = name !== view;
+  });
+
+  // Cada vista se carga la primera vez que se abre, no antes.
   if (view === "news" && !$("#news-grid").children.length) loadNews();
+  if (view === "trends" && !$("#trend-list").children.length) loadTrends();
+  if (view === "team" && !$("#team-content").children.length) loadTeam();
+  if (view === "odds" && !$("#odds-content").children.length) loadOdds();
 }
 
 function bindEvents() {
@@ -435,10 +505,12 @@ function bindEvents() {
   $("#scoring").addEventListener("change", (e) => {
     state.scoring = e.target.value;
     loadRankings();
+    invalidateDerivedViews();
   });
   $("#superflex").addEventListener("change", (e) => {
     state.superflex = e.target.checked;
     loadRankings();
+    invalidateDerivedViews();
   });
   $("#hide-injured").addEventListener("change", (e) => {
     state.hideInjured = e.target.checked;
@@ -480,7 +552,11 @@ function bindEvents() {
       await loadMeta();
       await loadNewsCounts();
       await loadRankings();
+      invalidateDerivedViews();
       if (state.view === "news") await loadNews();
+      if (state.view === "trends") await loadTrends();
+      if (state.view === "team") await loadTeam();
+      if (state.view === "odds") await loadOdds();
     } finally {
       button.disabled = false;
       button.textContent = "↻";
@@ -509,6 +585,34 @@ function bindEvents() {
     loadNews();
   });
 
+  // --- Tendencias ---
+  $("#direction-chips").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    $$("#direction-chips .chip").forEach((c) => c.classList.toggle("is-active", c === chip));
+    state.trendDirection = chip.dataset.direction;
+    loadTrends();
+  });
+  $("#trend-position-chips").addEventListener("click", (e) => {
+    const chip = e.target.closest(".chip");
+    if (!chip) return;
+    $$("#trend-position-chips .chip").forEach((c) => c.classList.toggle("is-active", c === chip));
+    state.trendPosition = chip.dataset.position;
+    loadTrends();
+  });
+  $("#trend-weeks").addEventListener("change", (e) => {
+    state.trendWeeks = Number(e.target.value);
+    loadTrends();
+  });
+  $("#trend-free-agents").addEventListener("change", (e) => {
+    state.trendFreeAgents = e.target.checked;
+    loadTrends();
+  });
+  $("#trend-list").addEventListener("click", (e) => {
+    const card = e.target.closest(".trend-card[data-player-id]");
+    if (card) openDrawer(card.dataset.playerId);
+  });
+
   $("#drawer-close").addEventListener("click", closeDrawer);
   $("#scrim").addEventListener("click", closeDrawer);
   document.addEventListener("keydown", (e) => {
@@ -525,6 +629,403 @@ async function init() {
   // Los distintivos de noticias llegan después: no bloquean la tabla.
   await loadNewsCounts();
   if (Object.keys(state.newsCountByPlayer).length) loadRankings();
+}
+
+/* ============================== Tendencias =============================== */
+
+Object.assign(state, {
+  trendDirection: "alza",
+  trendPosition: "ALL",
+  trendWeeks: 6,
+  trendFreeAgents: false,
+});
+
+/** Minigráfico de una serie de números, en SVG puro. */
+function sparkline(values, color) {
+  const clean = values.filter((v) => v !== null && v !== undefined);
+  if (clean.length < 2) return "";
+  const width = 120;
+  const height = 34;
+  const pad = 3;
+  const min = Math.min(...clean);
+  const max = Math.max(...clean);
+  const span = max - min || 1;
+  const step = (width - pad * 2) / (clean.length - 1);
+
+  const points = clean.map((v, i) => {
+    const x = pad + i * step;
+    const y = height - pad - ((v - min) / span) * (height - pad * 2);
+    return [x, y];
+  });
+  const line = points.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+  const area = `${line} L${points[points.length - 1][0].toFixed(1)},${height - pad} L${pad},${height - pad} Z`;
+  const [lastX, lastY] = points[points.length - 1];
+
+  return `<svg class="spark" viewBox="0 0 ${width} ${height}" aria-hidden="true">
+    <path d="${area}" fill="${color}" opacity="0.13"></path>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round"></path>
+    <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="2.6" fill="${color}"></circle>
+  </svg>`;
+}
+
+function trendCardHtml(trend) {
+  const p = trend.player;
+  const pos = positionOf(p);
+  const clase = trend.direction === "alza" ? "up" : trend.direction === "baja" ? "down" : "flat";
+  const color = trend.direction === "alza" ? "#35d07f" : trend.direction === "baja" ? "#ff6b6b" : "#8d99ae";
+
+  // Se dibuja el volumen, no los puntos: es la señal que se adelanta.
+  const serie = trend.weeks.map((w) => w.opportunities ?? w.targets ?? w.points);
+  const etiqueta = trend.weeks.some((w) => w.opportunities !== null && w.opportunities !== undefined)
+    ? "Oportunidades por jornada"
+    : "Puntos por jornada";
+
+  const metricas = ["targets", "snap_share", "opportunities"]
+    .map((clave) => trend.metrics[clave])
+    .filter(Boolean)
+    .map((m) => {
+      const esCuota = m.metric === "snap_share";
+      const fmt = (v) => (v === null || v === undefined ? "—" : esCuota ? `${(v * 100).toFixed(0)} %` : v.toFixed(1));
+      const signo = (m.delta ?? 0) > 0 ? "+" : "";
+      const deltaTxt = esCuota
+        ? `${signo}${((m.delta ?? 0) * 100).toFixed(0)} pp`
+        : `${signo}${(m.delta ?? 0).toFixed(1)}`;
+      return `<span class="trend-metric">${esc(m.label)}: <b>${fmt(m.previous)} → ${fmt(m.recent)}</b> (${deltaTxt})</span>`;
+    })
+    .join("");
+
+  return `
+    <article class="trend-card" data-player-id="${esc(p.player_id)}">
+      <div class="trend-score ${clase}">${trend.trend_score > 0 ? "+" : ""}${trend.trend_score.toFixed(0)}</div>
+
+      <div class="trend-player">
+        <div class="avatar" style="${p.headshot_url ? `background-image:url('${esc(p.headshot_url)}')` : ""}"></div>
+        <div style="min-width:0">
+          <div class="player-name">${esc(p.name)}</div>
+          <div class="player-meta">
+            <span class="pos-tag pos-${esc(pos)}">${esc(pos)}</span>
+            ${esc(p.team || "Libre")}${trend.rank ? ` · #${trend.rank} del ranking` : ""}
+          </div>
+        </div>
+      </div>
+
+      <div class="spark-wrap">
+        ${sparkline(serie, color)}
+        <span class="spark-label">${etiqueta}</span>
+      </div>
+
+      <div>
+        <ul class="trend-signals">
+          ${trend.signals.map((s) => `<li>${esc(s)}</li>`).join("")}
+        </ul>
+        ${metricas ? `<div class="trend-metrics" style="margin-top:6px">${metricas}</div>` : ""}
+      </div>
+    </article>`;
+}
+
+async function loadTrends() {
+  const list = $("#trend-list");
+  list.innerHTML = `<p class="empty">Calculando tendencias…</p>`;
+  try {
+    const data = await api("/api/trends", {
+      scoring: state.scoring,
+      superflex: state.superflex,
+      weeks: state.trendWeeks,
+      direction: state.trendDirection,
+      position: state.trendPosition,
+      free_agents_only: state.trendFreeAgents,
+      limit: 60,
+    });
+
+    list.innerHTML = data.players.map(trendCardHtml).join("");
+    $("#trend-empty").hidden = data.players.length > 0;
+    if (!data.players.length) {
+      list.innerHTML = "";
+      $("#trend-empty").textContent =
+        data.warnings[0] || "Ningún jugador encaja con estos filtros.";
+    }
+    $("#trend-result-line").textContent = data.weeks_analyzed.length
+      ? `${data.total} jugadores · jornadas ${data.weeks_analyzed[0]}–${
+          data.weeks_analyzed[data.weeks_analyzed.length - 1]
+        }`
+      : "";
+  } catch (error) {
+    list.innerHTML = "";
+    $("#trend-empty").hidden = false;
+    $("#trend-empty").textContent = error.message;
+    if (error.status === 409) {
+      $("#trend-free-agents").checked = false;
+      state.trendFreeAgents = false;
+    }
+  }
+}
+
+/* ============================== Mi equipo =============================== */
+
+function setupTeamHtml(mensaje) {
+  return `
+    <div class="panel">
+      <h2>Conecta tu liga de Sleeper</h2>
+      <p class="panel-sub">${esc(mensaje)}</p>
+      <ol class="setup-steps">
+        <li>Copia el archivo de ejemplo: <code>cp .env.example .env</code></li>
+        <li>Abre tu liga en la web de Sleeper y copia el número de la URL:
+            <code>sleeper.com/leagues/<b>123456789012345678</b>/team</code></li>
+        <li>Pega ese número y tu usuario en <code>.env</code>:
+          <span class="code-block">SLEEPER_LEAGUE_ID=123456789012345678
+SLEEPER_USERNAME=tu_usuario</span>
+        </li>
+        <li>Reinicia el servidor y vuelve aquí.</li>
+      </ol>
+      <p class="panel-sub" style="margin-top:14px">
+        No hace falta ninguna contraseña ni llave: la API de lectura de Sleeper es pública.
+      </p>
+    </div>`;
+}
+
+function positionBarsHtml(team) {
+  const posiciones = Object.entries(team.positions).sort(
+    (a, b) => a[1].percentile - b[1].percentile
+  );
+
+  return posiciones
+    .map(([pos, b]) => {
+      const clase = b.verdict === "débil" ? "weak" : b.verdict === "fuerte" ? "strong" : "mid";
+      // Cada posición va a su propia escala: comparar tus 2 receptores titulares
+      // con tu único quarterback en el mismo eje no dice nada. Lo que importa
+      // en cada fila es dónde caes tú frente a la liga en ESA posición.
+      const tope = Math.max(b.starter_score, b.league_best, 1) * 1.08;
+      return `
+        <div class="pos-bar-row">
+          <span class="pos-tag pos-${esc(pos)}">${esc(pos)}</span>
+          <div class="pos-bar-track" title="Media de la liga: ${b.league_avg.toFixed(1)}">
+            <div class="pos-bar-fill ${clase}" style="width:${(b.starter_score / tope) * 100}%"></div>
+            <div class="pos-bar-avg" style="left:${(b.league_avg / tope) * 100}%"></div>
+          </div>
+          <div class="pos-bar-meta">
+            <b>${b.starter_score.toFixed(1)}</b> vs ${b.league_avg.toFixed(1)} de media
+            · ${b.rank_in_league}º de la liga
+            <span class="verdict ${esc(b.verdict)}">${esc(b.verdict)}</span>
+          </div>
+        </div>`;
+    })
+    .join("");
+}
+
+function tradeCardHtml(idea) {
+  return `
+    <div class="trade-card">
+      <div class="trade-partner">Con ${esc(idea.partner_team_name || idea.partner_owner || "otro equipo")}</div>
+      <div class="trade-swap">
+        <div class="trade-side">
+          <div class="label">Das</div>
+          <div class="who">${idea.give.map((g) => esc(g.player.name)).join(", ")}</div>
+        </div>
+        <div class="trade-arrow">⇄</div>
+        <div class="trade-side">
+          <div class="label">Recibes</div>
+          <div class="who">${idea.get.map((g) => esc(g.player.name)).join(", ")}</div>
+        </div>
+      </div>
+      <div class="trade-gains">
+        <span class="gain-me">Tú +${idea.my_gain.toFixed(1)}</span>
+        <span class="gain-them">Él +${idea.their_gain.toFixed(1)}</span>
+        <span style="color:var(--text-faint)">Equilibrio ${idea.fairness.toFixed(0)}/100</span>
+      </div>
+      <ul class="trade-why">${idea.rationale.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>
+    </div>`;
+}
+
+function teamAnalysisHtml(data) {
+  const me = data.me;
+  const standings = `
+    <div class="panel">
+      <h3>Clasificación por valor de plantilla</h3>
+      <table class="standings">
+        <thead><tr><th>#</th><th>Equipo</th><th>Mánager</th><th>Alineación titular</th><th>Fuertes</th><th>Débiles</th></tr></thead>
+        <tbody>
+          ${data.teams
+            .map(
+              (t) => `
+            <tr class="${t.is_me ? "is-me" : ""}">
+              <td>${t.rank_in_league}</td>
+              <td>${esc(t.team_name || "—")}${t.is_me ? " ← tú" : ""}</td>
+              <td>${esc(t.owner || "—")}</td>
+              <td class="num">${t.total_score.toFixed(1)}</td>
+              <td>${t.strengths.map((p) => `<span class="pos-tag pos-${esc(p)}">${esc(p)}</span>`).join(" ")}</td>
+              <td>${t.weaknesses.map((p) => `<span class="pos-tag pos-${esc(p)}">${esc(p)}</span>`).join(" ")}</td>
+            </tr>`
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>`;
+
+  if (!me) {
+    return `
+      <div class="panel">
+        <h2>${esc(data.league_name || "Tu liga")}</h2>
+        <p class="panel-sub">${data.warnings.map(esc).join(" ")}</p>
+      </div>
+      ${standings}`;
+  }
+
+  const avisos = data.warnings.length
+    ? `<div class="warnings" style="margin:0 0 16px">${data.warnings
+        .map((w) => `<div class="warning">${esc(w)}</div>`)
+        .join("")}</div>`
+    : "";
+
+  return `
+    ${avisos}
+    <div class="panel">
+      <h2>${esc(me.team_name || me.owner || "Mi equipo")}</h2>
+      <p class="panel-sub">
+        ${me.rank_in_league}º de ${data.teams.length} equipos en ${esc(data.league_name || "la liga")}
+        · alineación titular valorada en ${me.total_score.toFixed(1)}
+        · ${me.player_count} jugadores en plantilla
+      </p>
+
+      <h3>Dónde estás flojo y dónde vas sobrado</h3>
+      <div class="pos-bars">${positionBarsHtml(me)}</div>
+      <p class="panel-sub" style="margin-top:12px; font-size:12px; color:var(--text-faint)">
+        La barra es la suma de tus titulares en esa posición; la línea vertical, la media de la liga.
+      </p>
+
+      ${
+        me.surplus.length
+          ? `<h3>Valor parado en tu banquillo</h3>
+             <p class="panel-sub">Suplentes tuyos que serían titulares en otros equipos: la moneda con la que pagar un intercambio.</p>
+             <div class="trend-metrics">${me.surplus
+               .slice(0, 8)
+               .map(
+                 (s) =>
+                   `<span class="trend-metric"><b>${esc(s.player.name)}</b> ${esc(
+                     positionOf(s.player)
+                   )} · nota ${s.score.toFixed(0)}</span>`
+               )
+               .join("")}</div>`
+          : ""
+      }
+    </div>
+
+    <div class="panel">
+      <h3>Intercambios que mejoran a las dos partes (${data.trade_ideas.length})</h3>
+      <p class="panel-sub">
+        Se recalculan las dos alineaciones con el cambio hecho. Si solo ganas tú, no aparece:
+        eso no es una propuesta, es un favor que nadie acepta.
+      </p>
+      ${
+        data.trade_ideas.length
+          ? `<div class="trade-grid">${data.trade_ideas.map(tradeCardHtml).join("")}</div>`
+          : `<p class="empty">Ahora mismo no hay ningún intercambio uno por uno que os venga bien a los dos.</p>`
+      }
+    </div>
+
+    ${standings}`;
+}
+
+async function loadTeam() {
+  const box = $("#team-content");
+  box.innerHTML = `<div class="panel"><div class="skeleton" style="height:90px"></div></div>`;
+  try {
+    const data = await api("/api/league/analysis", {
+      scoring: state.scoring,
+      superflex: state.superflex,
+    });
+    box.innerHTML = teamAnalysisHtml(data);
+  } catch (error) {
+    box.innerHTML =
+      error.status === 409 ? setupTeamHtml(error.message) : `<p class="empty">${esc(error.message)}</p>`;
+  }
+}
+
+/* =============================== Apuestas =============================== */
+
+function oddsHtml(data) {
+  const equipos = data.teams.filter((t) => t.implied_total !== null && t.implied_total !== undefined);
+  const tope = Math.max(...equipos.map((t) => t.implied_total), 1);
+
+  const avisos = data.warnings.length
+    ? `<div class="warnings" style="margin:0 0 16px">${data.warnings
+        .map((w) => `<div class="warning">${esc(w)}</div>`)
+        .join("")}</div>`
+    : "";
+
+  if (!equipos.length) return `${avisos}<p class="empty">No hay cuotas publicadas ahora mismo.</p>`;
+
+  return `
+    ${avisos}
+    <div class="panel">
+      <h3>Ataques mejor y peor vistos por el mercado${data.week ? ` · jornada ${data.week}` : ""}</h3>
+      <table class="odds-table">
+        <thead><tr><th>#</th><th>Equipo</th><th>Rival</th><th>Puntos implícitos</th><th></th><th>Spread</th><th>Total</th><th>Lectura</th></tr></thead>
+        <tbody>
+          ${equipos
+            .map(
+              (t) => `
+            <tr>
+              <td class="num">${t.implied_rank ?? "—"}</td>
+              <td><b>${esc(t.team)}</b></td>
+              <td>${t.is_home ? "vs" : "en"} ${esc(t.opponent || "—")}</td>
+              <td class="num">${t.implied_total.toFixed(1)}</td>
+              <td style="width:110px"><span class="implied-bar"><i style="width:${
+                (t.implied_total / tope) * 100
+              }%"></i></span></td>
+              <td class="num">${t.spread > 0 ? "+" : ""}${t.spread?.toFixed(1) ?? "—"}</td>
+              <td class="num">${t.total?.toFixed(1) ?? "—"}</td>
+              <td style="color:var(--text-dim);font-size:12.5px">${esc(t.verdict || "")}</td>
+            </tr>`
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h3>Partidos de la jornada</h3>
+      <div class="games-grid">
+        ${data.games
+          .map(
+            (g) => `
+          <div class="game-card">
+            <div class="game-teams">
+              <span class="abbr">${esc(g.away)} @ ${esc(g.home)}</span>
+              <span class="game-line">${g.total ? `O/U ${g.total.toFixed(1)}` : ""}</span>
+            </div>
+            <div class="game-line">${
+              g.favorite ? `Favorito: ${esc(g.favorite)} ${Math.abs(g.spread ?? 0).toFixed(1)}` : "Sin línea"
+            }${g.bookmaker ? ` · ${esc(g.bookmaker)}` : ""}</div>
+            <div class="game-implied">
+              <span>${esc(g.away)} <b>${g.away_implied?.toFixed(1) ?? "—"}</b></span>
+              <span>${esc(g.home)} <b>${g.home_implied?.toFixed(1) ?? "—"}</b></span>
+            </div>
+          </div>`
+          )
+          .join("")}
+      </div>
+    </div>`;
+}
+
+async function loadOdds() {
+  const box = $("#odds-content");
+  box.innerHTML = `<div class="panel"><div class="skeleton" style="height:90px"></div></div>`;
+  try {
+    box.innerHTML = oddsHtml(await api("/api/odds"));
+  } catch (error) {
+    box.innerHTML = `<p class="empty">${esc(error.message)}</p>`;
+  }
+}
+
+/* ================================ Arranque =============================== */
+
+/** Vacía las vistas que dependen del ranking, para que se recalculen. */
+function invalidateDerivedViews() {
+  $("#trend-list").innerHTML = "";
+  $("#team-content").innerHTML = "";
+  if (state.view === "trends") loadTrends();
+  if (state.view === "team") loadTeam();
 }
 
 init();

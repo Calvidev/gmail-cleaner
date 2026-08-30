@@ -1,0 +1,30 @@
+[
+ {
+  "user_id": "100001",
+  "display_name": "calvidev",
+  "metadata": {
+   "team_name": "Los Fantasmas"
+  }
+ },
+ {
+  "user_id": "100002",
+  "display_name": "marcos_nfl",
+  "metadata": {
+   "team_name": "Blitz Brothers"
+  }
+ },
+ {
+  "user_id": "100003",
+  "display_name": "la_jefa",
+  "metadata": {
+   "team_name": "Pick Six"
+  }
+ },
+ {
+  "user_id": "100004",
+  "display_name": "tono_88",
+  "metadata": {
+   "team_name": "Zona Roja"
+  }
+ }
+]

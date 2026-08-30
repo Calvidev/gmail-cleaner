@@ -13,6 +13,7 @@ estadísticas y noticias de ejemplo. No sirven para tomar decisiones.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import httpx
@@ -41,14 +42,34 @@ def demo_handler(request: httpx.Request) -> httpx.Response:
         if "/trending/drop" in path:
             return httpx.Response(200, json=_load_json("trending_drop.json"))
         if path.startswith("/v1/stats/"):
+            # /v1/stats/nfl/regular/2025/7 -> estadísticas de esa jornada
+            match = re.search(r"/stats/\w+/\w+/\d{4}/(\d+)$", path)
+            if match:
+                archivo = DEMO_DIR / f"stats_week_{match.group(1)}.json"
+                if archivo.exists():
+                    return httpx.Response(200, json=json.loads(archivo.read_text()))
+                return httpx.Response(404, json={"error": "jornada sin datos"})
             return httpx.Response(200, json=_load_json("stats.json"))
         if path.startswith("/v1/projections/"):
             return httpx.Response(200, json=_load_json("projections.json"))
-        # Ligas y usuarios no están en el modo demo.
+        if path.startswith("/v1/league/"):
+            if path.endswith("/rosters"):
+                return httpx.Response(200, json=_load_json("league_rosters.json"))
+            if path.endswith("/users"):
+                return httpx.Response(200, json=_load_json("league_users.json"))
+            return httpx.Response(200, json=_load_json("league.json"))
+        if path.startswith("/v1/user/"):
+            return httpx.Response(200, json=_load_json("user.json"))
         return httpx.Response(404, json={"error": "no disponible en modo demo"})
 
     if host == "site.api.espn.com":
+        if "scoreboard" in path:
+            return httpx.Response(200, json=_load_json("odds_scoreboard.json"))
         return httpx.Response(200, json=_load_json("news_espn.json"))
+
+    if host == "api.the-odds-api.com":
+        # El modo demo no simula The Odds API: sin llave no se usa.
+        return httpx.Response(401, json={"message": "sin llave en modo demo"})
 
     # Cualquier otro feed RSS recibe el mismo archivo de ejemplo.
     return httpx.Response(

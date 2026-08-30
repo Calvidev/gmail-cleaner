@@ -129,6 +129,12 @@ class TestSleeperClient:
         assert await cliente.get_trending("add") == {}
         assert await cliente.get_season_stats("2025") == {}
 
-    async def test_sin_liga_no_hay_jugadores_ocupados(self, sleeper):
-        # El modo demo no sirve ligas: debe devolver un conjunto vacío, no fallar.
-        assert await sleeper.get_rostered_player_ids("123") == set()
+    async def test_devuelve_los_jugadores_ya_fichados_en_la_liga(self, sleeper):
+        ocupados = await sleeper.get_rostered_player_ids("999888777666555444")
+        assert len(ocupados) > 40
+        assert all(isinstance(pid, str) for pid in ocupados)
+
+    async def test_si_la_liga_falla_devuelve_conjunto_vacio(self, settings, cache):
+        transporte = httpx.MockTransport(lambda r: httpx.Response(404))
+        cliente = SleeperClient(settings, cache, httpx.AsyncClient(transport=transporte))
+        assert await cliente.get_rostered_player_ids("123") == set()

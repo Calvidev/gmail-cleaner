@@ -419,3 +419,217 @@ table.ranking {
   .filters input[type="search"] { min-width: 0; flex: 1 1 100%; }
   .drawer { width: 100%; }
 }
+
+/* ============================== Tendencias =============================== */
+
+.hint {
+  color: var(--text-faint);
+  font-size: 12.5px;
+  line-height: 1.5;
+  max-width: 780px;
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--wr);
+  border-radius: 8px;
+}
+.hint code {
+  background: var(--bg-soft);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.trend-list { display: flex; flex-direction: column; gap: 10px; }
+
+.trend-card {
+  display: grid;
+  grid-template-columns: 62px minmax(190px, 1.1fr) 130px minmax(240px, 1.6fr);
+  gap: 16px;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: border-color .12s ease, background .12s ease;
+}
+.trend-card:hover { background: var(--bg-hover); border-color: #38455f; }
+
+.trend-score {
+  font-size: 19px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  border-radius: 8px;
+  padding: 6px 0;
+}
+.trend-score.up { color: var(--accent); background: rgba(53, 208, 127, .11); }
+.trend-score.down { color: var(--danger); background: rgba(255, 107, 107, .11); }
+.trend-score.flat { color: var(--text-faint); background: var(--bg-soft); }
+
+.trend-player { display: flex; align-items: center; gap: 11px; min-width: 0; }
+.trend-player .player-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.spark-wrap { width: 120px; }
+.spark { display: block; width: 120px; height: 34px; }
+.spark-label {
+  display: block;
+  font-size: 9.5px;
+  line-height: 1.25;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.trend-signals { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+.trend-signals li { font-size: 12.5px; color: var(--text-dim); }
+.trend-signals li strong { color: var(--text); font-weight: 600; }
+
+.trend-metrics { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--text-faint); }
+.trend-metric b { color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ============================== Mi equipo =============================== */
+
+.panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.panel h2 { margin: 0 0 4px; font-size: 18px; }
+.panel h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-faint);
+  margin: 22px 0 12px;
+}
+.panel > h3:first-child { margin-top: 0; }
+.panel-sub { color: var(--text-dim); font-size: 13px; margin: 0 0 6px; }
+
+.pos-bars { display: flex; flex-direction: column; gap: 12px; }
+.pos-bar-row { display: grid; grid-template-columns: 54px 1fr 190px; gap: 14px; align-items: center; }
+.pos-bar-track {
+  position: relative;
+  height: 22px;
+  background: var(--bg-soft);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.pos-bar-fill { height: 100%; border-radius: 6px; }
+.pos-bar-fill.weak { background: linear-gradient(90deg, #7a2f2f, var(--danger)); }
+.pos-bar-fill.mid { background: linear-gradient(90deg, #7a6122, var(--warn)); }
+.pos-bar-fill.strong { background: linear-gradient(90deg, var(--accent-dim), var(--accent)); }
+.pos-bar-avg {
+  position: absolute;
+  top: -2px; bottom: -2px;
+  width: 2px;
+  background: var(--text);
+  opacity: .65;
+}
+.pos-bar-meta { font-size: 12px; color: var(--text-faint); }
+.pos-bar-meta b { color: var(--text); }
+
+.verdict { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 5px; }
+.verdict.débil { background: rgba(255, 107, 107, .15); color: var(--danger); }
+.verdict.medio { background: rgba(245, 182, 66, .15); color: var(--warn); }
+.verdict.fuerte { background: rgba(53, 208, 127, .13); color: var(--accent); }
+
+.trade-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+.trade-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.trade-partner { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--text-faint); margin-bottom: 10px; }
+.trade-swap { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.trade-side { flex: 1; min-width: 110px; }
+.trade-side .label { font-size: 10px; text-transform: uppercase; color: var(--text-faint); letter-spacing: .05em; }
+.trade-side .who { font-weight: 620; font-size: 14px; }
+.trade-arrow { color: var(--accent); font-size: 18px; }
+.trade-gains { display: flex; gap: 16px; font-size: 12px; margin-bottom: 8px; }
+.gain-me { color: var(--accent); font-weight: 650; }
+.gain-them { color: var(--wr); font-weight: 650; }
+.trade-why { list-style: none; margin: 0; padding: 0; font-size: 12px; color: var(--text-dim); }
+.trade-why li { padding-left: 13px; position: relative; }
+.trade-why li::before { content: "·"; position: absolute; left: 3px; color: var(--accent); }
+
+.standings { width: 100%; border-collapse: separate; border-spacing: 0; }
+.standings th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-faint); padding: 8px 12px; border-bottom: 1px solid var(--border);
+}
+.standings td { padding: 9px 12px; border-bottom: 1px solid rgba(37, 48, 72, .5); font-size: 13.5px; }
+.standings tr.is-me td { background: rgba(53, 208, 127, .06); font-weight: 600; }
+.standings tr:last-child td { border-bottom: 0; }
+
+.setup-steps { counter-reset: paso; list-style: none; padding: 0; margin: 16px 0 0; }
+.setup-steps li {
+  counter-increment: paso;
+  position: relative;
+  padding: 0 0 16px 34px;
+  color: var(--text-dim);
+  font-size: 13.5px;
+}
+.setup-steps li::before {
+  content: counter(paso);
+  position: absolute; left: 0; top: -1px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--accent-dim); color: #eafff2;
+  font-size: 12px; font-weight: 700;
+  display: grid; place-items: center;
+}
+.setup-steps code, .code-block {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 12.5px;
+  color: var(--accent);
+}
+.code-block { display: block; padding: 12px 14px; margin: 8px 0; white-space: pre; overflow-x: auto; color: var(--text); }
+
+/* =============================== Apuestas =============================== */
+
+.odds-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.odds-table th {
+  text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--text-faint); padding: 9px 12px; border-bottom: 1px solid var(--border);
+}
+.odds-table td { padding: 9px 12px; border-bottom: 1px solid rgba(37, 48, 72, .5); font-size: 13.5px; }
+.odds-table tr:last-child td { border-bottom: 0; }
+.implied-bar {
+  /* Es un <span>: sin `display: block` ignora el alto y no se ve nada. */
+  display: block;
+  height: 7px;
+  min-width: 90px;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.implied-bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--te), var(--accent)); }
+
+.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.game-card {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+.game-teams { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+.game-teams .abbr { font-weight: 700; font-size: 15px; }
+.game-line { color: var(--text-faint); font-size: 12px; }
+.game-implied { display: flex; justify-content: space-between; margin-top: 7px; font-size: 12px; color: var(--text-dim); }
+
+@media (max-width: 860px) {
+  .trend-card { grid-template-columns: 54px 1fr; gap: 10px; }
+  .trend-card .spark-wrap, .trend-card .trend-signals { grid-column: 1 / -1; }
+  .pos-bar-row { grid-template-columns: 46px 1fr; }
+  .pos-bar-row .pos-bar-meta { grid-column: 1 / -1; }
+}

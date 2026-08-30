@@ -1,0 +1,27 @@
+{
+ "league_id": "999888777666555444",
+ "name": "Liga de Demostración",
+ "season": "2025",
+ "season_type": "regular",
+ "status": "in_season",
+ "total_rosters": 4,
+ "scoring_settings": {
+  "rec": 1.0,
+  "pass_td": 4.0,
+  "rush_td": 6.0
+ },
+ "roster_positions": [
+  "QB",
+  "RB",
+  "RB",
+  "WR",
+  "WR",
+  "TE",
+  "FLEX",
+  "DEF",
+  "BN",
+  "BN",
+  "BN",
+  "BN"
+ ]
+}

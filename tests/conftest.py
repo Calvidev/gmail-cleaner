@@ -80,3 +80,38 @@ def sample_players() -> dict[str, Player]:
             search_rank=700, status="Inactive",
         ),
     }
+
+
+DEMO_LEAGUE_ID = "999888777666555444"
+DEMO_USER_ID = "100001"  # el equipo "Los Fantasmas" de la liga de ejemplo
+
+
+@pytest.fixture
+def league_settings() -> Settings:
+    """Ajustes con la liga de ejemplo ya conectada."""
+    return Settings(
+        fantasy_demo=True,
+        sleeper_league_id=DEMO_LEAGUE_ID,
+        sleeper_user_id=DEMO_USER_ID,
+        sleeper_username="calvidev",
+    )
+
+
+@pytest.fixture
+def league_service(league_settings, cache, http_client) -> FantasyService:
+    from app.providers.odds import OddsProvider
+
+    return FantasyService(
+        settings=league_settings,
+        cache=cache,
+        sleeper=SleeperClient(league_settings, cache, http_client),
+        news=NewsProvider(league_settings, cache, http_client),
+        odds=OddsProvider(league_settings, cache, http_client),
+    )
+
+
+@pytest.fixture
+def odds_provider(settings, cache, http_client):
+    from app.providers.odds import OddsProvider
+
+    return OddsProvider(settings, cache, http_client)
