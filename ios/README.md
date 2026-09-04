@@ -27,6 +27,20 @@ ios/
 - Una cuenta de Apple. Con la gratuita se instala en tu propio iPhone y hay que
   volver a firmar cada 7 días; lee más abajo lo del *App Group*.
 
+## El atajo: `build.sh`
+
+Para no pelearse con `xcodebuild`:
+
+```bash
+./ios/build.sh            # ¿compila? (rápido, sin firmar ni simulador)
+./ios/build.sh sim        # compila para el simulador
+./ios/build.sh runtime    # descarga el simulador de iOS que falte
+./ios/build.sh abrir      # abre el proyecto en Xcode
+```
+
+Por pantalla salen solo los errores y el resultado; el log entero queda en
+`/tmp/sleeperscore-build.log`.
+
 ## Cómo arrancarla (5 minutos)
 
 1. **Abre el proyecto**: `open ios/SleeperScore.xcodeproj`.
