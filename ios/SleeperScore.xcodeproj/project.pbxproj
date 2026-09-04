@@ -1,0 +1,720 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+		024892A436DE54D2493F20CE = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.entitlements;
+			path = SleeperScore.entitlements;
+			sourceTree = "<group>";
+		};
+		03FCA72BB613E552F2AD9FAD = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FD2DD70200319FF7456A87FC /* Debug */,
+				CC75E1056C3F0D7E633EEBD6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		04449DC025E75A1853DBCE40 = {
+			isa = PBXBuildFile;
+			fileRef = 1B442E42980596EBCD246D51 /* ScoreWidgetExtension.appex */;
+			settings = {
+				ATTRIBUTES = (
+					RemoveHeadersOnCopy,
+				);
+			};
+		};
+		0661F517A86C8F5C87C0EDBA = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 03FCA72BB613E552F2AD9FAD /* Build configuration list for PBXNativeTarget "ScoreWidgetExtension" */;
+			buildPhases = (
+				37A859133C5B7A49CE597D35,
+				11EF39465FB5B37CF41E367D,
+				B56E96530BC9DC2EBA288692,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ScoreWidgetExtension;
+			productName = ScoreWidgetExtension;
+			productReference = 1B442E42980596EBCD246D51 /* ScoreWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		1011B10BE33E7445720286C5 = {
+			isa = PBXBuildFile;
+			fileRef = C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */;
+		};
+		11EF39465FB5B37CF41E367D = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		13FBE3C3B926169A29D11AEA = {
+			isa = PBXBuildFile;
+			fileRef = CD7706DE0705E26991B88766 /* AppConfig.swift */;
+		};
+		16ACE556BD5CA3C51FD3F043 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SleeperScore/SleeperScore.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SleeperScore/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.calvi.sleeperscore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1B442E42980596EBCD246D51 = {
+			isa = PBXFileReference;
+			explicitFileType = "wrapper.app-extension";
+			includeInIndex = 0;
+			path = ScoreWidgetExtension.appex;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1F3512EF34B2A4C6D8FFD69F = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82000B87E0EC13AD7FD6DA43 /* Debug */,
+				16ACE556BD5CA3C51FD3F043 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		207AE7F7BF7702CED53D696C = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Theme.swift;
+			sourceTree = "<group>";
+		};
+		2109C7E654CC4E0E38EA26A3 = {
+			isa = PBXBuildFile;
+			fileRef = C5DDC4617D40B315EC9D8E47 /* ScoreboardModel.swift */;
+		};
+		241B5769E28CE18570E5F2F8 = {
+			isa = PBXBuildFile;
+			fileRef = 6017835189AFFF5EC9046AAB /* MatchupComponents.swift */;
+		};
+		2C74BDE13991C1ADF223AAEA = {
+			isa = PBXBuildFile;
+			fileRef = 5B082B835ACC628B90347851 /* MatchupSnapshot.swift */;
+		};
+		3583F9BFD8A741B035FE38DC = {
+			isa = PBXBuildFile;
+			fileRef = 5B5F18854E67727AE5FF5B8E /* SleeperAPI.swift */;
+		};
+		36CBBEEECA3A305005C30BB5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		37A859133C5B7A49CE597D35 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5ADEADE4C0734DD3CBC6315E /* AppConfig.swift in ScoreWidgetExtension */,
+				76783979A41D8BC5142F6045 /* JSONSupport.swift in ScoreWidgetExtension */,
+				D43102C6B7124A44BB8B79D2 /* SleeperModels.swift in ScoreWidgetExtension */,
+				3583F9BFD8A741B035FE38DC /* SleeperAPI.swift in ScoreWidgetExtension */,
+				2C74BDE13991C1ADF223AAEA /* MatchupSnapshot.swift in ScoreWidgetExtension */,
+				EB0BABE71F931600D48BB98F /* SharedStore.swift in ScoreWidgetExtension */,
+				D0143AE3927E5100A6257CF1 /* AvatarLoader.swift in ScoreWidgetExtension */,
+				1011B10BE33E7445720286C5 /* PlayerCatalog.swift in ScoreWidgetExtension */,
+				CBBBE19B4682C29799DAE9F0 /* MatchupService.swift in ScoreWidgetExtension */,
+				9A14ACA83648BAAD0A7B4F62 /* Theme.swift in ScoreWidgetExtension */,
+				71DAAFA211708FECC42DA14A /* MatchupComponents.swift in ScoreWidgetExtension */,
+				553B51B711A499F0543A1AF3 /* ScoreWidgetBundle.swift in ScoreWidgetExtension */,
+				9DC05096FC383F2E372383D0 /* ScoreProvider.swift in ScoreWidgetExtension */,
+				E97658E1132B2D311B4060A1 /* ScoreWidgetViews.swift in ScoreWidgetExtension */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4160C9CADF7F467006E7D38D = {
+			isa = PBXBuildFile;
+			fileRef = 7BF4B39FDFC5099A24827AF0 /* SettingsView.swift */;
+		};
+		45DE0911B50B5D5508CA0B61 = {
+			isa = PBXBuildFile;
+			fileRef = 5B5F18854E67727AE5FF5B8E /* SleeperAPI.swift */;
+		};
+		46F86FAA6BBF9AC94A7E4595 = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					0661F517A86C8F5C87C0EDBA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					E3435DDA2687639586BF0B70 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 4B6C2876ED42CF301970B266 /* Build configuration list for PBXProject "SleeperScore" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = es;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+				es,
+			);
+			mainGroup = 518DA81DB9B99529C0C0AEBE /* group:main */;
+			productRefGroup = 547D009064F7C3F13BEF3460 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E3435DDA2687639586BF0B70 /* SleeperScore */,
+				0661F517A86C8F5C87C0EDBA /* ScoreWidgetExtension */,
+			);
+		};
+		47DB9E782CD4A6EF0DD65202 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SleeperModels.swift;
+			sourceTree = "<group>";
+		};
+		4821909E9BF9E73E471FEA84 = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13FBE3C3B926169A29D11AEA /* AppConfig.swift in SleeperScore */,
+				62A1142776BBB3D9EDA74A24 /* JSONSupport.swift in SleeperScore */,
+				79CAEDCD7081CCC9E228807D /* SleeperModels.swift in SleeperScore */,
+				45DE0911B50B5D5508CA0B61 /* SleeperAPI.swift in SleeperScore */,
+				532D73CF490BB7A11403E875 /* MatchupSnapshot.swift in SleeperScore */,
+				4DDDE3071D9582391BFE9D0D /* SharedStore.swift in SleeperScore */,
+				F5A30E0A9EB43FB9E5566673 /* AvatarLoader.swift in SleeperScore */,
+				FAEBD90CE12952F4FBC920AC /* PlayerCatalog.swift in SleeperScore */,
+				58AA38ADA353BE33F5AF5C3A /* MatchupService.swift in SleeperScore */,
+				D80B18A2F5944D5736AB7143 /* Theme.swift in SleeperScore */,
+				241B5769E28CE18570E5F2F8 /* MatchupComponents.swift in SleeperScore */,
+				55FB7C5417C0B686BCCA94A7 /* SleeperScoreApp.swift in SleeperScore */,
+				2109C7E654CC4E0E38EA26A3 /* ScoreboardModel.swift in SleeperScore */,
+				C6DA29FAD2E61DF050748E30 /* RootView.swift in SleeperScore */,
+				71F6B29CF9FE0FE20B3C9AD5 /* ScoreboardView.swift in SleeperScore */,
+				4160C9CADF7F467006E7D38D /* SettingsView.swift in SleeperScore */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		496AF46EC2762DDF91F78F13 = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				04449DC025E75A1853DBCE40 /* ScoreWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4B6C2876ED42CF301970B266 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				92E165A9035A603BE73D2E62 /* Debug */,
+				E1D3BBA94590957B0374D6E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4DDDE3071D9582391BFE9D0D = {
+			isa = PBXBuildFile;
+			fileRef = A55CC726808CF50732E54964 /* SharedStore.swift */;
+		};
+		518DA81DB9B99529C0C0AEBE = {
+			isa = PBXGroup;
+			children = (
+				9CB302E9C7F6377B351DBEAB /* Shared */,
+				82CF2A43A7100F086D7FCFDD /* SleeperScore */,
+				EC21069A65F2CA977FE14A64 /* ScoreWidget */,
+				547D009064F7C3F13BEF3460 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		532D73CF490BB7A11403E875 = {
+			isa = PBXBuildFile;
+			fileRef = 5B082B835ACC628B90347851 /* MatchupSnapshot.swift */;
+		};
+		547D009064F7C3F13BEF3460 = {
+			isa = PBXGroup;
+			children = (
+				84337AD8D27FCD69AF2C4FC2 /* SleeperScore.app */,
+				1B442E42980596EBCD246D51 /* ScoreWidgetExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		553B51B711A499F0543A1AF3 = {
+			isa = PBXBuildFile;
+			fileRef = C5A41E448492DA848F9CAA89 /* ScoreWidgetBundle.swift */;
+		};
+		55FB7C5417C0B686BCCA94A7 = {
+			isa = PBXBuildFile;
+			fileRef = C19B50826CD60F84F1157D12 /* SleeperScoreApp.swift */;
+		};
+		58AA38ADA353BE33F5AF5C3A = {
+			isa = PBXBuildFile;
+			fileRef = ADE09ECB837E05A3414451DB /* MatchupService.swift */;
+		};
+		5ADEADE4C0734DD3CBC6315E = {
+			isa = PBXBuildFile;
+			fileRef = CD7706DE0705E26991B88766 /* AppConfig.swift */;
+		};
+		5B082B835ACC628B90347851 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MatchupSnapshot.swift;
+			sourceTree = "<group>";
+		};
+		5B5F18854E67727AE5FF5B8E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SleeperAPI.swift;
+			sourceTree = "<group>";
+		};
+		5EE764C8FC411275FBA279BF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = JSONSupport.swift;
+			sourceTree = "<group>";
+		};
+		6017835189AFFF5EC9046AAB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MatchupComponents.swift;
+			sourceTree = "<group>";
+		};
+		62A1142776BBB3D9EDA74A24 = {
+			isa = PBXBuildFile;
+			fileRef = 5EE764C8FC411275FBA279BF /* JSONSupport.swift */;
+		};
+		678B11228DF3B271F8486C38 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = RootView.swift;
+			sourceTree = "<group>";
+		};
+		688026E8C814351531673AE2 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = AvatarLoader.swift;
+			sourceTree = "<group>";
+		};
+		6EFAB1ECC0D092E20FE51FCD = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		71DAAFA211708FECC42DA14A = {
+			isa = PBXBuildFile;
+			fileRef = 6017835189AFFF5EC9046AAB /* MatchupComponents.swift */;
+		};
+		71F6B29CF9FE0FE20B3C9AD5 = {
+			isa = PBXBuildFile;
+			fileRef = B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */;
+		};
+		76783979A41D8BC5142F6045 = {
+			isa = PBXBuildFile;
+			fileRef = 5EE764C8FC411275FBA279BF /* JSONSupport.swift */;
+		};
+		77AEDF226E1B82E972C1B282 = {
+			isa = PBXBuildFile;
+			fileRef = C67A2D71EF5298D30645961D /* Assets.xcassets */;
+		};
+		79CAEDCD7081CCC9E228807D = {
+			isa = PBXBuildFile;
+			fileRef = 47DB9E782CD4A6EF0DD65202 /* SleeperModels.swift */;
+		};
+		7BF4B39FDFC5099A24827AF0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SettingsView.swift;
+			sourceTree = "<group>";
+		};
+		82000B87E0EC13AD7FD6DA43 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = SleeperScore/SleeperScore.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = SleeperScore/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.calvi.sleeperscore;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		82CF2A43A7100F086D7FCFDD = {
+			isa = PBXGroup;
+			children = (
+				C19B50826CD60F84F1157D12 /* SleeperScoreApp.swift */,
+				C5DDC4617D40B315EC9D8E47 /* ScoreboardModel.swift */,
+				678B11228DF3B271F8486C38 /* RootView.swift */,
+				B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */,
+				7BF4B39FDFC5099A24827AF0 /* SettingsView.swift */,
+				931226496DCE20872776D15D /* Assets.xcassets */,
+				36CBBEEECA3A305005C30BB5 /* Info.plist */,
+				024892A436DE54D2493F20CE /* SleeperScore.entitlements */,
+			);
+			path = SleeperScore;
+			sourceTree = "<group>";
+		};
+		84337AD8D27FCD69AF2C4FC2 = {
+			isa = PBXFileReference;
+			explicitFileType = wrapper.application;
+			includeInIndex = 0;
+			path = SleeperScore.app;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		889A34C747900C87EE5F896E = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.entitlements;
+			path = ScoreWidget.entitlements;
+			sourceTree = "<group>";
+		};
+		92E165A9035A603BE73D2E62 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		931226496DCE20872776D15D = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		99E6A51DA0B86FE48AEB34ED = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0661F517A86C8F5C87C0EDBA;
+			remoteInfo = ScoreWidgetExtension;
+		};
+		9A14ACA83648BAAD0A7B4F62 = {
+			isa = PBXBuildFile;
+			fileRef = 207AE7F7BF7702CED53D696C /* Theme.swift */;
+		};
+		9CB302E9C7F6377B351DBEAB = {
+			isa = PBXGroup;
+			children = (
+				CD7706DE0705E26991B88766 /* AppConfig.swift */,
+				5EE764C8FC411275FBA279BF /* JSONSupport.swift */,
+				47DB9E782CD4A6EF0DD65202 /* SleeperModels.swift */,
+				5B5F18854E67727AE5FF5B8E /* SleeperAPI.swift */,
+				5B082B835ACC628B90347851 /* MatchupSnapshot.swift */,
+				A55CC726808CF50732E54964 /* SharedStore.swift */,
+				688026E8C814351531673AE2 /* AvatarLoader.swift */,
+				C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */,
+				ADE09ECB837E05A3414451DB /* MatchupService.swift */,
+				207AE7F7BF7702CED53D696C /* Theme.swift */,
+				6017835189AFFF5EC9046AAB /* MatchupComponents.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		9DC05096FC383F2E372383D0 = {
+			isa = PBXBuildFile;
+			fileRef = BD3A67CAFF664165392226E0 /* ScoreProvider.swift */;
+		};
+		A55CC726808CF50732E54964 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SharedStore.swift;
+			sourceTree = "<group>";
+		};
+		ADE09ECB837E05A3414451DB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MatchupService.swift;
+			sourceTree = "<group>";
+		};
+		B56E96530BC9DC2EBA288692 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				77AEDF226E1B82E972C1B282 /* Assets.xcassets in ScoreWidgetExtension */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B7A4709E6FA19CE45B277C8B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScoreboardView.swift;
+			sourceTree = "<group>";
+		};
+		BD3A67CAFF664165392226E0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScoreProvider.swift;
+			sourceTree = "<group>";
+		};
+		C19B50826CD60F84F1157D12 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SleeperScoreApp.swift;
+			sourceTree = "<group>";
+		};
+		C5A41E448492DA848F9CAA89 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScoreWidgetBundle.swift;
+			sourceTree = "<group>";
+		};
+		C5DDC4617D40B315EC9D8E47 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScoreboardModel.swift;
+			sourceTree = "<group>";
+		};
+		C67A2D71EF5298D30645961D = {
+			isa = PBXFileReference;
+			lastKnownFileType = folder.assetcatalog;
+			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		C6ADDF882A06872F0A8E4C06 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = PlayerCatalog.swift;
+			sourceTree = "<group>";
+		};
+		C6DA29FAD2E61DF050748E30 = {
+			isa = PBXBuildFile;
+			fileRef = 678B11228DF3B271F8486C38 /* RootView.swift */;
+		};
+		C7B8CEEB7B179A9C9CD3B8D8 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScoreWidgetViews.swift;
+			sourceTree = "<group>";
+		};
+		CBBBE19B4682C29799DAE9F0 = {
+			isa = PBXBuildFile;
+			fileRef = ADE09ECB837E05A3414451DB /* MatchupService.swift */;
+		};
+		CC75E1056C3F0D7E633EEBD6 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = ScoreWidget/ScoreWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ScoreWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.calvi.sleeperscore.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CD7706DE0705E26991B88766 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = AppConfig.swift;
+			sourceTree = "<group>";
+		};
+		CDC15F89DB2640D57277623E = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		D0143AE3927E5100A6257CF1 = {
+			isa = PBXBuildFile;
+			fileRef = 688026E8C814351531673AE2 /* AvatarLoader.swift */;
+		};
+		D43102C6B7124A44BB8B79D2 = {
+			isa = PBXBuildFile;
+			fileRef = 47DB9E782CD4A6EF0DD65202 /* SleeperModels.swift */;
+		};
+		D80B18A2F5944D5736AB7143 = {
+			isa = PBXBuildFile;
+			fileRef = 207AE7F7BF7702CED53D696C /* Theme.swift */;
+		};
+		E1D3BBA94590957B0374D6E9 = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E3435DDA2687639586BF0B70 = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F3512EF34B2A4C6D8FFD69F /* Build configuration list for PBXNativeTarget "SleeperScore" */;
+			buildPhases = (
+				4821909E9BF9E73E471FEA84,
+				6EFAB1ECC0D092E20FE51FCD,
+				F667297ED3AB90EAC07798D4,
+				496AF46EC2762DDF91F78F13,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F78D8F997A3DF3A317629BBA /* PBXTargetDependency */,
+			);
+			name = SleeperScore;
+			productName = SleeperScore;
+			productReference = 84337AD8D27FCD69AF2C4FC2 /* SleeperScore.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E97658E1132B2D311B4060A1 = {
+			isa = PBXBuildFile;
+			fileRef = C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */;
+		};
+		EB0BABE71F931600D48BB98F = {
+			isa = PBXBuildFile;
+			fileRef = A55CC726808CF50732E54964 /* SharedStore.swift */;
+		};
+		EBA88E926D54C1F60AED6990 = {
+			isa = PBXBuildFile;
+			fileRef = 931226496DCE20872776D15D /* Assets.xcassets */;
+		};
+		EC21069A65F2CA977FE14A64 = {
+			isa = PBXGroup;
+			children = (
+				C5A41E448492DA848F9CAA89 /* ScoreWidgetBundle.swift */,
+				BD3A67CAFF664165392226E0 /* ScoreProvider.swift */,
+				C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */,
+				C67A2D71EF5298D30645961D /* Assets.xcassets */,
+				CDC15F89DB2640D57277623E /* Info.plist */,
+				889A34C747900C87EE5F896E /* ScoreWidget.entitlements */,
+			);
+			path = ScoreWidget;
+			sourceTree = "<group>";
+		};
+		F5A30E0A9EB43FB9E5566673 = {
+			isa = PBXBuildFile;
+			fileRef = 688026E8C814351531673AE2 /* AvatarLoader.swift */;
+		};
+		F667297ED3AB90EAC07798D4 = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EBA88E926D54C1F60AED6990 /* Assets.xcassets in SleeperScore */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F78D8F997A3DF3A317629BBA = {
+			isa = PBXTargetDependency;
+			target = 0661F517A86C8F5C87C0EDBA /* ScoreWidgetExtension */;
+			targetProxy = 99E6A51DA0B86FE48AEB34ED /* PBXContainerItemProxy */;
+		};
+		FAEBD90CE12952F4FBC920AC = {
+			isa = PBXBuildFile;
+			fileRef = C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */;
+		};
+		FD2DD70200319FF7456A87FC = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = ScoreWidget/ScoreWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = ScoreWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.calvi.sleeperscore.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+	};
+	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;
+}

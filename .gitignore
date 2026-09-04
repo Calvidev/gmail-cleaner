@@ -21,3 +21,10 @@ data/cache/
 .vscode/
 .idea/
 .DS_Store
+
+# Xcode (app de iOS en ios/)
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.xcworkspace/xcuserdata/

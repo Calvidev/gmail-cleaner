@@ -361,11 +361,26 @@ web/                 Interfaz (HTML, CSS y JS, sin paso de compilación)
 data/demo/           Datos de ejemplo del modo demo
 data/rankings/       Rankings importados de otras fuentes (uno por archivo)
 tests/               376 tests
+ios/                 App de iPhone del marcador en vivo (SwiftUI + WidgetKit)
 ```
 
 La caché guarda el catálogo de jugadores en `.cache/` (pesa unos MB y cambia
 poco), así que solo el primer arranque tarda. Si una fuente se cae, se sirven
 los últimos datos buenos en lugar de una pantalla en blanco.
+
+---
+
+## App de iPhone: el marcador en vivo
+
+En `ios/` hay una app aparte, nativa, que enseña tu enfrentamiento de la jornada
+en Sleeper: marcador, avatares, diferencia, la alineación titular con los puntos
+de cada jugador, y widgets para la pantalla de inicio y la de bloqueo. Nace del
+widget de Scriptable que está guardado en `ios/scriptable/`.
+
+No tiene nada que ver con el servidor de Python: habla directamente con la API
+pública de Sleeper, así que funciona sin levantar Fantasy Tool. Para abrirla hace
+falta un Mac con Xcode 16; las instrucciones están en
+[`ios/README.md`](ios/README.md).
 
 ---
 
