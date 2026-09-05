@@ -33,6 +33,7 @@ Para no pelearse con `xcodebuild`:
 
 ```bash
 ./ios/build.sh            # ¿compila? (rápido, sin firmar ni simulador)
+./ios/build.sh iphone     # compila, firma e instala en el iPhone conectado
 ./ios/build.sh sim        # compila para el simulador
 ./ios/build.sh runtime    # descarga el simulador de iOS que falte
 ./ios/build.sh abrir      # abre el proyecto en Xcode
@@ -40,6 +41,15 @@ Para no pelearse con `xcodebuild`:
 
 Por pantalla salen solo los errores y el resultado; el log entero queda en
 `/tmp/sleeperscore-build.log`.
+
+`iphone` es el atajo a ⌘R: compila firmando con la cuenta que elegiste en Xcode,
+instala en el primer iPhone conectado y la abre. El iPhone tiene que estar
+desbloqueado y haber dado a "Confiar". Si nunca abriste el proyecto en Xcode, no
+sabrá con qué cuenta firmar; entonces pásale el equipo a mano:
+
+```bash
+DEVELOPMENT_TEAM=TU_TEAM_ID ./ios/build.sh iphone
+```
 
 ## Cómo arrancarla (5 minutos)
 
