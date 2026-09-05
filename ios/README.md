@@ -59,8 +59,10 @@ Por pantalla salen solo los errores y el resultado; el log entero queda en
    añade el widget rectangular o el de una línea.
 
 La app arranca ya apuntando a tu liga (`1263745758830530560`, equipo 1): son los
-valores del widget original, escritos en `Shared/AppConfig.swift`. Desde el
-engranaje de arriba puedes pegar otro id de liga y elegir tu equipo de una lista.
+valores del widget original, escritos en `Shared/AppConfig.swift`. Para cambiarla,
+toca el engranaje y **escribe tu usuario de Sleeper**: salen todas tus ligas de la
+temporada y, al elegir una, la app reconoce sola cuál es tu equipo. No hace falta
+contraseña (la API de Sleeper es pública y de solo lectura) ni buscar ningún id.
 
 ### Si el App Group no te deja
 
@@ -75,7 +77,7 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 | Pantalla / tamaño | Qué enseña |
 | --- | --- |
 | App | Marcador grande, diferencia, barra, y la alineación hueco a hueco con los puntos de cada titular |
-| Ajustes | Id de liga, lista de equipos con avatar para elegir el tuyo, estado del App Group, catálogo de jugadores |
+| Ajustes | Entrar con tu usuario, tus ligas, equipos con avatar, estado del App Group, catálogo de jugadores |
 | Widget pequeño | Los dos equipos con avatar, puntos y barra |
 | Widget mediano | Lo mismo del widget original: cabecera, dos columnas, diferencia, barra y pie |
 | Widget grande | El mediano + los primeros huecos de la alineación con nombres abreviados |
@@ -93,7 +95,9 @@ Las mismas cinco llamadas que hacía el widget de Scriptable, en
 
 | Llamada | Para qué |
 | --- | --- |
-| `GET /state/nfl` | la jornada en curso |
+| `GET /state/nfl` | la jornada y la temporada en curso |
+| `GET /user/{usuario}` | tu `user_id` a partir del nombre de usuario |
+| `GET /user/{user_id}/leagues/nfl/{año}` | tus ligas de la temporada |
 | `GET /league/{id}` | nombre de la liga y huecos de la alineación |
 | `GET /league/{id}/users` | nombres de equipo y avatares |
 | `GET /league/{id}/rosters` | qué manager lleva cada roster, y su récord |

@@ -163,11 +163,45 @@ struct LeagueTeam: Identifiable, Hashable {
     let name: String
     let avatarURL: URL?
     let record: String?
+    /// Quién lo lleva. Sirve para reconocer cuál es el tuyo sin preguntártelo.
+    let ownerIDs: [String]
 
     var id: Int { rosterID }
+
+    func belongs(to userID: String) -> Bool { ownerIDs.contains(userID) }
+}
+
+/// Lo que hace falta para no pedirle a nadie un id de liga: quién eres y en
+/// qué ligas juegas esta temporada.
+struct SleeperAccount {
+    let user: SleeperUser
+    let season: String
+    let leagues: [LeagueSummary]
 }
 
 extension MatchupService {
+    /// Tu cuenta y tus ligas a partir del nombre de usuario. La API de Sleeper
+    /// es de lectura y pública: no hay contraseña ni OAuth de por medio.
+    func account(username: String) async throws -> SleeperAccount {
+        let user = try await api.user(username: username)
+        let season = try await currentSeason()
+        let leagues = (try? await api.leagues(userID: user.userID, season: season)) ?? []
+        return SleeperAccount(user: user, season: season, leagues: leagues)
+    }
+
+    /// La temporada en curso según Sleeper; si el estado falla, se deduce de la
+    /// fecha (la temporada NFL arranca en septiembre).
+    func currentSeason() async throws -> String {
+        if let season = try? await api.state().season, !season.isEmpty {
+            return season
+        }
+        let calendario = Calendar(identifier: .gregorian)
+        let hoy = Date()
+        let año = calendario.component(.year, from: hoy)
+        let mes = calendario.component(.month, from: hoy)
+        return String(mes >= 3 ? año : año - 1)
+    }
+
     /// Los equipos de una liga, para elegir el tuyo sin saberte el número de roster.
     func teams(in leagueID: String) async throws -> (leagueName: String, teams: [LeagueTeam]) {
         let clean = leagueID.trimmingCharacters(in: .whitespaces)
@@ -186,11 +220,15 @@ extension MatchupService {
             .sorted { $0.rosterID < $1.rosterID }
             .map { roster -> LeagueTeam in
                 let owner = roster.ownerID.flatMap { userByID[$0] }
+                var dueños: [String] = []
+                if let ownerID = roster.ownerID { dueños.append(ownerID) }
+                dueños.append(contentsOf: roster.coOwners ?? [])
                 return LeagueTeam(
                     rosterID: roster.rosterID,
                     name: owner?.preferredName ?? "Equipo \(roster.rosterID)",
                     avatarURL: owner?.avatarURL,
-                    record: roster.record
+                    record: roster.record,
+                    ownerIDs: dueños
                 )
             }
         return (league.name ?? "Liga de Sleeper", teams)

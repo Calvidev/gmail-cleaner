@@ -101,6 +101,8 @@ struct RosterSettings: Decodable {
 struct Roster: Decodable {
     let rosterID: Int
     let ownerID: String?
+    /// Ligas con equipo compartido: el usuario puede no ser el `owner_id`.
+    let coOwners: [String]?
     let players: [String]?
     let starters: [String]?
     let settings: RosterSettings?
@@ -108,9 +110,16 @@ struct Roster: Decodable {
     enum CodingKeys: String, CodingKey {
         case rosterID = "roster_id"
         case ownerID = "owner_id"
+        case coOwners = "co_owners"
         case players
         case starters
         case settings
+    }
+
+    /// ¿Es este el equipo de ese usuario?
+    func belongs(to userID: String) -> Bool {
+        if ownerID == userID { return true }
+        return (coOwners ?? []).contains(userID)
     }
 
     /// "3-1" o "3-1-1" cuando hay empates.
@@ -121,6 +130,74 @@ struct Roster: Decodable {
         let ties = settings.ties ?? 0
         if wins == 0 && losses == 0 && ties == 0 { return nil }
         return ties > 0 ? "\(wins)-\(losses)-\(ties)" : "\(wins)-\(losses)"
+    }
+}
+
+// MARK: - Cuenta del usuario
+
+/// El perfil que devuelve `/user/{usuario}`. Con el `user_id` ya se puede
+/// listar todo lo suyo sin pedirle ninguna contraseña: la API es de lectura.
+struct SleeperUser: Decodable {
+    let userID: String
+    let username: String?
+    let displayName: String?
+    let avatar: String?
+
+    enum CodingKeys: String, CodingKey {
+        case userID = "user_id"
+        case username
+        case displayName = "display_name"
+        case avatar
+    }
+
+    var name: String {
+        if let displayName, !displayName.isEmpty { return displayName }
+        if let username, !username.isEmpty { return username }
+        return "Tu cuenta"
+    }
+
+    var avatarURL: URL? {
+        guard let avatar, !avatar.isEmpty else { return nil }
+        return URL(string: "https://sleepercdn.com/avatars/thumbs/\(avatar)")
+    }
+}
+
+/// Una liga en la lista de "mis ligas".
+struct LeagueSummary: Decodable, Identifiable, Hashable {
+    let leagueID: String
+    let name: String?
+    let avatar: String?
+    let season: String?
+    let totalRosters: Int?
+    let status: String?
+
+    var id: String { leagueID }
+
+    enum CodingKeys: String, CodingKey {
+        case leagueID = "league_id"
+        case name
+        case avatar
+        case season
+        case totalRosters = "total_rosters"
+        case status
+    }
+
+    var displayName: String {
+        if let name, !name.isEmpty { return name }
+        return "Liga \(leagueID)"
+    }
+
+    var avatarURL: URL? {
+        guard let avatar, !avatar.isEmpty else { return nil }
+        return URL(string: "https://sleepercdn.com/avatars/thumbs/\(avatar)")
+    }
+
+    /// "2026 · 12 equipos"
+    var subtitle: String {
+        var parts: [String] = []
+        if let season, !season.isEmpty { parts.append(season) }
+        if let totalRosters { parts.append("\(totalRosters) equipos") }
+        return parts.joined(separator: " · ")
     }
 }
 

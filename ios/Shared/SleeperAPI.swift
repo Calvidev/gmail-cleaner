@@ -9,6 +9,7 @@ enum SleeperError: LocalizedError {
     case decoding(String)
     case rosterNotFound(Int)
     case leagueNotSet
+    case userNotFound(String)
 
     var errorDescription: String? {
         switch self {
@@ -24,6 +25,8 @@ enum SleeperError: LocalizedError {
             return "El equipo \(rosterID) no juega esta jornada en esa liga."
         case .leagueNotSet:
             return "Todavía no has elegido liga y equipo."
+        case let .userNotFound(username):
+            return "Sleeper no conoce a «\(username)». Es tu nombre de usuario, no el correo."
         }
     }
 }
@@ -89,6 +92,27 @@ struct SleeperAPI {
 
     func state() async throws -> NFLState {
         try await get("/state/nfl")
+    }
+
+    /// Perfil por nombre de usuario. Es la puerta de entrada: de aquí sale el
+    /// `user_id` con el que se listan sus ligas.
+    func user(username: String) async throws -> SleeperUser {
+        let limpio = username.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !limpio.isEmpty else { throw SleeperError.userNotFound(username) }
+        let escapado = limpio.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? limpio
+        do {
+            return try await get("/user/\(escapado)")
+        } catch SleeperError.badStatus(let code, _) where code == 404 {
+            throw SleeperError.userNotFound(limpio)
+        } catch SleeperError.decoding(let detalle) {
+            // Un usuario que no existe devuelve `null`, que no es un perfil.
+            throw SleeperError.userNotFound(limpio + " — " + detalle)
+        }
+    }
+
+    /// Las ligas de ese usuario en una temporada.
+    func leagues(userID: String, season: String) async throws -> [LeagueSummary] {
+        try await get("/user/\(userID)/leagues/nfl/\(season)")
     }
 
     func league(_ leagueID: String) async throws -> League {

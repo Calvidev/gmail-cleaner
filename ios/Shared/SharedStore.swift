@@ -8,10 +8,16 @@
 import Foundation
 
 /// Liga y equipo elegidos.
+///
+/// `username` y `userID` se guardan cuando entras con tu cuenta de Sleeper:
+/// no hacen falta para pintar el marcador, pero permiten volver a encontrar
+/// tu equipo si cambias de liga sin tener que preguntarte nada otra vez.
 struct LeagueConfig: Codable, Equatable {
     var leagueID: String
     var rosterID: Int
     var teamName: String?
+    var username: String? = nil
+    var userID: String? = nil
 
     static let `default` = LeagueConfig(
         leagueID: AppConfig.defaultLeagueID,
