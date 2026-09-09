@@ -99,6 +99,25 @@ struct LockScreenLiveView: View {
 
             ScoreBar(share: state.share, height: 6)
 
+            if let winChance = state.winChanceText {
+                HStack(spacing: 6) {
+                    Text(winChance)
+                        .font(.system(size: 11, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle((state.isFavorite ?? true) ? Theme.accent : Color.red)
+                    Text("de ganar")
+                        .font(.system(size: 10))
+                        .foregroundStyle(.white.opacity(0.45))
+                    Spacer(minLength: 0)
+                    if let proyeccion = state.projectionText {
+                        Text(proyeccion)
+                            .font(.system(size: 10))
+                            .monospacedDigit()
+                            .foregroundStyle(.white.opacity(0.45))
+                    }
+                }
+            }
+
             if let play = state.lastPlay {
                 PlayBanner(play: play, compact: false)
             }

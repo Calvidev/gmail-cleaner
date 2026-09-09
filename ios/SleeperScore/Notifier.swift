@@ -40,6 +40,21 @@ enum Notifier {
         await add(contenido, id: play.id)
     }
 
+    // MARK: - Cambio de liderato
+
+    static func leadChange(tookLead: Bool, difference: Double, opponent: String) async {
+        guard await authorized() else { return }
+
+        let contenido = UNMutableNotificationContent()
+        contenido.title = tookLead ? "Vuelves a ir ganando" : "Te acaban de pasar"
+        contenido.body = tookLead
+            ? "Vas por delante de \(opponent) por \(abs(difference).fantasyPoints)."
+            : "\(opponent) se pone por delante por \(abs(difference).fantasyPoints)."
+        contenido.sound = .default
+        contenido.interruptionLevel = .timeSensitive
+        await add(contenido, id: "lead-\(Int(Date().timeIntervalSince1970))")
+    }
+
     // MARK: - Lesión
 
     static func injury(_ change: InjuryChange) async {

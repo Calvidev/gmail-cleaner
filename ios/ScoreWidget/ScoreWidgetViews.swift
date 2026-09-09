@@ -64,7 +64,7 @@ struct SmallScore: View {
             HStack(spacing: 4) {
                 Text("Sem. \(snapshot.week)")
                 Spacer(minLength: 0)
-                Text(snapshot.difference.signedFantasyPoints)
+                Text(snapshot.projection?.percentText ?? snapshot.difference.signedFantasyPoints)
                     .monospacedDigit()
                     .foregroundStyle(snapshot.isLeading ? Theme.accent : Color.red)
                 Text("·")
@@ -121,6 +121,11 @@ struct MediumScore: View {
 
             if let play = snapshot.plays.first {
                 WidgetPlayRow(play: play)
+            } else if let projection = snapshot.projection {
+                HStack(spacing: 6) {
+                    WinChanceBadge(projection: projection, compact: true)
+                    ProjectionLine(projection: projection, size: 10)
+                }
             } else {
                 HStack {
                     Text("Titulares \(snapshot.me.startersCount):\(snapshot.opponent?.startersCount ?? 0)")
@@ -145,6 +150,12 @@ struct LargeScore: View {
     var body: some View {
         VStack(spacing: 10) {
             MediumScore(snapshot: snapshot)
+            if let projection = snapshot.projection {
+                HStack(spacing: 6) {
+                    WinChanceBadge(projection: projection, compact: true)
+                    ProjectionLine(projection: projection, size: 10)
+                }
+            }
             if !rows.isEmpty {
                 Divider().overlay(Color.white.opacity(0.08))
                 VStack(spacing: 5) {

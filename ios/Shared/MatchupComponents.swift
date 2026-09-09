@@ -120,6 +120,52 @@ struct LeagueHeader: View {
     }
 }
 
+/// La probabilidad de ganar, que es el número que la gente mira.
+struct WinChanceBadge: View {
+    var projection: MatchupProjection
+    var compact: Bool = false
+
+    private var favorable: Bool { projection.winProbability >= 0.5 }
+
+    var body: some View {
+        Text(projection.percentText)
+            .font(.system(size: compact ? 11 : 14, weight: .bold, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(favorable ? Theme.accent : Color.red)
+            .padding(.horizontal, compact ? 6 : 9)
+            .padding(.vertical, compact ? 2 : 4)
+            .background(
+                (favorable ? Theme.accent : Color.red).opacity(0.14),
+                in: Capsule()
+            )
+            .accessibilityLabel("\(projection.percentText) de probabilidad de ganar")
+    }
+}
+
+/// "Proyección 121.6 – 118.2 · te quedan 3".
+struct ProjectionLine: View {
+    var projection: MatchupProjection
+    var size: CGFloat = 11
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Text("Proyección")
+            Text("\(projection.mine.fantasyPoints) – \(projection.theirs.fantasyPoints)")
+                .monospacedDigit()
+                .foregroundStyle(.white.opacity(0.8))
+            Spacer(minLength: 0)
+            if projection.playersLeftMine > 0 || projection.playersLeftTheirs > 0 {
+                Text("faltan \(projection.playersLeftMine):\(projection.playersLeftTheirs)")
+            } else {
+                Text("jornada cerrada")
+            }
+        }
+        .font(.system(size: size))
+        .foregroundStyle(.white.opacity(0.5))
+        .lineLimit(1)
+    }
+}
+
 extension Date {
     /// "18:42" — la hora del último refresco, como en el widget original.
     var hourAndMinute: String {

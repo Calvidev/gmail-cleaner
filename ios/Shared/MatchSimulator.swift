@@ -63,6 +63,7 @@ enum MatchSimulator {
         }
         copia.updatedAt = now
         copia.isStale = false
+        copia.projection = WinProbability.compute(for: copia)
         return copia
     }
 }

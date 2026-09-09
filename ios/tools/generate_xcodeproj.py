@@ -42,6 +42,8 @@ SHARED_SOURCES = [
     "HeadshotCache.swift",
     "PlayerCatalog.swift",
     "WeekStats.swift",
+    "Projections.swift",
+    "WinProbability.swift",
     "MatchupService.swift",
     "Theme.swift",
     "MatchupComponents.swift",

@@ -97,7 +97,7 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 
 | Pantalla / tamaño | Qué enseña |
 | --- | --- |
-| App | Marcador grande, diferencia, barra, últimas anotaciones y la alineación hueco a hueco, con la foto y los puntos de cada titular |
+| App | Marcador grande, **probabilidad de ganar**, proyección del resultado, últimas anotaciones y la alineación hueco a hueco con foto y puntos |
 | Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |
 | Ajustes de Sleeper | Entrar con tu usuario, tus ligas, equipos con avatar |
 | Live Activity | Marcador en la pantalla de bloqueo y en la Dynamic Island, con la última anotación: foto, nombre, línea estadística ("6 rec · 88 yds · 1 TD") y puntos |
@@ -155,6 +155,22 @@ gratuita funciona, pero se queda quieta mientras no abras la app. Cuando pases a
 cuenta de pago, añadir el push son unas pocas líneas: `Activity.request` ya está
 preparado para recibir un `pushType`.
 
+## La probabilidad de ganar
+
+Es el número que convierte un marcador en una historia: "vas ganando de 10, pero
+tienes un 38 % de ganar" dice mucho más que el marcador solo.
+
+El método, sin misterio (`Shared/WinProbability.swift`): a cada titular le queda
+por anotar la diferencia entre su proyección y lo que lleva, nunca negativa.
+Sumando sale el resultado final esperado de cada lado. La incertidumbre crece
+con lo que queda por jugar —60 % de dispersión por punto pendiente—, así que un
+partido con todos los jugadores terminados es casi determinista y uno con cuatro
+por jugar puede darse la vuelta.
+
+Es una estimación, no un oráculo: no sabe de lesiones en directo ni de reparto
+de balón, y usa proyecciones PPR aunque tu liga puntúe distinto. Para lo que
+sirve —saber si hay que seguir mirando— aguanta bien.
+
 ## Probar sin esperar al domingo
 
 En compilaciones de depuración (las que hace `./ios/build.sh iphone`), el menú
@@ -194,6 +210,7 @@ Las mismas cinco llamadas que hacía el widget de Scriptable, en
 | `GET /league/{id}/matchups/{semana}` | los puntos, titular a titular |
 | `GET /players/nfl` | los nombres de los jugadores (5 MB, una vez al día, solo desde la app) |
 | `GET /stats/nfl/regular/{año}/{jornada}` | yardas, recepciones y touchdowns de la jornada |
+| `GET /projections/nfl/regular/{año}/{jornada}` | lo que se espera que anote cada jugador |
 
 Y dos del CDN, cacheadas en el grupo de apps: `sleepercdn.com/avatars/thumbs/…`
 para los managers y `sleepercdn.com/content/nfl/players/thumb/…` para las caras

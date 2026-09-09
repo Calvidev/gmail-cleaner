@@ -71,6 +71,13 @@ struct ScoreCard: View {
 
             ScoreBar(share: snapshot.myShare, height: 10)
 
+            if let projection = snapshot.projection {
+                HStack(spacing: 10) {
+                    WinChanceBadge(projection: projection)
+                    ProjectionLine(projection: projection, size: 12)
+                }
+            }
+
             HStack {
                 Label(
                     "Titulares \(snapshot.me.startersCount):\(snapshot.opponent?.startersCount ?? 0)",

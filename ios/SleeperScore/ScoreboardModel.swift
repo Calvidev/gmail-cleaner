@@ -86,6 +86,16 @@ final class ScoreboardModel: ObservableObject {
         // Las fotos, en disco, para el widget y la Live Activity.
         Task { await HeadshotCache.prefetch(lineup: actualizado.lineup) }
 
+        // Que te pasen (o volver a pasar tú) es el aviso que más se agradece.
+        if let anterior, anterior.opponent != nil,
+           anterior.isLeading != actualizado.isLeading {
+            await Notifier.leadChange(
+                tookLead: actualizado.isLeading,
+                difference: actualizado.difference,
+                opponent: actualizado.opponent?.name ?? "el rival"
+            )
+        }
+
         live.update(with: actualizado, play: anotaciones.first)
         // Si tres jugadores anotan a la vez, tres avisos son demasiados.
         for anotacion in anotaciones.prefix(3) {
@@ -93,11 +103,13 @@ final class ScoreboardModel: ObservableObject {
         }
     }
 
-    /// Yardas, recepciones y touchdowns de la jornada. Van en otra llamada que
-    /// el marcador, así que se piden aparte y se guardan para el widget.
+    /// Yardas y proyecciones de la jornada. Van en llamadas aparte del
+    /// marcador, así que se piden por su cuenta y se guardan para el widget.
     private func syncWeekStats(week: Int) async {
         guard let season = try? await service.currentSeason(), !season.isEmpty else { return }
-        _ = await WeekStatsStore.shared.refreshIfNeeded(season: season, week: week)
+        async let estadisticas = WeekStatsStore.shared.refreshIfNeeded(season: season, week: week)
+        async let proyecciones = ProjectionStore.shared.refreshIfNeeded(season: season, week: week)
+        _ = await (estadisticas, proyecciones)
         // La primera vez de cada jornada el marcador se montó sin ellas:
         // se vuelve a montar, ya con yardas. Después el TTL de la caché manda.
         if statsWeek != week {

@@ -81,15 +81,17 @@ struct MatchupService {
         // Las estadísticas de la jornada son un extra: si no están descargadas,
         // el marcador sale igual, solo que sin yardas.
         let weekStats = await WeekStatsStore.shared.cached()
+        let projections = await ProjectionStore.shared.cached()
         let lineup = buildLineup(
             slots: league.starterSlots,
             mine: mineMatchup,
             theirs: theirsMatchup,
             catalog: catalog,
-            weekStats: weekStats
+            weekStats: weekStats,
+            projections: projections
         )
 
-        return MatchupSnapshot(
+        var snapshot = MatchupSnapshot(
             leagueName: league.name ?? "Liga de Sleeper",
             week: week,
             me: me,
@@ -99,6 +101,8 @@ struct MatchupService {
             isStale: false,
             recentPlays: nil
         )
+        snapshot.projection = WinProbability.compute(for: snapshot)
+        return snapshot
     }
 
     // MARK: - Piezas
@@ -119,7 +123,8 @@ struct MatchupService {
         mine: Matchup,
         theirs: Matchup?,
         catalog: [String: CatalogPlayer],
-        weekStats: WeekStats?
+        weekStats: WeekStats?,
+        projections: Projections?
     ) -> [LineupRow] {
         let count = max(
             slots.count,
@@ -134,9 +139,15 @@ struct MatchupService {
             let row = LineupRow(
                 index: index,
                 slot: slot,
-                mine: line(from: mine, at: index, catalog: catalog, weekStats: weekStats),
+                mine: line(
+                    from: mine, at: index, catalog: catalog,
+                    weekStats: weekStats, projections: projections
+                ),
                 theirs: theirs.flatMap {
-                    line(from: $0, at: index, catalog: catalog, weekStats: weekStats)
+                    line(
+                        from: $0, at: index, catalog: catalog,
+                        weekStats: weekStats, projections: projections
+                    )
                 }
             )
             if row.mine == nil && row.theirs == nil { continue }
@@ -149,7 +160,8 @@ struct MatchupService {
         from matchup: Matchup,
         at index: Int,
         catalog: [String: CatalogPlayer],
-        weekStats: WeekStats?
+        weekStats: WeekStats?,
+        projections: Projections?
     ) -> PlayerLine? {
         guard let starters = matchup.starters, index < starters.count else { return nil }
         let playerID = starters[index]
@@ -161,7 +173,8 @@ struct MatchupService {
             name: entry?.name,
             position: entry?.position,
             team: entry?.team,
-            stats: weekStats?.line(for: playerID, position: entry?.position)
+            stats: weekStats?.line(for: playerID, position: entry?.position),
+            projected: projections?.projected(for: playerID)
         )
     }
 }

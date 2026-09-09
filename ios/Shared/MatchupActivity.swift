@@ -40,6 +40,13 @@ struct MatchupActivityAttributes: ActivityAttributes {
         var opponentStarters: Int
         var lastPlay: ScoringPlay?
         var updatedAt: Date
+        /// "62 %". Texto ya hecho: el estado viaja serializado y tiene un
+        /// límite de 4 KB, así que aquí no van estructuras enteras.
+        var winChanceText: String?
+        var projectionText: String?
+        /// Opcional para que un estado escrito por una versión anterior de la
+        /// app se siga leyendo.
+        var isFavorite: Bool?
 
         var difference: Double { myPoints - opponentPoints }
 
@@ -76,7 +83,12 @@ extension MatchupSnapshot {
             myStarters: me.startersCount,
             opponentStarters: opponent?.startersCount ?? 0,
             lastPlay: lastPlay ?? plays.first,
-            updatedAt: updatedAt
+            updatedAt: updatedAt,
+            winChanceText: projection?.percentText,
+            projectionText: projection.map {
+                "\($0.mine.fantasyPoints) – \($0.theirs.fantasyPoints)"
+            },
+            isFavorite: (projection?.winProbability ?? 0.5) >= 0.5
         )
     }
 }

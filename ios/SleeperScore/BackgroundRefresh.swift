@@ -84,6 +84,13 @@ enum BackgroundRefresh {
         for anotacion in anotaciones.prefix(3) {
             await Notifier.play(anotacion)
         }
+        if let anterior, anterior.opponent != nil, anterior.isLeading != fresco.isLeading {
+            await Notifier.leadChange(
+                tookLead: fresco.isLeading,
+                difference: fresco.difference,
+                opponent: fresco.opponent?.name ?? "el rival"
+            )
+        }
         return fresco
     }
 }
