@@ -92,7 +92,8 @@ struct MatchupService {
             opponent: opponent,
             lineup: lineup,
             updatedAt: Date(),
-            isStale: false
+            isStale: false,
+            recentPlays: nil
         )
     }
 

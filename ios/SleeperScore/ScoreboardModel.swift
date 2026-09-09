@@ -13,6 +13,7 @@ final class ScoreboardModel: ObservableObject {
     @Published private(set) var config: LeagueConfig
 
     private let service = MatchupService()
+    private let live = LiveActivityController.shared
     private var refreshTask: Task<Void, Never>?
 
     init() {
@@ -31,11 +32,25 @@ final class ScoreboardModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let fresh = try await service.snapshot(for: config)
+            var fresh = try await service.snapshot(for: config)
+
+            // Lo que ha pasado desde la última lectura: quién ha anotado.
+            let anotaciones = ScoringDetector.plays(previous: snapshot, current: fresh)
+            fresh.recentPlays = Array((anotaciones + (snapshot?.plays ?? [])).prefix(6))
+
             snapshot = fresh
             lastError = nil
             SharedStore.cache(fresh)
             WidgetCenter.shared.reloadAllTimelines()
+
+            // Las fotos, en disco, para el widget y la Live Activity.
+            Task { await HeadshotCache.prefetch(lineup: fresh.lineup) }
+
+            live.update(with: fresh, play: anotaciones.first)
+            // Si tres jugadores anotan a la vez, tres avisos son demasiados.
+            for anotacion in anotaciones.prefix(3) {
+                await live.notify(anotacion)
+            }
         } catch {
             lastError = error.localizedDescription
             // Si no había nada en pantalla, al menos se enseña lo guardado.
@@ -58,6 +73,24 @@ final class ScoreboardModel: ObservableObject {
         defer { isLoading = false }
         await PlayerCatalog.shared.refreshIfNeeded(force: true)
         await refresh(showSpinner: false)
+    }
+
+    // MARK: - Live Activity
+
+    var isLiveActivityRunning: Bool { live.isRunning }
+
+    var canStartLiveActivity: Bool { live.areActivitiesEnabled }
+
+    func startLiveActivity() async {
+        guard let snapshot else { return }
+        await live.requestNotificationPermission()
+        live.start(with: snapshot)
+        objectWillChange.send()
+    }
+
+    func stopLiveActivity() {
+        live.stop()
+        objectWillChange.send()
     }
 
     // MARK: - Ajustes

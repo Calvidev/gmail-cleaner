@@ -30,6 +30,7 @@ struct LeagueConfig: Codable, Equatable {
 
 enum SharedStore {
     private static let configKey = "leagueConfig"
+    private static let connectionsKey = "hostConnections"
     private static let snapshotFile = "matchup-snapshot.json"
 
     // MARK: - Dónde se guarda
@@ -72,6 +73,45 @@ enum SharedStore {
     static func save(_ config: LeagueConfig) {
         guard let data = try? SharedJSON.encoder.encode(config) else { return }
         defaults.set(data, forKey: configKey)
+    }
+
+    // MARK: - Cuentas conectadas
+
+    /// Qué plataformas hay conectadas y con qué cuenta.
+    static func connections() -> [HostKind: HostConnection] {
+        guard
+            let data = defaults.data(forKey: connectionsKey),
+            let guardadas = try? SharedJSON.decoder.decode([String: HostConnection].self, from: data)
+        else {
+            return [:]
+        }
+        var resultado: [HostKind: HostConnection] = [:]
+        for (clave, conexion) in guardadas {
+            if let host = HostKind(rawValue: clave) { resultado[host] = conexion }
+        }
+        return resultado
+    }
+
+    static func connect(_ host: HostKind, accountName: String) {
+        var actuales = connections()
+        actuales[host] = HostConnection(
+            host: host, accountName: accountName, connectedAt: Date()
+        )
+        saveConnections(actuales)
+    }
+
+    static func disconnect(_ host: HostKind) {
+        var actuales = connections()
+        actuales.removeValue(forKey: host)
+        saveConnections(actuales)
+    }
+
+    private static func saveConnections(_ conexiones: [HostKind: HostConnection]) {
+        let porClave = Dictionary(
+            uniqueKeysWithValues: conexiones.map { ($0.key.rawValue, $0.value) }
+        )
+        guard let data = try? SharedJSON.encoder.encode(porClave) else { return }
+        defaults.set(data, forKey: connectionsKey)
     }
 
     // MARK: - Último marcador conocido

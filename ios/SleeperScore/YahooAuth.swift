@@ -1,0 +1,216 @@
+//  YahooAuth.swift
+//  Login de Yahoo con OAuth 2.0.
+//
+//  Yahoo, al contrario que Sleeper, sí exige identificarse. Hay que registrar
+//  una app en developer.yahoo.com para conseguir un client id y un secreto; no
+//  vienen en el código porque un secreto dentro de una app de iPhone no es un
+//  secreto (cualquiera lo saca del binario). Se piden una vez y se guardan en
+//  el llavero.
+//
+//  Esto inicia sesión y guarda el token. Leer tus ligas de Yahoo es el paso
+//  siguiente y todavía no está.
+
+import AuthenticationServices
+import Foundation
+import UIKit
+
+struct YahooCredentials: Codable, Equatable {
+    var clientID: String
+    var clientSecret: String
+    /// Yahoo obliga a declarar la dirección de vuelta al registrar la app.
+    var redirectURI: String
+
+    var isComplete: Bool {
+        !clientID.isEmpty && !clientSecret.isEmpty && !redirectURI.isEmpty
+    }
+}
+
+struct YahooToken: Codable, Equatable {
+    var accessToken: String
+    var refreshToken: String?
+    var expiresAt: Date?
+    var accountName: String?
+
+    var isExpired: Bool {
+        guard let expiresAt else { return false }
+        return Date() >= expiresAt.addingTimeInterval(-60)
+    }
+}
+
+enum YahooAuthError: LocalizedError {
+    case missingCredentials
+    case cancelled
+    case badRedirect
+    case tokenExchange(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .missingCredentials:
+            return "Faltan el client id y el secreto de tu app de Yahoo."
+        case .cancelled:
+            return "Has cerrado la ventana de Yahoo sin terminar."
+        case .badRedirect:
+            return "Yahoo no devolvió el código de autorización."
+        case let .tokenExchange(detalle):
+            return "Yahoo rechazó el canje del token: \(detalle)"
+        }
+    }
+}
+
+@MainActor
+final class YahooAuth: NSObject, ObservableObject {
+    static let credentialsKey = "yahoo.credentials"
+    static let tokenKey = "yahoo.token"
+
+    @Published private(set) var token: YahooToken?
+    @Published var credentials: YahooCredentials
+
+    /// La ventana sobre la que se presenta el login. Se captura antes de
+    /// arrancar la sesión para no tener que buscarla desde fuera del hilo
+    /// principal, que es donde el sistema pide el ancla.
+    private nonisolated(unsafe) var anchor: ASPresentationAnchor?
+
+    private let authorizeURL = URL(string: "https://api.login.yahoo.com/oauth2/request_auth")!
+    private let tokenURL = URL(string: "https://api.login.yahoo.com/oauth2/get_token")!
+
+    override init() {
+        credentials = KeychainStore.read(YahooCredentials.self, for: Self.credentialsKey)
+            ?? YahooCredentials(
+                clientID: "", clientSecret: "", redirectURI: "sleeperscore://yahoo"
+            )
+        token = KeychainStore.read(YahooToken.self, for: Self.tokenKey)
+        super.init()
+    }
+
+    var isConnected: Bool { token != nil }
+
+    func saveCredentials() {
+        KeychainStore.save(credentials, for: Self.credentialsKey)
+    }
+
+    // MARK: - Entrar
+
+    func signIn() async throws {
+        guard credentials.isComplete else { throw YahooAuthError.missingCredentials }
+        saveCredentials()
+
+        let estado = UUID().uuidString
+        var componentes = URLComponents(url: authorizeURL, resolvingAgainstBaseURL: false)!
+        componentes.queryItems = [
+            URLQueryItem(name: "client_id", value: credentials.clientID),
+            URLQueryItem(name: "redirect_uri", value: credentials.redirectURI),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: "fspt-r"),  // fantasy, solo lectura
+            URLQueryItem(name: "state", value: estado),
+        ]
+
+        anchor = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }?
+            .keyWindow
+
+        let vuelta = try await presentLogin(url: componentes.url!)
+        guard
+            let items = URLComponents(url: vuelta, resolvingAgainstBaseURL: false)?.queryItems,
+            let codigo = items.first(where: { $0.name == "code" })?.value
+        else {
+            throw YahooAuthError.badRedirect
+        }
+        try await exchange(code: codigo)
+    }
+
+    func signOut() {
+        token = nil
+        KeychainStore.delete(Self.tokenKey)
+        SharedStore.disconnect(.yahoo)
+    }
+
+    /// Renueva el token cuando caduca. Yahoo los da con una hora de vida.
+    func refreshIfNeeded() async {
+        guard let actual = token, actual.isExpired, let refresco = actual.refreshToken else { return }
+        try? await exchange(refreshToken: refresco)
+    }
+
+    // MARK: - Interno
+
+    private func presentLogin(url: URL) async throws -> URL {
+        let esquema = URL(string: credentials.redirectURI)?.scheme
+        return try await withCheckedThrowingContinuation { continuation in
+            let sesion = ASWebAuthenticationSession(
+                url: url, callbackURLScheme: esquema
+            ) { vuelta, error in
+                if let vuelta {
+                    continuation.resume(returning: vuelta)
+                } else if let error = error as? ASWebAuthenticationSessionError,
+                          error.code == .canceledLogin {
+                    continuation.resume(throwing: YahooAuthError.cancelled)
+                } else {
+                    continuation.resume(throwing: error ?? YahooAuthError.badRedirect)
+                }
+            }
+            sesion.presentationContextProvider = self
+            sesion.prefersEphemeralWebBrowserSession = false
+            sesion.start()
+        }
+    }
+
+    private func exchange(code: String? = nil, refreshToken: String? = nil) async throws {
+        var campos: [String: String] = [
+            "client_id": credentials.clientID,
+            "client_secret": credentials.clientSecret,
+            "redirect_uri": credentials.redirectURI,
+        ]
+        if let code {
+            campos["grant_type"] = "authorization_code"
+            campos["code"] = code
+        } else if let refreshToken {
+            campos["grant_type"] = "refresh_token"
+            campos["refresh_token"] = refreshToken
+        }
+
+        var peticion = URLRequest(url: tokenURL)
+        peticion.httpMethod = "POST"
+        peticion.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        peticion.httpBody = campos
+            .map { "\($0.key)=\($0.value.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? $0.value)" }
+            .joined(separator: "&")
+            .data(using: .utf8)
+
+        let (datos, respuesta) = try await URLSession.shared.data(for: peticion)
+        guard let http = respuesta as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+            let detalle = String(data: datos, encoding: .utf8) ?? "sin detalle"
+            throw YahooAuthError.tokenExchange(detalle)
+        }
+
+        struct Respuesta: Decodable {
+            let accessToken: String
+            let refreshToken: String?
+            let expiresIn: Int?
+            let xoauthYahooGuid: String?
+
+            enum CodingKeys: String, CodingKey {
+                case accessToken = "access_token"
+                case refreshToken = "refresh_token"
+                case expiresIn = "expires_in"
+                case xoauthYahooGuid = "xoauth_yahoo_guid"
+            }
+        }
+
+        let decodificada = try JSONDecoder().decode(Respuesta.self, from: datos)
+        let nuevo = YahooToken(
+            accessToken: decodificada.accessToken,
+            refreshToken: decodificada.refreshToken ?? refreshToken,
+            expiresAt: decodificada.expiresIn.map { Date().addingTimeInterval(TimeInterval($0)) },
+            accountName: decodificada.xoauthYahooGuid ?? token?.accountName
+        )
+        token = nuevo
+        KeychainStore.save(nuevo, for: Self.tokenKey)
+        SharedStore.connect(.yahoo, accountName: nuevo.accountName ?? "Cuenta de Yahoo")
+    }
+}
+
+extension YahooAuth: ASWebAuthenticationPresentationContextProviding {
+    nonisolated func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
+        anchor ?? ASPresentationAnchor()
+    }
+}

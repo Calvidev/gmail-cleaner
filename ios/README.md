@@ -86,8 +86,10 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 
 | Pantalla / tamaño | Qué enseña |
 | --- | --- |
-| App | Marcador grande, diferencia, barra, y la alineación hueco a hueco con los puntos de cada titular |
-| Ajustes | Entrar con tu usuario, tus ligas, equipos con avatar, estado del App Group, catálogo de jugadores |
+| App | Marcador grande, diferencia, barra, últimas anotaciones y la alineación hueco a hueco, con la foto y los puntos de cada titular |
+| Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |
+| Ajustes de Sleeper | Entrar con tu usuario, tus ligas, equipos con avatar |
+| Live Activity | Marcador en la pantalla de bloqueo y en la Dynamic Island, con la última anotación: foto, nombre y puntos |
 | Widget pequeño | Los dos equipos con avatar, puntos y barra |
 | Widget mediano | Lo mismo del widget original: cabecera, dos columnas, diferencia, barra y pie |
 | Widget grande | El mediano + los primeros huecos de la alineación con nombres abreviados |
@@ -97,6 +99,50 @@ La app se refresca sola cada minuto mientras la tienes abierta, y al tirar hacia
 abajo. El widget pide refresco cada 10 minutos si hay partido en marcha y cada
 hora si no; **quien decide de verdad cuándo refrescar es iOS**, así que en pleno
 domingo puede tardar más de 10 minutos en moverse.
+
+## Cuentas: qué está conectado y qué no
+
+El menú de cuentas (el engranaje) ofrece cuatro plataformas:
+
+| | Estado | Qué hace falta |
+| --- | --- | --- |
+| **Sleeper** | Funciona | Tu nombre de usuario. Nada más: su API de lectura es pública |
+| **Yahoo** | Inicia sesión | Registrar una app en developer.yahoo.com y pegar el client id y el secreto |
+| **ESPN** | Apagada | Su API no es pública; las ligas privadas piden las cookies de sesión |
+| **NFL.com** | Apagada | Su API tampoco es pública |
+
+Las dos últimas salen en gris y no se pueden tocar. Están para decir "esto
+viene después", no para aparentar que ya funcionan.
+
+**Sobre Yahoo, con todas las letras**: hoy el botón *inicia sesión y guarda el
+token en el llavero*, nada más. Leer tus ligas de Yahoo y pintar su marcador es
+el paso siguiente y **no está hecho**: el marcador sigue saliendo de Sleeper. El
+client id y el secreto no vienen en el código a propósito —un secreto dentro de
+una app de iPhone lo extrae cualquiera del binario— así que se piden una vez y
+se guardan en el llavero de tu teléfono. La dirección de vuelta por defecto es
+`sleeperscore://yahoo`; si Yahoo rechaza los esquemas propios y exige una `https`,
+hay que cambiarla en la misma pantalla y en el registro de la app.
+
+## Live Activity: el marcador en la pantalla de bloqueo
+
+Botón **"Seguir en la pantalla de bloqueo"** bajo el marcador. Enciende una Live
+Activity con los dos equipos, la barra, la diferencia y —cuando alguien anota— la
+foto, el nombre y los puntos de la jugada, tanto en la pantalla de bloqueo como
+en la Dynamic Island. Además suena una notificación por cada anotación (hasta
+tres por refresco, para no convertirlo en una metralleta).
+
+Las anotaciones se deducen restando: Sleeper no avisa de las jugadas, da los
+puntos acumulados de cada titular, y `ScoringDetector` compara la lectura nueva
+con la anterior. Diferencias menores de 0,1 puntos se ignoran, que son las
+correcciones de estadísticas.
+
+**La limitación importante**: una Live Activity no se refresca sola como un
+widget. Se actualiza cuando la app puede hacerlo (abierta, o en los ratos de
+segundo plano que conceda iOS) o por push, y el push necesita la capacidad de
+notificaciones remotas, que **pide cuenta de desarrollador de pago**. Con cuenta
+gratuita funciona, pero se queda quieta mientras no abras la app. Cuando pases a
+cuenta de pago, añadir el push son unas pocas líneas: `Activity.request` ya está
+preparado para recibir un `pushType`.
 
 ## Cómo está montado
 
@@ -113,6 +159,11 @@ Las mismas cinco llamadas que hacía el widget de Scriptable, en
 | `GET /league/{id}/rosters` | qué manager lleva cada roster, y su récord |
 | `GET /league/{id}/matchups/{semana}` | los puntos, titular a titular |
 | `GET /players/nfl` | los nombres de los jugadores (5 MB, una vez al día, solo desde la app) |
+
+Y dos del CDN, cacheadas en el grupo de apps: `sleepercdn.com/avatars/thumbs/…`
+para los managers y `sleepercdn.com/content/nfl/players/thumb/…` para las caras
+de los jugadores (las defensas usan el escudo del equipo). El widget y la Live
+Activity **solo leen esos archivos**: no pueden salir a la red mientras pintan.
 
 Todo lo que se pinta cabe en un `MatchupSnapshot`, que se guarda entero en el
 App Group. De ahí salen dos cosas importantes: el widget no repite el trabajo de
@@ -137,8 +188,8 @@ python3 tools/check_pbxproj.py        # lo relee y comprueba que cuadra
 ```
 
 Los archivos nuevos hay que añadirlos a las listas de `tools/generate_xcodeproj.py`.
-Ojo: regenerar **borra el equipo de firma** que hayas puesto en Xcode; hay que
-volver a elegirlo (paso 2).
+El equipo de firma que hayas puesto en Xcode **se conserva**: el generador lo lee
+del proyecto anterior y lo vuelve a escribir.
 
 Como plan B está `project.yml`, la misma estructura para
 [XcodeGen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen && cd ios && xcodegen generate`.

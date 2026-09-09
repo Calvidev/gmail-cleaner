@@ -7,6 +7,7 @@ import WidgetKit
 struct ScoreWidgetBundle: WidgetBundle {
     var body: some Widget {
         ScoreWidget()
+        MatchupLiveActivity()
     }
 }
 

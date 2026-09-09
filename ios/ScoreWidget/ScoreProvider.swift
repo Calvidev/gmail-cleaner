@@ -41,8 +41,13 @@ struct ScoreProvider: TimelineProvider {
 
     private func loadEntry() async -> ScoreEntry {
         let config = SharedStore.loadConfig()
+        let anterior = SharedStore.cachedSnapshot()
         do {
-            let snapshot = try await MatchupService().snapshot(for: config)
+            var snapshot = try await MatchupService().snapshot(for: config)
+            // El widget también detecta anotaciones: si no, al guardar borraría
+            // las que la app había apuntado.
+            let anotaciones = ScoringDetector.plays(previous: anterior, current: snapshot)
+            snapshot.recentPlays = Array((anotaciones + (anterior?.plays ?? [])).prefix(6))
             SharedStore.cache(snapshot)
             return ScoreEntry(date: Date(), snapshot: snapshot, message: nil)
         } catch {

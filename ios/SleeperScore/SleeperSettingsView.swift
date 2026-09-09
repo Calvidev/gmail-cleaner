@@ -1,5 +1,8 @@
-//  SettingsView.swift
-//  Entrar con tu usuario de Sleeper, elegir liga y ver qué comparte con el widget.
+//  SleeperSettingsView.swift
+//  Entrar con tu usuario de Sleeper y elegir liga y equipo.
+//
+//  Cuelga del menú de cuentas (`AccountsView`), que es quien decide qué
+//  plataformas se ofrecen.
 
 import SwiftUI
 
@@ -20,7 +23,6 @@ final class SettingsModel: ObservableObject {
     @Published private(set) var isLoadingTeams = false
     @Published private(set) var status: String?
     @Published private(set) var error: String?
-    @Published private(set) var catalogDate: Date?
 
     private let service = MatchupService()
 
@@ -97,10 +99,6 @@ final class SettingsModel: ObservableObject {
         }
     }
 
-    func loadCatalogDate() async {
-        catalogDate = await PlayerCatalog.shared.savedAt
-    }
-
     func config() -> LeagueConfig {
         LeagueConfig(
             leagueID: leagueID.trimmingCharacters(in: .whitespaces),
@@ -112,11 +110,10 @@ final class SettingsModel: ObservableObject {
     }
 }
 
-struct SettingsView: View {
+struct SleeperSettingsView: View {
     @EnvironmentObject private var model: ScoreboardModel
     @Environment(\.dismiss) private var dismiss
     @StateObject private var settings: SettingsModel
-    @State private var isRefreshingCatalog = false
     @State private var showingManualLeague = false
 
     init() {
@@ -124,38 +121,32 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Form {
-                accountSection
-                messagesSection
-                myLeaguesSection
-                teamsSection
-                manualSection
-                widgetSection
-                catalogSection
-                aboutSection
-            }
-            .scrollContentBackground(.hidden)
-            .background(Theme.background.ignoresSafeArea())
-            .navigationTitle("Ajustes")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cerrar") { dismiss() }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Guardar") {
-                        model.update(config: settings.config())
-                        dismiss()
+        Form {
+            accountSection
+            messagesSection
+            myLeaguesSection
+            teamsSection
+            manualSection
+        }
+        .scrollContentBackground(.hidden)
+        .background(Theme.background.ignoresSafeArea())
+        .navigationTitle("Sleeper")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .confirmationAction) {
+                Button("Guardar") {
+                    model.update(config: settings.config())
+                    if let cuenta = settings.account?.user {
+                        SharedStore.connect(.sleeper, accountName: cuenta.name)
                     }
-                    .disabled(!settings.canSave)
+                    dismiss()
                 }
+                .disabled(!settings.canSave)
             }
-            .task {
-                // Si ya había liga elegida, se carga para poder cambiar de equipo.
-                if !settings.leagueID.isEmpty { await settings.loadTeams() }
-                await settings.loadCatalogDate()
-            }
+        }
+        .task {
+            // Si ya había liga elegida, se carga para poder cambiar de equipo.
+            if !settings.leagueID.isEmpty { await settings.loadTeams() }
         }
     }
 
@@ -294,85 +285,8 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: - Resto
 
-    private var widgetSection: some View {
-        Section {
-            Label(
-                SharedStore.usesAppGroup ? "Compartido con el widget" : "Widget sin datos compartidos",
-                systemImage: SharedStore.usesAppGroup ? "checkmark.seal.fill" : "exclamationmark.triangle.fill"
-            )
-            .foregroundStyle(SharedStore.usesAppGroup ? Theme.accent : .orange)
-        } header: {
-            Text("Widget")
-        } footer: {
-            Text(
-                SharedStore.usesAppGroup
-                ? "El widget usa la liga y el equipo que elijas aquí."
-                : "Falta activar el grupo de apps (App Groups) en Xcode. Sin él, el widget se queda con la liga por defecto del código."
-            )
-        }
-    }
 
-    private var catalogSection: some View {
-        Section {
-            Button {
-                isRefreshingCatalog = true
-                Task {
-                    await model.forceCatalogRefresh()
-                    await settings.loadCatalogDate()
-                    isRefreshingCatalog = false
-                }
-            } label: {
-                if isRefreshingCatalog {
-                    HStack { ProgressView(); Text("Descargando…") }
-                } else {
-                    Text("Actualizar catálogo de jugadores")
-                }
-            }
-            .disabled(isRefreshingCatalog)
-        } header: {
-            Text("Nombres de los jugadores")
-        } footer: {
-            if let date = settings.catalogDate {
-                Text("Guardado el \(date.formatted(date: .abbreviated, time: .shortened)). Se renueva solo una vez al día.")
-            } else {
-                Text("Aún no se ha descargado. Son unos 5 MB y solo hace falta una vez al día.")
-            }
-        }
-    }
-
-    private var aboutSection: some View {
-        Section {
-            LabeledContent("Versión", value: Bundle.main.shortVersion)
-            Link("API de Sleeper", destination: URL(string: "https://docs.sleeper.com")!)
-        }
-    }
 }
 
-/// Avatar de red con hueco de reserva, para las listas de ajustes.
-struct AsyncAvatar: View {
-    var url: URL?
-    var size: CGFloat
 
-    var body: some View {
-        AsyncImage(url: url) { image in
-            image.resizable().scaledToFill()
-        } placeholder: {
-            Image(systemName: "person.crop.circle.fill")
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(.secondary)
-        }
-        .frame(width: size, height: size)
-        .clipShape(Circle())
-    }
-}
-
-extension Bundle {
-    var shortVersion: String {
-        let version = infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-        let build = infoDictionary?["CFBundleVersion"] as? String ?? "1"
-        return "\(version) (\(build))"
-    }
-}

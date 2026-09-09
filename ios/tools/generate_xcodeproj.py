@@ -30,8 +30,13 @@ SHARED_SOURCES = [
     "SleeperModels.swift",
     "SleeperAPI.swift",
     "MatchupSnapshot.swift",
+    "MatchupActivity.swift",
+    "ScoringDetector.swift",
     "SharedStore.swift",
+    "KeychainStore.swift",
+    "HostKind.swift",
     "AvatarLoader.swift",
+    "HeadshotCache.swift",
     "PlayerCatalog.swift",
     "MatchupService.swift",
     "Theme.swift",
@@ -40,14 +45,18 @@ SHARED_SOURCES = [
 APP_SOURCES = [
     "SleeperScoreApp.swift",
     "ScoreboardModel.swift",
+    "LiveActivityController.swift",
     "RootView.swift",
     "ScoreboardView.swift",
-    "SettingsView.swift",
+    "AccountsView.swift",
+    "SleeperSettingsView.swift",
+    "YahooAuth.swift",
 ]
 WIDGET_SOURCES = [
     "ScoreWidgetBundle.swift",
     "ScoreProvider.swift",
     "ScoreWidgetViews.swift",
+    "MatchupLiveActivity.swift",
 ]
 
 FILE_TYPES = {
@@ -273,7 +282,25 @@ WIDGET_SETTINGS = {
 }
 
 
+def equipo_de_firma_existente() -> str | None:
+    """El DEVELOPMENT_TEAM que ya hubiera en el proyecto, si lo hay.
+
+    Xcode lo escribe dentro del .pbxproj al elegir la cuenta. Regenerar sin
+    conservarlo obligaría a volver a configurar la firma cada vez.
+    """
+    ruta = ROOT / f"{PROJECT_NAME}.xcodeproj" / "project.pbxproj"
+    if not ruta.exists():
+        return None
+    encontrado = re.search(r"DEVELOPMENT_TEAM = ([A-Z0-9]+);", ruta.read_text(encoding="utf-8"))
+    return encontrado.group(1) if encontrado else None
+
+
 def build() -> str:
+    equipo = equipo_de_firma_existente()
+    if equipo:
+        APP_SETTINGS["DEVELOPMENT_TEAM"] = equipo
+        WIDGET_SETTINGS["DEVELOPMENT_TEAM"] = equipo
+
     # -- referencias a archivos ---------------------------------------------
     shared_refs = [file_ref("Shared", name) for name in SHARED_SOURCES]
     app_file_names = APP_SOURCES + ["Assets.xcassets", "Info.plist", "SleeperScore.entitlements"]

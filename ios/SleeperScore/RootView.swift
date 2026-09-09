@@ -25,14 +25,14 @@ struct RootView: View {
                     } label: {
                         Image(systemName: "gearshape")
                     }
-                    .accessibilityLabel("Ajustes")
+                    .accessibilityLabel("Cuentas y ajustes")
                 }
             }
             .toolbarBackground(Color(hex: "161618"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
         .sheet(isPresented: $showingSettings) {
-            SettingsView()
+            AccountsView()
                 .environmentObject(model)
                 .preferredColorScheme(.dark)
         }
@@ -54,12 +54,12 @@ struct SetupPrompt: View {
             Text("Entra con tu Sleeper")
                 .font(.title2.bold())
                 .foregroundStyle(.white)
-            Text("Escribe tu nombre de usuario de Sleeper y elige la liga de la lista. No hace falta contraseña ni buscar el id de la liga.")
+            Text("Conecta tu cuenta y elige la liga. Con Sleeper basta tu nombre de usuario: no hace falta contraseña.")
                 .font(.callout)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.white.opacity(0.7))
                 .padding(.horizontal, 32)
-            Button("Abrir ajustes", action: onOpenSettings)
+            Button("Elegir plataforma", action: onOpenSettings)
                 .buttonStyle(.borderedProminent)
         }
     }

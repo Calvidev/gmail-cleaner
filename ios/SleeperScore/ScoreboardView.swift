@@ -2,6 +2,7 @@
 //  El marcador del widget, en grande y con la alineación debajo.
 
 import SwiftUI
+import UIKit
 
 struct ScoreboardView: View {
     @EnvironmentObject private var model: ScoreboardModel
@@ -11,6 +12,10 @@ struct ScoreboardView: View {
             VStack(spacing: 16) {
                 if let snapshot = model.snapshot {
                     ScoreCard(snapshot: snapshot)
+                    LiveActivityButton()
+                    if !snapshot.plays.isEmpty {
+                        RecentPlaysSection(plays: snapshot.plays)
+                    }
                     if !snapshot.lineup.isEmpty {
                         LineupSection(rows: snapshot.lineup)
                     } else {
@@ -91,6 +96,86 @@ struct ScoreCard: View {
     }
 }
 
+// MARK: - Live Activity
+
+/// Encender el seguimiento en la pantalla de bloqueo y la Dynamic Island.
+struct LiveActivityButton: View {
+    @EnvironmentObject private var model: ScoreboardModel
+
+    var body: some View {
+        if model.canStartLiveActivity {
+            Button {
+                if model.isLiveActivityRunning {
+                    model.stopLiveActivity()
+                } else {
+                    Task { await model.startLiveActivity() }
+                }
+            } label: {
+                Label(
+                    model.isLiveActivityRunning
+                        ? "Dejar de seguir el partido"
+                        : "Seguir en la pantalla de bloqueo",
+                    systemImage: model.isLiveActivityRunning ? "stop.circle" : "bolt.badge.clock"
+                )
+                .font(.system(size: 13, weight: .medium))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 11)
+                .background(
+                    model.isLiveActivityRunning ? Theme.pill : Theme.accent.opacity(0.16),
+                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
+                )
+                .foregroundStyle(model.isLiveActivityRunning ? Color.white.opacity(0.7) : Theme.accent)
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
+
+// MARK: - Últimas anotaciones
+
+struct RecentPlaysSection: View {
+    var plays: [ScoringPlay]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Últimas anotaciones")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white)
+
+            ForEach(plays.prefix(4)) { play in
+                HStack(spacing: 10) {
+                    PlayerHeadshot(
+                        line: PlayerLine(
+                            playerID: play.playerID,
+                            points: play.total,
+                            name: play.name,
+                            position: play.position,
+                            team: play.team
+                        ),
+                        size: 30
+                    )
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(play.name)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                        Text(play.isMine ? "Tu equipo" : "Rival")
+                            .font(.system(size: 10))
+                            .foregroundStyle(.white.opacity(0.45))
+                    }
+                    Spacer()
+                    Text("+\(play.delta.fantasyPoints)")
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(play.isMine ? Theme.accent : Color.red)
+                }
+            }
+        }
+        .padding(16)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+    }
+}
+
 // MARK: - Alineación
 
 struct LineupSection: View {
@@ -156,6 +241,7 @@ struct PlayerCell: View {
     var body: some View {
         HStack(spacing: 6) {
             if alignment == .trailing { points }
+            if alignment == .trailing { headshot }
             VStack(alignment: alignment, spacing: 1) {
                 Text(line?.displayName ?? "—")
                     .font(.system(size: 12, weight: .medium))
@@ -170,8 +256,15 @@ struct PlayerCell: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: alignment == .trailing ? .trailing : .leading)
+            if alignment == .leading { headshot }
             if alignment == .leading { points }
         }
+    }
+
+    /// La cara del jugador, pequeña. Sale del grupo de apps: la app la deja
+    /// descargada al montar el marcador, así que aquí no hay red de por medio.
+    private var headshot: some View {
+        PlayerHeadshot(line: line, size: 24)
     }
 
     private var subtitle: String { line?.subtitle ?? "" }
@@ -211,5 +304,49 @@ struct ErrorNote: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+/// Foto de un jugador, redonda y pequeña. Se sirve del archivo cacheado y, si
+/// no está, la descarga ella misma: así cada fila se resuelve sola y no hace
+/// falta coordinar nada desde fuera.
+struct PlayerHeadshot: View {
+    var line: PlayerLine?
+    var size: CGFloat
+
+    @State private var data: Data?
+
+    var body: some View {
+        Group {
+            if let data, let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                Image(systemName: "person.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(size * 0.24)
+                    .foregroundStyle(.white.opacity(0.35))
+            }
+        }
+        .frame(width: size, height: size)
+        .background(Theme.pill, in: Circle())
+        .clipShape(Circle())
+        .task(id: line?.playerID) { await load() }
+    }
+
+    private func load() async {
+        guard let line else {
+            data = nil
+            return
+        }
+        if let cacheada = HeadshotCache.cachedData(playerID: line.playerID) {
+            data = cacheada
+            return
+        }
+        data = await HeadshotCache.prefetch(
+            playerID: line.playerID, position: line.position, team: line.team
+        )
     }
 }

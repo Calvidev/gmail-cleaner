@@ -84,6 +84,12 @@
 			};
 			name = Release;
 		};
+		195E05D9D0E5FE526308E629 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = HostKind.swift;
+			sourceTree = "<group>";
+		};
 		1B442E42980596EBCD246D51 = {
 			isa = PBXFileReference;
 			explicitFileType = "wrapper.app-extension";
@@ -118,6 +124,14 @@
 			isa = PBXBuildFile;
 			fileRef = 5B082B835ACC628B90347851 /* MatchupSnapshot.swift */;
 		};
+		3151BC39D6A2698E68E6D340 = {
+			isa = PBXBuildFile;
+			fileRef = 3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */;
+		};
+		3324523CAE439BA3B0D3A966 = {
+			isa = PBXBuildFile;
+			fileRef = 3EB54807A73C03E3C475C2EF /* KeychainStore.swift */;
+		};
 		3583F9BFD8A741B035FE38DC = {
 			isa = PBXBuildFile;
 			fileRef = 5B5F18854E67727AE5FF5B8E /* SleeperAPI.swift */;
@@ -137,8 +151,13 @@
 				D43102C6B7124A44BB8B79D2 /* SleeperModels.swift in ScoreWidgetExtension */,
 				3583F9BFD8A741B035FE38DC /* SleeperAPI.swift in ScoreWidgetExtension */,
 				2C74BDE13991C1ADF223AAEA /* MatchupSnapshot.swift in ScoreWidgetExtension */,
+				DCBEC3B50E0D25141FE1D888 /* MatchupActivity.swift in ScoreWidgetExtension */,
+				48FFC91029B2DA79EDFFA0C1 /* ScoringDetector.swift in ScoreWidgetExtension */,
 				EB0BABE71F931600D48BB98F /* SharedStore.swift in ScoreWidgetExtension */,
+				3324523CAE439BA3B0D3A966 /* KeychainStore.swift in ScoreWidgetExtension */,
+				68B0C94D62D04030A04109CF /* HostKind.swift in ScoreWidgetExtension */,
 				D0143AE3927E5100A6257CF1 /* AvatarLoader.swift in ScoreWidgetExtension */,
+				74B9E9A0D86F399917DBF509 /* HeadshotCache.swift in ScoreWidgetExtension */,
 				1011B10BE33E7445720286C5 /* PlayerCatalog.swift in ScoreWidgetExtension */,
 				CBBBE19B4682C29799DAE9F0 /* MatchupService.swift in ScoreWidgetExtension */,
 				9A14ACA83648BAAD0A7B4F62 /* Theme.swift in ScoreWidgetExtension */,
@@ -146,12 +165,27 @@
 				553B51B711A499F0543A1AF3 /* ScoreWidgetBundle.swift in ScoreWidgetExtension */,
 				9DC05096FC383F2E372383D0 /* ScoreProvider.swift in ScoreWidgetExtension */,
 				E97658E1132B2D311B4060A1 /* ScoreWidgetViews.swift in ScoreWidgetExtension */,
+				3151BC39D6A2698E68E6D340 /* MatchupLiveActivity.swift in ScoreWidgetExtension */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		4160C9CADF7F467006E7D38D = {
-			isa = PBXBuildFile;
-			fileRef = 7BF4B39FDFC5099A24827AF0 /* SettingsView.swift */;
+		394D755F24F129EE7716E89F = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = YahooAuth.swift;
+			sourceTree = "<group>";
+		};
+		3CC877DCD46ABB61F63E8488 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MatchupLiveActivity.swift;
+			sourceTree = "<group>";
+		};
+		3EB54807A73C03E3C475C2EF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = KeychainStore.swift;
+			sourceTree = "<group>";
 		};
 		45DE0911B50B5D5508CA0B61 = {
 			isa = PBXBuildFile;
@@ -205,19 +239,31 @@
 				79CAEDCD7081CCC9E228807D /* SleeperModels.swift in SleeperScore */,
 				45DE0911B50B5D5508CA0B61 /* SleeperAPI.swift in SleeperScore */,
 				532D73CF490BB7A11403E875 /* MatchupSnapshot.swift in SleeperScore */,
+				56201EA16EE7691FA1143BCD /* MatchupActivity.swift in SleeperScore */,
+				75831CD06B138A88B2678D6D /* ScoringDetector.swift in SleeperScore */,
 				4DDDE3071D9582391BFE9D0D /* SharedStore.swift in SleeperScore */,
+				6C367E27D171A8E0CF442BD3 /* KeychainStore.swift in SleeperScore */,
+				AC44EE7A89E0071831176FE1 /* HostKind.swift in SleeperScore */,
 				F5A30E0A9EB43FB9E5566673 /* AvatarLoader.swift in SleeperScore */,
+				73AA4EBD467F0E330299F7C4 /* HeadshotCache.swift in SleeperScore */,
 				FAEBD90CE12952F4FBC920AC /* PlayerCatalog.swift in SleeperScore */,
 				58AA38ADA353BE33F5AF5C3A /* MatchupService.swift in SleeperScore */,
 				D80B18A2F5944D5736AB7143 /* Theme.swift in SleeperScore */,
 				241B5769E28CE18570E5F2F8 /* MatchupComponents.swift in SleeperScore */,
 				55FB7C5417C0B686BCCA94A7 /* SleeperScoreApp.swift in SleeperScore */,
 				2109C7E654CC4E0E38EA26A3 /* ScoreboardModel.swift in SleeperScore */,
+				55CAFCBE481E5EEBB2F99E24 /* LiveActivityController.swift in SleeperScore */,
 				C6DA29FAD2E61DF050748E30 /* RootView.swift in SleeperScore */,
 				71F6B29CF9FE0FE20B3C9AD5 /* ScoreboardView.swift in SleeperScore */,
-				4160C9CADF7F467006E7D38D /* SettingsView.swift in SleeperScore */,
+				5BB1FFBCF225159ABC9A8FE6 /* AccountsView.swift in SleeperScore */,
+				82606A21EEF631F7A0CCE86C /* SleeperSettingsView.swift in SleeperScore */,
+				8351630F35B9C4E00D24189C /* YahooAuth.swift in SleeperScore */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+		};
+		48FFC91029B2DA79EDFFA0C1 = {
+			isa = PBXBuildFile;
+			fileRef = 8777A0A8342E64FFA645DEB6 /* ScoringDetector.swift */;
 		};
 		496AF46EC2762DDF91F78F13 = {
 			isa = PBXCopyFilesBuildPhase;
@@ -270,9 +316,17 @@
 			isa = PBXBuildFile;
 			fileRef = C5A41E448492DA848F9CAA89 /* ScoreWidgetBundle.swift */;
 		};
+		55CAFCBE481E5EEBB2F99E24 = {
+			isa = PBXBuildFile;
+			fileRef = 77CBDA829DD33A4B108B5998 /* LiveActivityController.swift */;
+		};
 		55FB7C5417C0B686BCCA94A7 = {
 			isa = PBXBuildFile;
 			fileRef = C19B50826CD60F84F1157D12 /* SleeperScoreApp.swift */;
+		};
+		56201EA16EE7691FA1143BCD = {
+			isa = PBXBuildFile;
+			fileRef = B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */;
 		};
 		58AA38ADA353BE33F5AF5C3A = {
 			isa = PBXBuildFile;
@@ -293,6 +347,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = SleeperAPI.swift;
 			sourceTree = "<group>";
+		};
+		5BB1FFBCF225159ABC9A8FE6 = {
+			isa = PBXBuildFile;
+			fileRef = F5E4EB23F502600ABFDA7CF7 /* AccountsView.swift */;
 		};
 		5EE764C8FC411275FBA279BF = {
 			isa = PBXFileReference;
@@ -322,6 +380,14 @@
 			path = AvatarLoader.swift;
 			sourceTree = "<group>";
 		};
+		68B0C94D62D04030A04109CF = {
+			isa = PBXBuildFile;
+			fileRef = 195E05D9D0E5FE526308E629 /* HostKind.swift */;
+		};
+		6C367E27D171A8E0CF442BD3 = {
+			isa = PBXBuildFile;
+			fileRef = 3EB54807A73C03E3C475C2EF /* KeychainStore.swift */;
+		};
 		6EFAB1ECC0D092E20FE51FCD = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -337,23 +403,41 @@
 			isa = PBXBuildFile;
 			fileRef = B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */;
 		};
+		73AA4EBD467F0E330299F7C4 = {
+			isa = PBXBuildFile;
+			fileRef = E37BCAA6E1080EA572DA4D1E /* HeadshotCache.swift */;
+		};
+		74B9E9A0D86F399917DBF509 = {
+			isa = PBXBuildFile;
+			fileRef = E37BCAA6E1080EA572DA4D1E /* HeadshotCache.swift */;
+		};
+		75831CD06B138A88B2678D6D = {
+			isa = PBXBuildFile;
+			fileRef = 8777A0A8342E64FFA645DEB6 /* ScoringDetector.swift */;
+		};
 		76783979A41D8BC5142F6045 = {
 			isa = PBXBuildFile;
 			fileRef = 5EE764C8FC411275FBA279BF /* JSONSupport.swift */;
+		};
+		76D85F12774713AC80C39647 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = SleeperSettingsView.swift;
+			sourceTree = "<group>";
 		};
 		77AEDF226E1B82E972C1B282 = {
 			isa = PBXBuildFile;
 			fileRef = C67A2D71EF5298D30645961D /* Assets.xcassets */;
 		};
+		77CBDA829DD33A4B108B5998 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = LiveActivityController.swift;
+			sourceTree = "<group>";
+		};
 		79CAEDCD7081CCC9E228807D = {
 			isa = PBXBuildFile;
 			fileRef = 47DB9E782CD4A6EF0DD65202 /* SleeperModels.swift */;
-		};
-		7BF4B39FDFC5099A24827AF0 = {
-			isa = PBXFileReference;
-			lastKnownFileType = sourcecode.swift;
-			path = SettingsView.swift;
-			sourceTree = "<group>";
 		};
 		82000B87E0EC13AD7FD6DA43 = {
 			isa = XCBuildConfiguration;
@@ -378,14 +462,21 @@
 			};
 			name = Debug;
 		};
+		82606A21EEF631F7A0CCE86C = {
+			isa = PBXBuildFile;
+			fileRef = 76D85F12774713AC80C39647 /* SleeperSettingsView.swift */;
+		};
 		82CF2A43A7100F086D7FCFDD = {
 			isa = PBXGroup;
 			children = (
 				C19B50826CD60F84F1157D12 /* SleeperScoreApp.swift */,
 				C5DDC4617D40B315EC9D8E47 /* ScoreboardModel.swift */,
+				77CBDA829DD33A4B108B5998 /* LiveActivityController.swift */,
 				678B11228DF3B271F8486C38 /* RootView.swift */,
 				B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */,
-				7BF4B39FDFC5099A24827AF0 /* SettingsView.swift */,
+				F5E4EB23F502600ABFDA7CF7 /* AccountsView.swift */,
+				76D85F12774713AC80C39647 /* SleeperSettingsView.swift */,
+				394D755F24F129EE7716E89F /* YahooAuth.swift */,
 				931226496DCE20872776D15D /* Assets.xcassets */,
 				36CBBEEECA3A305005C30BB5 /* Info.plist */,
 				024892A436DE54D2493F20CE /* SleeperScore.entitlements */,
@@ -393,12 +484,22 @@
 			path = SleeperScore;
 			sourceTree = "<group>";
 		};
+		8351630F35B9C4E00D24189C = {
+			isa = PBXBuildFile;
+			fileRef = 394D755F24F129EE7716E89F /* YahooAuth.swift */;
+		};
 		84337AD8D27FCD69AF2C4FC2 = {
 			isa = PBXFileReference;
 			explicitFileType = wrapper.application;
 			includeInIndex = 0;
 			path = SleeperScore.app;
 			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		8777A0A8342E64FFA645DEB6 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ScoringDetector.swift;
+			sourceTree = "<group>";
 		};
 		889A34C747900C87EE5F896E = {
 			isa = PBXFileReference;
@@ -462,8 +563,13 @@
 				47DB9E782CD4A6EF0DD65202 /* SleeperModels.swift */,
 				5B5F18854E67727AE5FF5B8E /* SleeperAPI.swift */,
 				5B082B835ACC628B90347851 /* MatchupSnapshot.swift */,
+				B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */,
+				8777A0A8342E64FFA645DEB6 /* ScoringDetector.swift */,
 				A55CC726808CF50732E54964 /* SharedStore.swift */,
+				3EB54807A73C03E3C475C2EF /* KeychainStore.swift */,
+				195E05D9D0E5FE526308E629 /* HostKind.swift */,
 				688026E8C814351531673AE2 /* AvatarLoader.swift */,
+				E37BCAA6E1080EA572DA4D1E /* HeadshotCache.swift */,
 				C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */,
 				ADE09ECB837E05A3414451DB /* MatchupService.swift */,
 				207AE7F7BF7702CED53D696C /* Theme.swift */,
@@ -482,10 +588,20 @@
 			path = SharedStore.swift;
 			sourceTree = "<group>";
 		};
+		AC44EE7A89E0071831176FE1 = {
+			isa = PBXBuildFile;
+			fileRef = 195E05D9D0E5FE526308E629 /* HostKind.swift */;
+		};
 		ADE09ECB837E05A3414451DB = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = MatchupService.swift;
+			sourceTree = "<group>";
+		};
+		B3F8241004CFBF529E7D6903 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MatchupActivity.swift;
 			sourceTree = "<group>";
 		};
 		B56E96530BC9DC2EBA288692 = {
@@ -601,6 +717,10 @@
 			isa = PBXBuildFile;
 			fileRef = 207AE7F7BF7702CED53D696C /* Theme.swift */;
 		};
+		DCBEC3B50E0D25141FE1D888 = {
+			isa = PBXBuildFile;
+			fileRef = B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */;
+		};
 		E1D3BBA94590957B0374D6E9 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -644,6 +764,12 @@
 			productReference = 84337AD8D27FCD69AF2C4FC2 /* SleeperScore.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E37BCAA6E1080EA572DA4D1E = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = HeadshotCache.swift;
+			sourceTree = "<group>";
+		};
 		E97658E1132B2D311B4060A1 = {
 			isa = PBXBuildFile;
 			fileRef = C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */;
@@ -662,6 +788,7 @@
 				C5A41E448492DA848F9CAA89 /* ScoreWidgetBundle.swift */,
 				BD3A67CAFF664165392226E0 /* ScoreProvider.swift */,
 				C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */,
+				3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */,
 				C67A2D71EF5298D30645961D /* Assets.xcassets */,
 				CDC15F89DB2640D57277623E /* Info.plist */,
 				889A34C747900C87EE5F896E /* ScoreWidget.entitlements */,
@@ -672,6 +799,12 @@
 		F5A30E0A9EB43FB9E5566673 = {
 			isa = PBXBuildFile;
 			fileRef = 688026E8C814351531673AE2 /* AvatarLoader.swift */;
+		};
+		F5E4EB23F502600ABFDA7CF7 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = AccountsView.swift;
+			sourceTree = "<group>";
 		};
 		F667297ED3AB90EAC07798D4 = {
 			isa = PBXResourcesBuildPhase;

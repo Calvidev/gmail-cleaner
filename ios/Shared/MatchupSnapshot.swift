@@ -64,6 +64,12 @@ struct MatchupSnapshot: Codable, Hashable {
     var updatedAt: Date
     /// True cuando estos datos salen de la caché porque la descarga falló.
     var isStale: Bool
+    /// Últimas anotaciones detectadas. Opcional a propósito: así una caché
+    /// escrita por una versión anterior de la app se sigue leyendo.
+    var recentPlays: [ScoringPlay]?
+
+    /// Las anotaciones, sin tener que desenvolver el opcional en cada vista.
+    var plays: [ScoringPlay] { recentPlays ?? [] }
 
     var opponentPoints: Double { opponent?.points ?? 0 }
 
@@ -96,7 +102,8 @@ struct MatchupSnapshot: Codable, Hashable {
             ),
             lineup: [],
             updatedAt: Date(),
-            isStale: false
+            isStale: false,
+            recentPlays: nil
         )
     }
 }
