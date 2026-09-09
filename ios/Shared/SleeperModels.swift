@@ -98,6 +98,22 @@ struct RosterSettings: Decodable {
     let wins: Int?
     let losses: Int?
     let ties: Int?
+    /// Sleeper parte los puntos en entero y decimales.
+    let fpts: Double?
+    let fptsDecimal: Double?
+    let fptsAgainst: Double?
+    let fptsAgainstDecimal: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case wins, losses, ties
+        case fpts
+        case fptsDecimal = "fpts_decimal"
+        case fptsAgainst = "fpts_against"
+        case fptsAgainstDecimal = "fpts_against_decimal"
+    }
+
+    var pointsFor: Double { (fpts ?? 0) + (fptsDecimal ?? 0) / 100 }
+    var pointsAgainst: Double { (fptsAgainst ?? 0) + (fptsAgainstDecimal ?? 0) / 100 }
 }
 
 struct Roster: Decodable {
@@ -211,6 +227,8 @@ struct Matchup: Decodable {
     let points: Double?
     let starters: [String]?
     let startersPoints: [Double]?
+    /// Toda la plantilla, titulares y banquillo.
+    let players: [String]?
     let playersPoints: [String: Double]?
 
     enum CodingKeys: String, CodingKey {
@@ -219,7 +237,14 @@ struct Matchup: Decodable {
         case points
         case starters
         case startersPoints = "starters_points"
+        case players
         case playersPoints = "players_points"
+    }
+
+    /// Los que no salieron de titulares.
+    var benchIDs: [String] {
+        let titulares = Set(filledStarters)
+        return (players ?? []).filter { !titulares.contains($0) && $0 != "0" }
     }
 
     /// Titulares de verdad: Sleeper rellena con "0" los huecos vacíos.

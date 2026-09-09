@@ -91,6 +91,20 @@ struct MatchupService {
             projections: projections
         )
 
+        // El banquillo sale del mismo enfrentamiento: trae la plantilla entera.
+        let bench = mineMatchup.benchIDs.compactMap { playerID -> PlayerLine? in
+            let entry = catalog[playerID]
+            return PlayerLine(
+                playerID: playerID,
+                points: mineMatchup.playersPoints?[playerID] ?? 0,
+                name: entry?.name,
+                position: entry?.position,
+                team: entry?.team,
+                stats: weekStats?.line(for: playerID, position: entry?.position),
+                projected: projections?.projected(for: playerID)
+            )
+        }
+
         var snapshot = MatchupSnapshot(
             leagueName: league.name ?? "Liga de Sleeper",
             week: week,
@@ -102,6 +116,12 @@ struct MatchupService {
             recentPlays: nil
         )
         snapshot.projection = WinProbability.compute(for: snapshot)
+        snapshot.bench = bench
+        snapshot.benchReport = OptimalLineup.report(
+            starters: lineup.compactMap(\.mine),
+            bench: bench,
+            slots: league.starterSlots
+        )
         return snapshot
     }
 
@@ -176,6 +196,68 @@ struct MatchupService {
             stats: weekStats?.line(for: playerID, position: entry?.position),
             projected: projections?.projected(for: playerID)
         )
+    }
+}
+
+// MARK: - Clasificación
+
+struct TeamStanding: Identifiable, Hashable {
+    let rosterID: Int
+    let rank: Int
+    let name: String
+    let avatarURL: URL?
+    let wins: Int
+    let losses: Int
+    let ties: Int
+    let pointsFor: Double
+    let pointsAgainst: Double
+    let isMine: Bool
+
+    var id: Int { rosterID }
+
+    var record: String {
+        ties > 0 ? "\(wins)-\(losses)-\(ties)" : "\(wins)-\(losses)"
+    }
+}
+
+extension MatchupService {
+    /// La tabla de la liga. Sale de los rosters, que ya traen récord y puntos:
+    /// no hace falta ninguna llamada nueva.
+    func standings(in leagueID: String, myRosterID: Int?) async throws -> [TeamStanding] {
+        let clean = leagueID.trimmingCharacters(in: .whitespaces)
+        guard !clean.isEmpty else { throw SleeperError.leagueNotSet }
+
+        async let usersTask = api.users(leagueID: clean)
+        async let rostersTask = api.rosters(leagueID: clean)
+        let users = try await usersTask
+        let rosters = try await rostersTask
+
+        let userByID = Dictionary(users.map { ($0.userID, $0) }, uniquingKeysWith: { first, _ in first })
+
+        // Se ordena como cualquier liga: victorias primero, y los puntos a
+        // favor deshacen el empate.
+        let ordenados = rosters.sorted { izquierda, derecha in
+            let victoriasIzq = izquierda.settings?.wins ?? 0
+            let victoriasDer = derecha.settings?.wins ?? 0
+            if victoriasIzq != victoriasDer { return victoriasIzq > victoriasDer }
+            return (izquierda.settings?.pointsFor ?? 0) > (derecha.settings?.pointsFor ?? 0)
+        }
+
+        return ordenados.enumerated().map { indice, roster in
+            let owner = roster.ownerID.flatMap { userByID[$0] }
+            return TeamStanding(
+                rosterID: roster.rosterID,
+                rank: indice + 1,
+                name: owner?.preferredName ?? "Equipo \(roster.rosterID)",
+                avatarURL: owner?.avatarURL,
+                wins: roster.settings?.wins ?? 0,
+                losses: roster.settings?.losses ?? 0,
+                ties: roster.settings?.ties ?? 0,
+                pointsFor: roster.settings?.pointsFor ?? 0,
+                pointsAgainst: roster.settings?.pointsAgainst ?? 0,
+                isMine: roster.rosterID == myRosterID
+            )
+        }
     }
 }
 

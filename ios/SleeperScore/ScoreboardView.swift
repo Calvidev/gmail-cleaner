@@ -12,7 +12,23 @@ struct ScoreboardView: View {
             VStack(spacing: 16) {
                 if let snapshot = model.snapshot {
                     ScoreCard(snapshot: snapshot)
+                    HStack(spacing: 10) {
+                        NavigationLink {
+                            StandingsView(league: model.config)
+                        } label: {
+                            Label("Clasificación", systemImage: "list.number")
+                                .font(.system(size: 13, weight: .medium))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 11)
+                                .background(Theme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .foregroundStyle(.white.opacity(0.85))
+                        }
+                        ShareScoreButton(snapshot: snapshot)
+                    }
                     LiveActivityButton()
+                    if let informe = snapshot.benchReport, !informe.perfect {
+                        BenchCard(report: informe)
+                    }
                     if !snapshot.plays.isEmpty {
                         RecentPlaysSection(plays: snapshot.plays)
                     }
@@ -100,6 +116,55 @@ struct ScoreCard: View {
             "\(snapshot.me.name) \(snapshot.me.points.fantasyPoints) puntos, "
             + "\(snapshot.opponent?.name ?? "sin rival") \(snapshot.opponentPoints.fantasyPoints) puntos"
         )
+    }
+}
+
+// MARK: - Banquillo
+
+/// "Dejaste 23,4 puntos en el banquillo": el dato que más duele y más se mira.
+struct BenchCard: View {
+    var report: BenchReport
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Label("En el banquillo", systemImage: "chair.lounge.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(.white)
+                Spacer()
+                Text("−\(report.pointsLeft.fantasyPoints)")
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.orange)
+            }
+
+            Text("La mejor alineación posible sumaba \(report.best.fantasyPoints) en vez de \(report.actual.fantasyPoints).")
+                .font(.system(size: 11))
+                .foregroundStyle(.white.opacity(0.5))
+
+            ForEach(report.missed.prefix(3), id: \.playerID) { jugador in
+                HStack(spacing: 10) {
+                    PlayerHeadshot(line: jugador, size: 26)
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(jugador.displayName)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(.white)
+                            .lineLimit(1)
+                        Text(jugador.stats ?? jugador.subtitle)
+                            .font(.system(size: 10))
+                            .foregroundStyle(.white.opacity(0.45))
+                            .lineLimit(1)
+                    }
+                    Spacer()
+                    Text(jugador.points.fantasyPoints)
+                        .font(.system(size: 13, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.orange)
+                }
+            }
+        }
+        .padding(16)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }
 

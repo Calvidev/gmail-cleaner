@@ -74,6 +74,10 @@ struct MatchupSnapshot: Codable, Hashable {
     var recentPlays: [ScoringPlay]?
     /// Marcador final esperado y probabilidad de ganar.
     var projection: MatchupProjection?
+    /// Tu banquillo, para poder decir qué te dejaste sin alinear.
+    var bench: [PlayerLine]?
+    /// Lo que costó no alinear lo mejor posible.
+    var benchReport: BenchReport?
 
     /// Las anotaciones, sin tener que desenvolver el opcional en cada vista.
     var plays: [ScoringPlay] { recentPlays ?? [] }

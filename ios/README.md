@@ -97,7 +97,9 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 
 | Pantalla / tamaño | Qué enseña |
 | --- | --- |
-| App | Marcador grande, **probabilidad de ganar**, proyección del resultado, últimas anotaciones y la alineación hueco a hueco con foto y puntos |
+| App | Marcador, **probabilidad de ganar**, proyección, puntos dejados en el banquillo, últimas anotaciones y la alineación con foto y puntos |
+| Clasificación | La tabla de la liga con récord y puntos a favor y en contra |
+| Compartir | Una imagen del marcador para el grupo de la liga |
 | Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |
 | Ajustes de Sleeper | Entrar con tu usuario, tus ligas, equipos con avatar |
 | Live Activity | Marcador en la pantalla de bloqueo y en la Dynamic Island, con la última anotación: foto, nombre, línea estadística ("6 rec · 88 yds · 1 TD") y puntos |

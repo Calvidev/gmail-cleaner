@@ -60,6 +60,12 @@
 			isa = PBXBuildFile;
 			fileRef = C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */;
 		};
+		105E01A849C6AC17353F5BFB = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = StandingsView.swift;
+			sourceTree = "<group>";
+		};
 		11EF39465FB5B37CF41E367D = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -74,6 +80,10 @@
 		168A2B8957B3AD26128DBC3F = {
 			isa = PBXBuildFile;
 			fileRef = 203F74635AA1CE200A0E9736 /* Entitlements.swift */;
+		};
+		16A2A2EC5CD5F576C05BD458 = {
+			isa = PBXBuildFile;
+			fileRef = 24CB73DD8085DAD185EBE7EA /* OptimalLineup.swift */;
 		};
 		16ACE556BD5CA3C51FD3F043 = {
 			isa = XCBuildConfiguration;
@@ -140,6 +150,18 @@
 			isa = PBXBuildFile;
 			fileRef = 6017835189AFFF5EC9046AAB /* MatchupComponents.swift */;
 		};
+		24A2525A50D463D43174024B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = ShareCard.swift;
+			sourceTree = "<group>";
+		};
+		24CB73DD8085DAD185EBE7EA = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = OptimalLineup.swift;
+			sourceTree = "<group>";
+		};
 		2C74BDE13991C1ADF223AAEA = {
 			isa = PBXBuildFile;
 			fileRef = 5B082B835ACC628B90347851 /* MatchupSnapshot.swift */;
@@ -159,6 +181,10 @@
 		3324523CAE439BA3B0D3A966 = {
 			isa = PBXBuildFile;
 			fileRef = 3EB54807A73C03E3C475C2EF /* KeychainStore.swift */;
+		};
+		3523BFD0D7C29A78E0466695 = {
+			isa = PBXBuildFile;
+			fileRef = 24CB73DD8085DAD185EBE7EA /* OptimalLineup.swift */;
 		};
 		3583F9BFD8A741B035FE38DC = {
 			isa = PBXBuildFile;
@@ -199,6 +225,7 @@
 				3224D5599600DB32E6707465 /* WeekStats.swift in ScoreWidgetExtension */,
 				C716D99812EACED16CCF5CC5 /* Projections.swift in ScoreWidgetExtension */,
 				CAADC64843CA3C3E7BED06BD /* WinProbability.swift in ScoreWidgetExtension */,
+				3523BFD0D7C29A78E0466695 /* OptimalLineup.swift in ScoreWidgetExtension */,
 				CBBBE19B4682C29799DAE9F0 /* MatchupService.swift in ScoreWidgetExtension */,
 				9A14ACA83648BAAD0A7B4F62 /* Theme.swift in ScoreWidgetExtension */,
 				71DAAFA211708FECC42DA14A /* MatchupComponents.swift in ScoreWidgetExtension */,
@@ -303,6 +330,7 @@
 				D11F48B53881037F9CF0F7EF /* WeekStats.swift in SleeperScore */,
 				BB02DB3256C02EB45CE301EF /* Projections.swift in SleeperScore */,
 				FDB001CE42806C546F6ED13F /* WinProbability.swift in SleeperScore */,
+				16A2A2EC5CD5F576C05BD458 /* OptimalLineup.swift in SleeperScore */,
 				58AA38ADA353BE33F5AF5C3A /* MatchupService.swift in SleeperScore */,
 				D80B18A2F5944D5736AB7143 /* Theme.swift in SleeperScore */,
 				241B5769E28CE18570E5F2F8 /* MatchupComponents.swift in SleeperScore */,
@@ -315,6 +343,8 @@
 				71F6B29CF9FE0FE20B3C9AD5 /* ScoreboardView.swift in SleeperScore */,
 				5BB1FFBCF225159ABC9A8FE6 /* AccountsView.swift in SleeperScore */,
 				50BE8AE4816B3EE031CEB93D /* PaywallView.swift in SleeperScore */,
+				904AB9B259C5D8083B7B4DA3 /* StandingsView.swift in SleeperScore */,
+				C2AF9442A8E7CCC9C3394F69 /* ShareCard.swift in SleeperScore */,
 				82606A21EEF631F7A0CCE86C /* SleeperSettingsView.swift in SleeperScore */,
 				8351630F35B9C4E00D24189C /* YahooAuth.swift in SleeperScore */,
 			);
@@ -553,6 +583,8 @@
 				B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */,
 				F5E4EB23F502600ABFDA7CF7 /* AccountsView.swift */,
 				EA428F9B7B2AC331FC76A403 /* PaywallView.swift */,
+				105E01A849C6AC17353F5BFB /* StandingsView.swift */,
+				24A2525A50D463D43174024B /* ShareCard.swift */,
 				76D85F12774713AC80C39647 /* SleeperSettingsView.swift */,
 				394D755F24F129EE7716E89F /* YahooAuth.swift */,
 				931226496DCE20872776D15D /* Assets.xcassets */,
@@ -585,6 +617,10 @@
 			lastKnownFileType = text.plist.entitlements;
 			path = ScoreWidget.entitlements;
 			sourceTree = "<group>";
+		};
+		904AB9B259C5D8083B7B4DA3 = {
+			isa = PBXBuildFile;
+			fileRef = 105E01A849C6AC17353F5BFB /* StandingsView.swift */;
 		};
 		908BC9110B5449E87359BFDE = {
 			isa = PBXFileReference;
@@ -666,6 +702,7 @@
 				C447792AF8760633BC09EF93 /* WeekStats.swift */,
 				64B0C5A622253848870C83BC /* Projections.swift */,
 				368E8DA1F8408B5A9BB46F2F /* WinProbability.swift */,
+				24CB73DD8085DAD185EBE7EA /* OptimalLineup.swift */,
 				ADE09ECB837E05A3414451DB /* MatchupService.swift */,
 				207AE7F7BF7702CED53D696C /* Theme.swift */,
 				6017835189AFFF5EC9046AAB /* MatchupComponents.swift */,
@@ -733,6 +770,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = SleeperScoreApp.swift;
 			sourceTree = "<group>";
+		};
+		C2AF9442A8E7CCC9C3394F69 = {
+			isa = PBXBuildFile;
+			fileRef = 24A2525A50D463D43174024B /* ShareCard.swift */;
 		};
 		C447792AF8760633BC09EF93 = {
 			isa = PBXFileReference;

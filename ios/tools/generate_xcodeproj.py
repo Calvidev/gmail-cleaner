@@ -44,6 +44,7 @@ SHARED_SOURCES = [
     "WeekStats.swift",
     "Projections.swift",
     "WinProbability.swift",
+    "OptimalLineup.swift",
     "MatchupService.swift",
     "Theme.swift",
     "MatchupComponents.swift",
@@ -58,6 +59,8 @@ APP_SOURCES = [
     "ScoreboardView.swift",
     "AccountsView.swift",
     "PaywallView.swift",
+    "StandingsView.swift",
+    "ShareCard.swift",
     "SleeperSettingsView.swift",
     "YahooAuth.swift",
 ]
