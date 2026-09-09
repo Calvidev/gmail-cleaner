@@ -331,6 +331,9 @@ struct RecentPlaysSection: View {
 
 struct LineupSection: View {
     var rows: [LineupRow]
+    @EnvironmentObject private var model: ScoreboardModel
+    @State private var selected: PlayerLine?
+    @State private var selectedSlot: String?
 
     private var myTotal: Double { rows.compactMap { $0.mine?.points }.reduce(0, +) }
     private var theirTotal: Double { rows.compactMap { $0.theirs?.points }.reduce(0, +) }
@@ -350,7 +353,10 @@ struct LineupSection: View {
             .padding(.bottom, 10)
 
             ForEach(rows) { row in
-                LineupRowView(row: row)
+                LineupRowView(row: row) { jugador in
+                    selected = jugador
+                    selectedSlot = row.slotLabel
+                }
                 if row.id != rows.last?.id {
                     Divider().overlay(Color.white.opacity(0.06))
                 }
@@ -358,11 +364,16 @@ struct LineupSection: View {
         }
         .padding(16)
         .background(Theme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .sheet(item: $selected) { jugador in
+            PlayerDetailView(line: jugador, news: model.news, slot: selectedSlot)
+                .preferredColorScheme(.dark)
+        }
     }
 }
 
 struct LineupRowView: View {
     var row: LineupRow
+    var onTap: (PlayerLine) -> Void = { _ in }
 
     private var myPoints: Double { row.mine?.points ?? 0 }
     private var theirPoints: Double { row.theirs?.points ?? 0 }
@@ -370,6 +381,8 @@ struct LineupRowView: View {
     var body: some View {
         HStack(spacing: 8) {
             PlayerCell(line: row.mine, alignment: .leading, winning: myPoints > theirPoints)
+                .contentShape(Rectangle())
+                .onTapGesture { if let mine = row.mine { onTap(mine) } }
 
             Text(row.slotLabel)
                 .font(.system(size: 10, weight: .bold))
@@ -379,6 +392,8 @@ struct LineupRowView: View {
                 .background(Theme.pill, in: Capsule())
 
             PlayerCell(line: row.theirs, alignment: .trailing, winning: theirPoints > myPoints)
+                .contentShape(Rectangle())
+                .onTapGesture { if let theirs = row.theirs { onTap(theirs) } }
         }
         .padding(.vertical, 7)
     }
@@ -394,11 +409,19 @@ struct PlayerCell: View {
             if alignment == .trailing { points }
             if alignment == .trailing { headshot }
             VStack(alignment: alignment, spacing: 1) {
-                Text(line?.displayName ?? "—")
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Color.white.opacity(line == nil ? 0.3 : 1))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
+                HStack(spacing: 4) {
+                    if alignment == .trailing, let lesion = line?.injuryLabel {
+                        InjuryTag(label: lesion, severe: line?.injuryIsSevere ?? false)
+                    }
+                    Text(line?.displayName ?? "—")
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundStyle(Color.white.opacity(line == nil ? 0.3 : 1))
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                    if alignment == .leading, let lesion = line?.injuryLabel {
+                        InjuryTag(label: lesion, severe: line?.injuryIsSevere ?? false)
+                    }
+                }
                 if !subtitle.isEmpty {
                     Text(subtitle)
                         .font(.system(size: 10))
@@ -459,6 +482,25 @@ struct ErrorNote: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
             .background(Color.orange.opacity(0.12), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+/// El parte médico, en corto y con color.
+struct InjuryTag: View {
+    var label: String
+    var severe: Bool
+
+    var body: some View {
+        Text(label)
+            .font(.system(size: 8, weight: .bold))
+            .padding(.horizontal, 4)
+            .padding(.vertical, 1)
+            .background(
+                (severe ? Color.red : Color.orange).opacity(0.2),
+                in: RoundedRectangle(cornerRadius: 4)
+            )
+            .foregroundStyle(severe ? .red : .orange)
+            .fixedSize()
     }
 }
 

@@ -18,7 +18,7 @@ struct TeamSide: Codable, Hashable, Identifiable {
     var id: Int { rosterID }
 }
 
-struct PlayerLine: Codable, Hashable {
+struct PlayerLine: Codable, Hashable, Identifiable {
     var playerID: String
     var points: Double
     var name: String?
@@ -29,6 +29,10 @@ struct PlayerLine: Codable, Hashable {
     var stats: String?
     /// Lo que se espera que anote en la jornada.
     var projected: Double?
+    /// "Questionable", "Out"… Nil cuando está sano.
+    var injury: String?
+
+    var id: String { playerID }
 
     /// "T. Hill · WR KC" cuando hay catálogo; si no, algo legible igualmente.
     var subtitle: String {
@@ -38,6 +42,17 @@ struct PlayerLine: Codable, Hashable {
     var displayName: String {
         if let name, !name.isEmpty { return name }
         return "Jugador \(playerID)"
+    }
+
+    /// "Duda", "Fuera"… en corto, para la etiqueta de al lado del nombre.
+    var injuryLabel: String? {
+        guard let injury, !injury.isEmpty else { return nil }
+        return InjuryChange.label(injury)
+    }
+
+    /// Lesiones que impiden jugar: se pintan en rojo, no en naranja.
+    var injuryIsSevere: Bool {
+        InjuryChange.severity(injury) >= 3
     }
 }
 

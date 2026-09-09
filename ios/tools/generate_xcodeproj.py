@@ -63,6 +63,7 @@ APP_SOURCES = [
     "PaywallView.swift",
     "StandingsView.swift",
     "SeasonView.swift",
+    "PlayerDetailView.swift",
     "ShareCard.swift",
     "SleeperSettingsView.swift",
     "YahooAuth.swift",
