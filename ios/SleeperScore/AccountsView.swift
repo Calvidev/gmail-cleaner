@@ -20,6 +20,7 @@ struct AccountsView: View {
         NavigationStack {
             Form {
                 accountsSection
+                testingSection
                 widgetSection
                 catalogSection
                 aboutSection
@@ -75,6 +76,39 @@ struct AccountsView: View {
         } footer: {
             Text("ESPN y NFL.com llegarán más adelante: sus API no son públicas y hace falta resolver antes cómo entrar en cada una.")
         }
+    }
+
+    // MARK: - Pruebas
+
+    /// Anotaciones de mentira para probar la Live Activity y los avisos sin
+    /// esperar a que se juegue la jornada. Solo en compilaciones de depuración.
+    @ViewBuilder
+    private var testingSection: some View {
+        #if DEBUG
+        Section {
+            Button("Anota tu jugador (+6)") {
+                Task { await model.simulate(.touchdown, mine: true) }
+            }
+            Button("Anota el rival (+6)") {
+                Task { await model.simulate(.touchdown, mine: false) }
+            }
+            Button("Field goal (+3)") {
+                Task { await model.simulate(.fieldGoal, mine: true) }
+            }
+            Button(model.isSimulating ? "Parar el partido simulado" : "Partido simulado (cada 12 s)") {
+                if model.isSimulating {
+                    model.stopFakeGame()
+                } else {
+                    model.startFakeGame()
+                }
+            }
+            .foregroundStyle(model.isSimulating ? Color.orange : Theme.accent)
+        } header: {
+            Text("Pruebas")
+        } footer: {
+            Text("Suma puntos a un titular al azar y lo mete por el mismo camino que los datos reales: detección de anotación, Live Activity y notificación. Mientras el partido simulado esté en marcha no se descargan los puntos de verdad.")
+        }
+        #endif
     }
 
     // MARK: - Resto de ajustes

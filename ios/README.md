@@ -144,6 +144,24 @@ gratuita funciona, pero se queda quieta mientras no abras la app. Cuando pases a
 cuenta de pago, añadir el push son unas pocas líneas: `Activity.request` ya está
 preparado para recibir un `pushType`.
 
+## Probar sin esperar al domingo
+
+En compilaciones de depuración (las que hace `./ios/build.sh iphone`), el menú
+de cuentas tiene una sección **Pruebas**:
+
+| Botón | Qué hace |
+| --- | --- |
+| Anota tu jugador (+6) | Suma un touchdown a un titular tuyo al azar |
+| Anota el rival (+6) | Lo mismo para el otro equipo |
+| Field goal (+3) | Una jugada más pequeña |
+| Partido simulado | Alguien anota cada 12 segundos hasta que lo pares |
+
+No falsea la interfaz: fabrica un marcador con los puntos sumados y lo mete por
+la misma puerta que los datos reales, así que lo que se prueba es el
+`ScoringDetector`, la Live Activity y las notificaciones de verdad. Mientras el
+partido simulado esté en marcha se pausa la descarga de puntos reales, que si no
+borraría lo simulado en el siguiente refresco.
+
 ## Cómo está montado
 
 Las mismas cinco llamadas que hacía el widget de Scriptable, en

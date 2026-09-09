@@ -32,6 +32,7 @@ SHARED_SOURCES = [
     "MatchupSnapshot.swift",
     "MatchupActivity.swift",
     "ScoringDetector.swift",
+    "MatchSimulator.swift",
     "SharedStore.swift",
     "KeychainStore.swift",
     "HostKind.swift",

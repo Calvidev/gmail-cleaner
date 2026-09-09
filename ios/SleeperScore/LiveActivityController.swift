@@ -21,11 +21,15 @@ final class LiveActivityController: ObservableObject {
     @Published private(set) var lastError: String?
 
     private var activity: Activity<MatchupActivityAttributes>?
+    /// Sin esto, una notificación disparada con la app en primer plano no se
+    /// ve ni suena — que es justo lo que pasa al probar el simulador.
+    private let presenter = ForegroundNotificationPresenter()
 
     init() {
         // Al arrancar puede haber una actividad viva de una sesión anterior.
         activity = Activity<MatchupActivityAttributes>.activities.first
         isRunning = activity != nil
+        UNUserNotificationCenter.current().delegate = presenter
     }
 
     var areActivitiesEnabled: Bool {
@@ -127,5 +131,16 @@ final class LiveActivityController: ObservableObject {
         } catch {
             return nil
         }
+    }
+}
+
+/// Deja que las notificaciones se vean aunque la app esté abierta.
+final class ForegroundNotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound, .list])
     }
 }

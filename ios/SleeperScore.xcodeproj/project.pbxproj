@@ -128,6 +128,10 @@
 			isa = PBXBuildFile;
 			fileRef = 3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */;
 		};
+		32733C0A693D9BA930BBCCF3 = {
+			isa = PBXBuildFile;
+			fileRef = F360A9C432F944F1E4F4246B /* MatchSimulator.swift */;
+		};
 		3324523CAE439BA3B0D3A966 = {
 			isa = PBXBuildFile;
 			fileRef = 3EB54807A73C03E3C475C2EF /* KeychainStore.swift */;
@@ -153,6 +157,7 @@
 				2C74BDE13991C1ADF223AAEA /* MatchupSnapshot.swift in ScoreWidgetExtension */,
 				DCBEC3B50E0D25141FE1D888 /* MatchupActivity.swift in ScoreWidgetExtension */,
 				48FFC91029B2DA79EDFFA0C1 /* ScoringDetector.swift in ScoreWidgetExtension */,
+				DE2B75DF8FFBAB7A9E66A288 /* MatchSimulator.swift in ScoreWidgetExtension */,
 				EB0BABE71F931600D48BB98F /* SharedStore.swift in ScoreWidgetExtension */,
 				3324523CAE439BA3B0D3A966 /* KeychainStore.swift in ScoreWidgetExtension */,
 				68B0C94D62D04030A04109CF /* HostKind.swift in ScoreWidgetExtension */,
@@ -241,6 +246,7 @@
 				532D73CF490BB7A11403E875 /* MatchupSnapshot.swift in SleeperScore */,
 				56201EA16EE7691FA1143BCD /* MatchupActivity.swift in SleeperScore */,
 				75831CD06B138A88B2678D6D /* ScoringDetector.swift in SleeperScore */,
+				32733C0A693D9BA930BBCCF3 /* MatchSimulator.swift in SleeperScore */,
 				4DDDE3071D9582391BFE9D0D /* SharedStore.swift in SleeperScore */,
 				6C367E27D171A8E0CF442BD3 /* KeychainStore.swift in SleeperScore */,
 				AC44EE7A89E0071831176FE1 /* HostKind.swift in SleeperScore */,
@@ -565,6 +571,7 @@
 				5B082B835ACC628B90347851 /* MatchupSnapshot.swift */,
 				B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */,
 				8777A0A8342E64FFA645DEB6 /* ScoringDetector.swift */,
+				F360A9C432F944F1E4F4246B /* MatchSimulator.swift */,
 				A55CC726808CF50732E54964 /* SharedStore.swift */,
 				3EB54807A73C03E3C475C2EF /* KeychainStore.swift */,
 				195E05D9D0E5FE526308E629 /* HostKind.swift */,
@@ -721,6 +728,10 @@
 			isa = PBXBuildFile;
 			fileRef = B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */;
 		};
+		DE2B75DF8FFBAB7A9E66A288 = {
+			isa = PBXBuildFile;
+			fileRef = F360A9C432F944F1E4F4246B /* MatchSimulator.swift */;
+		};
 		E1D3BBA94590957B0374D6E9 = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -794,6 +805,12 @@
 				889A34C747900C87EE5F896E /* ScoreWidget.entitlements */,
 			);
 			path = ScoreWidget;
+			sourceTree = "<group>";
+		};
+		F360A9C432F944F1E4F4246B = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = MatchSimulator.swift;
 			sourceTree = "<group>";
 		};
 		F5A30E0A9EB43FB9E5566673 = {

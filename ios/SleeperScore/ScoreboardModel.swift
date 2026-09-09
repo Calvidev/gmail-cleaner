@@ -11,10 +11,13 @@ final class ScoreboardModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var lastError: String?
     @Published private(set) var config: LeagueConfig
+    /// True mientras corre el partido de mentira del menú de pruebas.
+    @Published private(set) var isSimulating = false
 
     private let service = MatchupService()
     private let live = LiveActivityController.shared
     private var refreshTask: Task<Void, Never>?
+    private var simulationTask: Task<Void, Never>?
 
     init() {
         config = SharedStore.loadConfig()
@@ -28,35 +31,80 @@ final class ScoreboardModel: ObservableObject {
 
     func refresh(showSpinner: Bool = true) async {
         guard config.isComplete else { return }
+        // Con el partido simulado en marcha, traer los puntos reales borraría
+        // lo que se está probando.
+        guard !isSimulating else { return }
         if showSpinner { isLoading = true }
         defer { isLoading = false }
 
         do {
-            var fresh = try await service.snapshot(for: config)
-
-            // Lo que ha pasado desde la última lectura: quién ha anotado.
-            let anotaciones = ScoringDetector.plays(previous: snapshot, current: fresh)
-            fresh.recentPlays = Array((anotaciones + (snapshot?.plays ?? [])).prefix(6))
-
-            snapshot = fresh
+            let fresh = try await service.snapshot(for: config)
+            await apply(fresh)
             lastError = nil
-            SharedStore.cache(fresh)
-            WidgetCenter.shared.reloadAllTimelines()
-
-            // Las fotos, en disco, para el widget y la Live Activity.
-            Task { await HeadshotCache.prefetch(lineup: fresh.lineup) }
-
-            live.update(with: fresh, play: anotaciones.first)
-            // Si tres jugadores anotan a la vez, tres avisos son demasiados.
-            for anotacion in anotaciones.prefix(3) {
-                await live.notify(anotacion)
-            }
         } catch {
             lastError = error.localizedDescription
             // Si no había nada en pantalla, al menos se enseña lo guardado.
             if snapshot == nil { snapshot = SharedStore.staleSnapshot() }
             else { snapshot?.isStale = true }
         }
+    }
+
+    /// Todo marcador nuevo entra por aquí, venga de la red o del simulador:
+    /// se detectan las anotaciones, se guarda, se avisa a los widgets, a la
+    /// Live Activity y al usuario.
+    private func apply(_ fresh: MatchupSnapshot) async {
+        var actualizado = fresh
+
+        // Lo que ha pasado desde la última lectura: quién ha anotado.
+        let anotaciones = ScoringDetector.plays(previous: snapshot, current: fresh)
+        actualizado.recentPlays = Array((anotaciones + (snapshot?.plays ?? [])).prefix(6))
+
+        snapshot = actualizado
+        SharedStore.cache(actualizado)
+        WidgetCenter.shared.reloadAllTimelines()
+
+        // Las fotos, en disco, para el widget y la Live Activity.
+        Task { await HeadshotCache.prefetch(lineup: actualizado.lineup) }
+
+        live.update(with: actualizado, play: anotaciones.first)
+        // Si tres jugadores anotan a la vez, tres avisos son demasiados.
+        for anotacion in anotaciones.prefix(3) {
+            await live.notify(anotacion)
+        }
+    }
+
+    // MARK: - Pruebas
+
+    /// Mete una anotación de mentira por el mismo camino que las de verdad.
+    func simulate(_ play: MatchSimulator.Play, mine: Bool? = nil) async {
+        guard let actual = snapshot,
+              let simulado = MatchSimulator.apply(play, to: actual, mine: mine)
+        else { return }
+        await live.requestNotificationPermission()
+        await apply(simulado)
+    }
+
+    /// Un partido de mentira: alguien anota cada pocos segundos.
+    func startFakeGame(every seconds: UInt64 = 12) {
+        guard !isSimulating else { return }
+        isSimulating = true
+        stopAutoRefresh()
+        simulationTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(nanoseconds: seconds * 1_000_000_000)
+                if Task.isCancelled { return }
+                guard let self else { return }
+                let jugada = MatchSimulator.Play.allCases.randomElement() ?? .touchdown
+                await self.simulate(jugada)
+            }
+        }
+    }
+
+    func stopFakeGame() {
+        simulationTask?.cancel()
+        simulationTask = nil
+        isSimulating = false
+        startAutoRefresh()
     }
 
     /// Los nombres de la alineación vienen del catálogo; se pone al día en
