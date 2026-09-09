@@ -3,6 +3,32 @@
 Ordenado por lo que yo haría primero. Cada ficha lleva esfuerzo estimado y, más
 importante, si **se puede hacer de verdad** con lo que hay.
 
+## Estado a día de hoy
+
+| | Estado |
+| --- | --- |
+| 1. Probabilidad de victoria | ✅ Hecho |
+| 2. Proyección del resultado | ✅ Hecho |
+| 3. Jugadores que quedan por jugar | ✅ Hecho (por proyección pendiente, no por estado del partido) |
+| 4. Aviso de cambio de liderato | ✅ Hecho |
+| 5. Tarjeta para compartir | ✅ Hecho |
+| 6. Puntos en el banquillo | ✅ Hecho |
+| 7. Agentes libres | ✅ Hecho |
+| 8. Noticias de tus jugadores | ✅ Hecho, con aviso |
+| 9. Analizador de intercambios | ⬜ Pendiente |
+| 10. Clasificación | ✅ Hecho (falta la probabilidad de playoffs) |
+| 11. Historial de la temporada | ✅ Hecho |
+| 12. Push real | ⬜ Necesita los 99 USD y servidor |
+| 13. Un widget por liga | ✅ Hecho |
+| 14. Apple Watch | ⬜ Pendiente |
+
+Añadido fuera de la lista original: ficha de jugador, parte de lesiones con
+aviso, avisos con la app cerrada, varias ligas, y traducción al inglés.
+
+**Lo que queda de más valor**, por orden: la probabilidad de playoffs (simular
+lo que resta de temporada), el analizador de intercambios, y el push cuando
+tengas la cuenta de Apple.
+
 ## La observación que manda sobre todo lo demás
 
 Tienes un motor de análisis en `app/` que la app de iPhone **no usa para nada**:
