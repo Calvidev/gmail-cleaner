@@ -8,7 +8,9 @@ import WidgetKit
 
 @MainActor
 final class ScoreboardModel: ObservableObject {
-    @Published private(set) var snapshot: MatchupSnapshot?
+    /// Un marcador por liga: al deslizar entre ellas se enseña el suyo al
+    /// instante, sin esperar a la descarga.
+    @Published private(set) var snapshots: [String: MatchupSnapshot] = [:]
     @Published private(set) var isLoading = false
     @Published private(set) var lastError: String?
     /// Todas tus ligas y cuál se está mirando.
@@ -29,11 +31,24 @@ final class ScoreboardModel: ObservableObject {
     init() {
         book = SharedStore.loadBook()
         // Se arranca con lo último que se vio: la pantalla nunca aparece vacía.
-        snapshot = SharedStore.cachedSnapshot()
+        for liga in book.leagues {
+            snapshots[liga.id] = SharedStore.cachedSnapshot(for: liga)
+        }
     }
 
     /// La liga que se está mirando.
     var config: LeagueConfig { book.active ?? .default }
+
+    /// El marcador de la liga activa.
+    var snapshot: MatchupSnapshot? {
+        get { snapshots[config.id] }
+        set { snapshots[config.id] = newValue }
+    }
+
+    /// El marcador de una liga concreta, para las páginas que no están activas.
+    func snapshot(for league: LeagueConfig) -> MatchupSnapshot? {
+        snapshots[league.id]
+    }
 
     var needsSetup: Bool { book.isEmpty }
 
@@ -261,6 +276,7 @@ final class ScoreboardModel: ObservableObject {
 
     func remove(_ league: LeagueConfig) {
         book.remove(league)
+        snapshots.removeValue(forKey: league.id)
         persist()
         if let siguiente = book.active {
             showLeague(siguiente)
@@ -271,9 +287,17 @@ final class ScoreboardModel: ObservableObject {
 
     private func showLeague(_ league: LeagueConfig) {
         // Cada liga guarda su propio marcador, así que el cambio es inmediato.
-        snapshot = SharedStore.cachedSnapshot(for: league)
+        if snapshots[league.id] == nil {
+            snapshots[league.id] = SharedStore.cachedSnapshot(for: league)
+        }
         statsWeek = nil
-        Task { await refresh(showSpinner: snapshot == nil) }
+        Task { await refresh(showSpinner: snapshots[league.id] == nil) }
+    }
+
+    /// Cambiar de liga desde el deslizador de páginas.
+    func activate(id: String) {
+        guard let liga = book.leagues.first(where: { $0.id == id }) else { return }
+        activate(liga)
     }
 
     private func persist() {

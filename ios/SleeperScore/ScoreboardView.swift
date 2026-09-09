@@ -4,40 +4,78 @@
 import SwiftUI
 import UIKit
 
+/// Con varias ligas, cada una es una página: se pasa deslizando y los puntitos
+/// de abajo dicen cuántas hay. Con una sola liga no hay deslizador ni puntos.
 struct ScoreboardView: View {
     @EnvironmentObject private var model: ScoreboardModel
 
     var body: some View {
+        if model.book.leagues.count > 1 {
+            TabView(selection: seleccion) {
+                ForEach(model.book.leagues) { liga in
+                    LeaguePage(league: liga)
+                        .tag(liga.id)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .indexViewStyle(.page(backgroundDisplayMode: .always))
+        } else {
+            LeaguePage(league: model.config)
+        }
+    }
+
+    /// Deslizar cambia la liga activa, igual que elegirla en el menú.
+    private var seleccion: Binding<String> {
+        Binding(
+            get: { model.book.activeID ?? model.config.id },
+            set: { model.activate(id: $0) }
+        )
+    }
+}
+
+/// El marcador de UNA liga. Cada página tiene el suyo, así que al deslizar se
+/// ve al instante lo último que se supo de esa liga.
+struct LeaguePage: View {
+    var league: LeagueConfig
+
+    @EnvironmentObject private var model: ScoreboardModel
+
+    private var snapshot: MatchupSnapshot? { model.snapshot(for: league) }
+    private var esLaActiva: Bool { league.id == model.book.activeID }
+
+    var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                if let snapshot = model.snapshot {
+                if let snapshot {
                     ScoreCard(snapshot: snapshot)
                     HStack(spacing: 8) {
                         NavigationLink {
-                            StandingsView(league: model.config)
+                            StandingsView(league: league)
                         } label: {
                             ActionTile(title: "Clasificación", icon: "list.number")
                         }
                         NavigationLink {
-                            FreeAgentsView(league: model.config)
+                            FreeAgentsView(league: league)
                         } label: {
                             ActionTile(title: "Libres", icon: "person.badge.plus")
                         }
                         NavigationLink {
-                            SeasonView(league: model.config, week: snapshot.week)
+                            SeasonView(league: league, week: snapshot.week)
                         } label: {
                             ActionTile(title: "Temporada", icon: "chart.bar.fill")
                         }
                         ShareScoreButton(snapshot: snapshot)
                     }
-                    LiveActivityButton()
+                    if esLaActiva {
+                        LiveActivityButton()
+                    }
                     if let informe = snapshot.benchReport, !informe.perfect {
                         BenchCard(report: informe)
                     }
                     if !snapshot.plays.isEmpty {
                         RecentPlaysSection(plays: snapshot.plays)
                     }
-                    if !model.news.isEmpty {
+                    if esLaActiva, !model.news.isEmpty {
                         NewsCard(items: model.news)
                     }
                     if !snapshot.lineup.isEmpty {
@@ -52,14 +90,20 @@ struct ScoreboardView: View {
                     Hint(text: model.lastError ?? "Todavía no hay datos de esta jornada.")
                 }
 
-                if let error = model.lastError, model.snapshot != nil {
+                if esLaActiva, let error = model.lastError, snapshot != nil {
                     ErrorNote(text: error)
+                }
+
+                // Hueco para los puntitos de las páginas, que van encima.
+                if model.hasMultipleLeagues {
+                    Color.clear.frame(height: 24)
                 }
             }
             .padding(16)
         }
         .scrollIndicators(.hidden)
         .refreshable {
+            model.activate(league)
             await model.refresh(showSpinner: false)
         }
     }

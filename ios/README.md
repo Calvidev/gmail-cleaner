@@ -111,6 +111,11 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 | Widget grande | El mediano + los primeros huecos de la alineación con nombres abreviados |
 | Bloqueo (rectangular / línea) | Jornada y marcador |
 
+Con varias ligas, el marcador se **desliza de una a otra** y los puntitos de
+abajo dicen cuántas hay; el menú del título sigue estando para saltar directo.
+Cada liga guarda su propio marcador, así que al deslizar se ve al instante lo
+último que se supo de esa liga y luego se refresca.
+
 Cada widget puede seguir **una liga distinta**: mantén pulsado el widget >
 Editar widget > Liga. Sin elegir nada sigue la liga activa en la app.
 
