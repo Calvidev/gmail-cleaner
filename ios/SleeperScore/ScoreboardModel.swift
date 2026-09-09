@@ -11,7 +11,8 @@ final class ScoreboardModel: ObservableObject {
     @Published private(set) var snapshot: MatchupSnapshot?
     @Published private(set) var isLoading = false
     @Published private(set) var lastError: String?
-    @Published private(set) var config: LeagueConfig
+    /// Todas tus ligas y cuál se está mirando.
+    @Published private(set) var book: LeagueBook
     /// True mientras corre el partido de mentira del menú de pruebas.
     @Published private(set) var isSimulating = false
     /// True durante la cuenta atrás de una anotación simulada.
@@ -24,12 +25,17 @@ final class ScoreboardModel: ObservableObject {
     private var statsWeek: Int?
 
     init() {
-        config = SharedStore.loadConfig()
+        book = SharedStore.loadBook()
         // Se arranca con lo último que se vio: la pantalla nunca aparece vacía.
         snapshot = SharedStore.cachedSnapshot()
     }
 
-    var needsSetup: Bool { !config.isComplete }
+    /// La liga que se está mirando.
+    var config: LeagueConfig { book.active ?? .default }
+
+    var needsSetup: Bool { book.isEmpty }
+
+    var hasMultipleLeagues: Bool { book.leagues.count > 1 }
 
     // MARK: - Descarga
 
@@ -49,7 +55,7 @@ final class ScoreboardModel: ObservableObject {
         } catch {
             lastError = error.localizedDescription
             // Si no había nada en pantalla, al menos se enseña lo guardado.
-            if snapshot == nil { snapshot = SharedStore.staleSnapshot() }
+            if snapshot == nil { snapshot = SharedStore.staleSnapshot(for: config) }
             else { snapshot?.isStale = true }
         }
     }
@@ -65,7 +71,7 @@ final class ScoreboardModel: ObservableObject {
         actualizado.recentPlays = Array((anotaciones + (snapshot?.plays ?? [])).prefix(6))
 
         snapshot = actualizado
-        SharedStore.cache(actualizado)
+        SharedStore.cache(actualizado, for: config)
         WidgetCenter.shared.reloadAllTimelines()
 
         // Las fotos, en disco, para el widget y la Live Activity.
@@ -149,15 +155,26 @@ final class ScoreboardModel: ObservableObject {
     func refreshCatalogIfNeeded() async {
         let stale = await PlayerCatalog.shared.isStale
         guard stale else { return }
-        await PlayerCatalog.shared.refreshIfNeeded()
+        let catalogo = await PlayerCatalog.shared.refreshIfNeeded()
         await refresh(showSpinner: false)
+        await checkInjuries(with: catalogo)
+    }
+
+    /// Avisa de los cambios en el parte de lesiones de los jugadores que ves.
+    private func checkInjuries(with catalog: [String: CatalogPlayer]) async {
+        guard let actual = snapshot else { return }
+        let cambios = InjuryWatcher.changes(in: actual, catalog: catalog)
+        for cambio in cambios.prefix(3) {
+            await Notifier.injury(cambio)
+        }
     }
 
     func forceCatalogRefresh() async {
         isLoading = true
         defer { isLoading = false }
-        await PlayerCatalog.shared.refreshIfNeeded(force: true)
+        let catalogo = await PlayerCatalog.shared.refreshIfNeeded(force: true)
         await refresh(showSpinner: false)
+        await checkInjuries(with: catalogo)
     }
 
     // MARK: - Live Activity
@@ -180,12 +197,42 @@ final class ScoreboardModel: ObservableObject {
 
     // MARK: - Ajustes
 
+    /// Añade una liga (o actualiza la que ya estaba) y la deja activa.
     func update(config newConfig: LeagueConfig) {
-        config = newConfig
-        SharedStore.save(newConfig)
-        snapshot = nil
+        book.upsert(newConfig)
+        persist()
+        showLeague(newConfig)
+    }
+
+    /// Cambia de liga sin descargar nada primero: se enseña al momento lo
+    /// último que se vio de esa liga y luego se refresca.
+    func activate(_ league: LeagueConfig) {
+        guard league.id != book.activeID else { return }
+        book.activeID = league.id
+        persist()
+        showLeague(league)
+    }
+
+    func remove(_ league: LeagueConfig) {
+        book.remove(league)
+        persist()
+        if let siguiente = book.active {
+            showLeague(siguiente)
+        } else {
+            snapshot = nil
+        }
+    }
+
+    private func showLeague(_ league: LeagueConfig) {
+        // Cada liga guarda su propio marcador, así que el cambio es inmediato.
+        snapshot = SharedStore.cachedSnapshot(for: league)
+        statsWeek = nil
+        Task { await refresh(showSpinner: snapshot == nil) }
+    }
+
+    private func persist() {
+        SharedStore.save(book)
         WidgetCenter.shared.reloadAllTimelines()
-        Task { await refresh() }
     }
 
     // MARK: - Refresco automático

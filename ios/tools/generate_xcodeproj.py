@@ -36,6 +36,7 @@ SHARED_SOURCES = [
     "SharedStore.swift",
     "KeychainStore.swift",
     "HostKind.swift",
+    "Entitlements.swift",
     "AvatarLoader.swift",
     "HeadshotCache.swift",
     "PlayerCatalog.swift",
@@ -51,6 +52,7 @@ APP_SOURCES = [
     "RootView.swift",
     "ScoreboardView.swift",
     "AccountsView.swift",
+    "PaywallView.swift",
     "SleeperSettingsView.swift",
     "YahooAuth.swift",
 ]
@@ -65,6 +67,7 @@ FILE_TYPES = {
     ".swift": "sourcecode.swift",
     ".xcassets": "folder.assetcatalog",
     ".plist": "text.plist.xml",
+    ".xcprivacy": "text.plist.xml",
     ".entitlements": "text.plist.entitlements",
 }
 
@@ -305,9 +308,13 @@ def build() -> str:
 
     # -- referencias a archivos ---------------------------------------------
     shared_refs = [file_ref("Shared", name) for name in SHARED_SOURCES]
-    app_file_names = APP_SOURCES + ["Assets.xcassets", "Info.plist", "SleeperScore.entitlements"]
+    app_file_names = APP_SOURCES + [
+        "Assets.xcassets", "PrivacyInfo.xcprivacy", "Info.plist", "SleeperScore.entitlements"
+    ]
     app_refs = [file_ref("SleeperScore", name) for name in app_file_names]
-    widget_file_names = WIDGET_SOURCES + ["Assets.xcassets", "Info.plist", "ScoreWidget.entitlements"]
+    widget_file_names = WIDGET_SOURCES + [
+        "Assets.xcassets", "PrivacyInfo.xcprivacy", "Info.plist", "ScoreWidget.entitlements"
+    ]
     widget_refs = [file_ref("ScoreWidget", name) for name in widget_file_names]
 
     app_product = add("product:app", {
@@ -343,8 +350,14 @@ def build() -> str:
     widget_sources = [build_file(WIDGET_TARGET, "Shared", n) for n in SHARED_SOURCES]
     widget_sources += [build_file(WIDGET_TARGET, "ScoreWidget", n) for n in WIDGET_SOURCES]
 
-    app_resources = [build_file(APP_TARGET, "SleeperScore", "Assets.xcassets")]
-    widget_resources = [build_file(WIDGET_TARGET, "ScoreWidget", "Assets.xcassets")]
+    app_resources = [
+        build_file(APP_TARGET, "SleeperScore", "Assets.xcassets"),
+        build_file(APP_TARGET, "SleeperScore", "PrivacyInfo.xcprivacy"),
+    ]
+    widget_resources = [
+        build_file(WIDGET_TARGET, "ScoreWidget", "Assets.xcassets"),
+        build_file(WIDGET_TARGET, "ScoreWidget", "PrivacyInfo.xcprivacy"),
+    ]
 
     app_sources_phase = add("phase:app:sources", {
         "isa": "PBXSourcesBuildPhase",

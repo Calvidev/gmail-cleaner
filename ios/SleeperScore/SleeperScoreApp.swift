@@ -1,11 +1,17 @@
 //  SleeperScoreApp.swift
 
+import BackgroundTasks
 import SwiftUI
 
 @main
 struct SleeperScoreApp: App {
     @StateObject private var model = ScoreboardModel()
     @Environment(\.scenePhase) private var scenePhase
+
+    init() {
+        // Hay que registrarla antes de que la app termine de arrancar.
+        BackgroundRefresh.register()
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -21,6 +27,8 @@ struct SleeperScoreApp: App {
                 model.startAutoRefresh()
             default:
                 model.stopAutoRefresh()
+                // Al salir se pide el siguiente rato de segundo plano.
+                BackgroundRefresh.schedule()
             }
         }
     }

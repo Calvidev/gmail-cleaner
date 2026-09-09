@@ -84,55 +84,14 @@ final class LiveActivityController: ObservableObject {
         }
     }
 
-    // MARK: - Aviso de anotación
+    // MARK: - Avisos
 
     func requestNotificationPermission() async {
-        _ = try? await UNUserNotificationCenter.current()
-            .requestAuthorization(options: [.alert, .sound])
+        await Notifier.requestPermission()
     }
 
-    /// Notificación con sonido, foto y puntos del jugador que acaba de anotar.
     func notify(_ play: ScoringPlay) async {
-        let centro = UNUserNotificationCenter.current()
-        let permisos = await centro.notificationSettings()
-        guard permisos.authorizationStatus == .authorized else { return }
-
-        let contenido = UNMutableNotificationContent()
-        contenido.title = play.isMine ? "Anotó tu jugador" : "Anotó el rival"
-        contenido.subtitle = "+\(play.delta.fantasyPoints) pts · \(play.total.fantasyPoints) en total"
-        // Lo que ha hecho, que es lo que uno quiere saber: "6 rec · 88 yds · 1 TD".
-        let detalle = play.stats ?? play.subtitle
-        contenido.body = detalle.isEmpty ? play.name : "\(play.name) — \(detalle)"
-        contenido.sound = .default
-        contenido.interruptionLevel = .timeSensitive
-
-        if let adjunto = await attachment(for: play) {
-            contenido.attachments = [adjunto]
-        }
-
-        let peticion = UNNotificationRequest(
-            identifier: play.id, content: contenido, trigger: nil
-        )
-        try? await centro.add(peticion)
-    }
-
-    /// Las notificaciones exigen un archivo con extensión reconocible, así que
-    /// la foto cacheada se copia a temporales como .jpg.
-    private func attachment(for play: ScoringPlay) async -> UNNotificationAttachment? {
-        guard
-            let datos = await HeadshotCache.prefetch(
-                playerID: play.playerID, position: play.position, team: play.team
-            )
-        else { return nil }
-
-        let destino = FileManager.default.temporaryDirectory
-            .appendingPathComponent("play-\(play.playerID).jpg")
-        do {
-            try datos.write(to: destino, options: .atomic)
-            return try UNNotificationAttachment(identifier: play.playerID, url: destino)
-        } catch {
-            return nil
-        }
+        await Notifier.play(play)
     }
 }
 

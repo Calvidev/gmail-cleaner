@@ -248,6 +248,7 @@ struct RawCatalogPlayer: Decodable {
     let lastName: String?
     let position: String?
     let team: String?
+    let injuryStatus: String?
 
     enum CodingKeys: String, CodingKey {
         case fullName = "full_name"
@@ -255,6 +256,7 @@ struct RawCatalogPlayer: Decodable {
         case lastName = "last_name"
         case position
         case team
+        case injuryStatus = "injury_status"
     }
 }
 
@@ -263,4 +265,7 @@ struct CatalogPlayer: Codable, Hashable {
     let name: String
     let position: String?
     let team: String?
+    /// "Questionable", "Out", "IR"… Nil cuando está sano. Opcional también en
+    /// el archivo: un catálogo guardado por la versión anterior se sigue leyendo.
+    var injuryStatus: String?
 }

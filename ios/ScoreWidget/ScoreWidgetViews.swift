@@ -2,6 +2,7 @@
 //  Las cinco caras del widget: pequeño, mediano, grande y las dos de bloqueo.
 
 import SwiftUI
+import UIKit
 import WidgetKit
 
 struct ScoreWidgetEntryView: View {
@@ -37,6 +38,7 @@ struct ScoreWidgetEntryView: View {
             }
         }
         .containerBackground(for: .widget) { Theme.background }
+        .widgetURL(URL(string: "sleeperscore://marcador"))
     }
 }
 
@@ -62,6 +64,10 @@ struct SmallScore: View {
             HStack(spacing: 4) {
                 Text("Sem. \(snapshot.week)")
                 Spacer(minLength: 0)
+                Text(snapshot.difference.signedFantasyPoints)
+                    .monospacedDigit()
+                    .foregroundStyle(snapshot.isLeading ? Theme.accent : Color.red)
+                Text("·")
                 Text(snapshot.isStale ? "guardado" : snapshot.updatedAt.hourAndMinute)
             }
             .font(.system(size: 9))
@@ -72,10 +78,17 @@ struct SmallScore: View {
     private func side(_ team: TeamSide?, points: Double) -> some View {
         HStack(spacing: 6) {
             AvatarBadge(data: team?.avatarData, size: 16)
-            Text(team?.name ?? "Sin rival")
-                .font(.system(size: 11, weight: .semibold))
-                .foregroundStyle(.white)
-                .lineLimit(1)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(team?.name ?? "Sin rival")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                if let record = team?.record {
+                    Text(record)
+                        .font(.system(size: 8))
+                        .foregroundStyle(.white.opacity(0.4))
+                }
+            }
             Spacer(minLength: 2)
             Text(points.fantasyPoints)
                 .font(.system(size: 17, weight: .bold, design: .rounded))
@@ -106,13 +119,17 @@ struct MediumScore: View {
 
             ScoreBar(share: snapshot.myShare)
 
-            HStack {
-                Text("Titulares \(snapshot.me.startersCount):\(snapshot.opponent?.startersCount ?? 0)")
-                Spacer()
-                Text(snapshot.isStale ? "Datos guardados" : "Actualizado \(snapshot.updatedAt.hourAndMinute)")
+            if let play = snapshot.plays.first {
+                WidgetPlayRow(play: play)
+            } else {
+                HStack {
+                    Text("Titulares \(snapshot.me.startersCount):\(snapshot.opponent?.startersCount ?? 0)")
+                    Spacer()
+                    Text(snapshot.isStale ? "Datos guardados" : "Actualizado \(snapshot.updatedAt.hourAndMinute)")
+                }
+                .font(.system(size: 10))
+                .foregroundStyle(.white.opacity(0.5))
             }
-            .font(.system(size: 10))
-            .foregroundStyle(.white.opacity(0.5))
         }
     }
 }
@@ -137,6 +154,13 @@ struct LargeScore: View {
                 }
             }
             Spacer(minLength: 0)
+            HStack {
+                Text(snapshot.me.record.map { "Tú \($0)" } ?? "")
+                Spacer()
+                Text(snapshot.isStale ? "Datos guardados" : "Actualizado \(snapshot.updatedAt.hourAndMinute)")
+            }
+            .font(.system(size: 9))
+            .foregroundStyle(.white.opacity(0.4))
         }
     }
 }
@@ -146,6 +170,7 @@ struct LargeLineupRow: View {
 
     var body: some View {
         HStack(spacing: 6) {
+            WidgetHeadshot(playerID: row.mine?.playerID, size: 18)
             Text(shortName(row.mine))
                 .frame(maxWidth: .infinity, alignment: .leading)
             Text((row.mine?.points ?? 0).fantasyPoints)
@@ -160,6 +185,7 @@ struct LargeLineupRow: View {
                 .foregroundStyle(.white)
             Text(shortName(row.theirs))
                 .frame(maxWidth: .infinity, alignment: .trailing)
+            WidgetHeadshot(playerID: row.theirs?.playerID, size: 18)
         }
         .font(.system(size: 11))
         .foregroundStyle(.white.opacity(0.75))
@@ -213,20 +239,79 @@ struct InlineScore: View {
     }
 }
 
+/// Una anotación en una línea, para el widget mediano.
+struct WidgetPlayRow: View {
+    var play: ScoringPlay
+
+    var body: some View {
+        HStack(spacing: 6) {
+            WidgetHeadshot(playerID: play.playerID, size: 18)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(play.name)
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .lineLimit(1)
+                if let stats = play.stats {
+                    Text(stats)
+                        .font(.system(size: 9))
+                        .foregroundStyle(.white.opacity(0.5))
+                        .lineLimit(1)
+                }
+            }
+            Spacer(minLength: 2)
+            Text("+\(play.delta.fantasyPoints)")
+                .font(.system(size: 11, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(play.isMine ? Theme.accent : Color.red)
+        }
+    }
+}
+
+/// Foto de jugador leída del grupo de apps. En un widget no hay red.
+struct WidgetHeadshot: View {
+    var playerID: String?
+    var size: CGFloat
+
+    var body: some View {
+        Group {
+            if let playerID,
+               let data = HeadshotCache.cachedData(playerID: playerID),
+               let image = UIImage(data: data) {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else {
+                Image(systemName: "person.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .padding(size * 0.25)
+                    .foregroundStyle(.white.opacity(0.25))
+            }
+        }
+        .frame(width: size, height: size)
+        .background(Color.white.opacity(0.06), in: Circle())
+        .clipShape(Circle())
+    }
+}
+
 // MARK: - Sin datos
 
 struct EmptyState: View {
     var message: String?
 
     var body: some View {
-        VStack(spacing: 6) {
-            Image(systemName: "sportscourt")
-                .font(.system(size: 20))
+        VStack(spacing: 8) {
+            Image(systemName: "sportscourt.fill")
+                .font(.system(size: 22))
                 .foregroundStyle(Theme.accent)
-            Text(message ?? "Abre la app y elige tu liga")
-                .font(.system(size: 11))
+            Text(message ?? "Elige tu liga en la app")
+                .font(.system(size: 11, weight: .medium))
                 .multilineTextAlignment(.center)
-                .foregroundStyle(.white.opacity(0.7))
+                .foregroundStyle(.white.opacity(0.75))
+            if message == nil {
+                Text("Toca para abrirla")
+                    .font(.system(size: 9))
+                    .foregroundStyle(.white.opacity(0.4))
+            }
         }
+        .padding(.horizontal, 8)
     }
 }

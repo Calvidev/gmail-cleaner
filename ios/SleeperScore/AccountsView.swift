@@ -13,13 +13,16 @@ struct AccountsView: View {
 
     @State private var connections: [HostKind: HostConnection] = SharedStore.connections()
     @State private var showingYahoo = false
+    @State private var showingPaywall = false
     @State private var catalogDate: Date?
     @State private var isRefreshingCatalog = false
 
     var body: some View {
         NavigationStack {
             Form {
+                leaguesSection
                 accountsSection
+                planSection
                 testingSection
                 widgetSection
                 catalogSection
@@ -34,6 +37,9 @@ struct AccountsView: View {
                     Button("Cerrar") { dismiss() }
                 }
             }
+            .sheet(isPresented: $showingPaywall) {
+                PaywallView().preferredColorScheme(.dark)
+            }
             .sheet(isPresented: $showingYahoo) {
                 YahooLoginView(auth: yahoo)
                     .preferredColorScheme(.dark)
@@ -44,6 +50,77 @@ struct AccountsView: View {
             .onChange(of: showingYahoo) { _, abierto in
                 if !abierto { connections = SharedStore.connections() }
             }
+        }
+    }
+
+    // MARK: - Mis ligas
+
+    @ViewBuilder
+    private var leaguesSection: some View {
+        if !model.book.leagues.isEmpty {
+            Section {
+                ForEach(model.book.leagues) { liga in
+                    Button {
+                        model.activate(liga)
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: liga.platform.symbol)
+                                .foregroundStyle(liga.platform.accent)
+                                .frame(width: 22)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(liga.displayName)
+                                    .foregroundStyle(.primary)
+                                if let equipo = liga.teamName {
+                                    Text(equipo)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                            Spacer()
+                            if liga.id == model.book.activeID {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundStyle(Theme.accent)
+                            }
+                        }
+                    }
+                }
+                .onDelete { indices in
+                    for indice in indices {
+                        model.remove(model.book.leagues[indice])
+                    }
+                }
+            } header: {
+                Text("Mis ligas")
+            } footer: {
+                Text(model.book.leagues.count > 1
+                     ? "Toca una para verla en el marcador; desliza para quitarla."
+                     : "Añade otra desde Sleeper, aquí abajo.")
+            }
+        }
+    }
+
+    // MARK: - Plan
+
+    private var planSection: some View {
+        Section {
+            Button {
+                showingPaywall = true
+            } label: {
+                HStack {
+                    Label("Plan \(EntitlementStore.current.plan.title)", systemImage: "sparkles")
+                        .foregroundStyle(.primary)
+                    Spacer()
+                    if EntitlementStore.current.plan == .free {
+                        Text("Ver Pro")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Theme.accent)
+                    }
+                }
+            }
+        } footer: {
+            Text(EntitlementStore.current.plan == .free
+                 ? "El plan gratis sigue una liga. Pro quita el límite."
+                 : "Pro activo: ligas ilimitadas.")
         }
     }
 

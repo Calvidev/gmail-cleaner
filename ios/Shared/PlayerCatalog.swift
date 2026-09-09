@@ -59,7 +59,10 @@ actor PlayerCatalog {
             let name = Self.name(for: playerID, entry: entry)
             guard !name.isEmpty else { continue }
             trimmed[playerID] = CatalogPlayer(
-                name: name, position: entry.position, team: entry.team
+                name: name,
+                position: entry.position,
+                team: entry.team,
+                injuryStatus: entry.injuryStatus
             )
         }
 

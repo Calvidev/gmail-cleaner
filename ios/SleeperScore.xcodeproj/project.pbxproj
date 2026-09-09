@@ -46,6 +46,10 @@
 			productReference = 1B442E42980596EBCD246D51 /* ScoreWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		0A598CA0E76491BC2FBFA58E = {
+			isa = PBXBuildFile;
+			fileRef = 203F74635AA1CE200A0E9736 /* Entitlements.swift */;
+		};
 		1011B10BE33E7445720286C5 = {
 			isa = PBXBuildFile;
 			fileRef = C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */;
@@ -60,6 +64,10 @@
 		13FBE3C3B926169A29D11AEA = {
 			isa = PBXBuildFile;
 			fileRef = CD7706DE0705E26991B88766 /* AppConfig.swift */;
+		};
+		168A2B8957B3AD26128DBC3F = {
+			isa = PBXBuildFile;
+			fileRef = 203F74635AA1CE200A0E9736 /* Entitlements.swift */;
 		};
 		16ACE556BD5CA3C51FD3F043 = {
 			isa = XCBuildConfiguration;
@@ -105,6 +113,12 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		203F74635AA1CE200A0E9736 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Entitlements.swift;
+			sourceTree = "<group>";
 		};
 		207AE7F7BF7702CED53D696C = {
 			isa = PBXFileReference;
@@ -165,6 +179,7 @@
 				EB0BABE71F931600D48BB98F /* SharedStore.swift in ScoreWidgetExtension */,
 				3324523CAE439BA3B0D3A966 /* KeychainStore.swift in ScoreWidgetExtension */,
 				68B0C94D62D04030A04109CF /* HostKind.swift in ScoreWidgetExtension */,
+				168A2B8957B3AD26128DBC3F /* Entitlements.swift in ScoreWidgetExtension */,
 				D0143AE3927E5100A6257CF1 /* AvatarLoader.swift in ScoreWidgetExtension */,
 				74B9E9A0D86F399917DBF509 /* HeadshotCache.swift in ScoreWidgetExtension */,
 				1011B10BE33E7445720286C5 /* PlayerCatalog.swift in ScoreWidgetExtension */,
@@ -255,6 +270,7 @@
 				4DDDE3071D9582391BFE9D0D /* SharedStore.swift in SleeperScore */,
 				6C367E27D171A8E0CF442BD3 /* KeychainStore.swift in SleeperScore */,
 				AC44EE7A89E0071831176FE1 /* HostKind.swift in SleeperScore */,
+				0A598CA0E76491BC2FBFA58E /* Entitlements.swift in SleeperScore */,
 				F5A30E0A9EB43FB9E5566673 /* AvatarLoader.swift in SleeperScore */,
 				73AA4EBD467F0E330299F7C4 /* HeadshotCache.swift in SleeperScore */,
 				FAEBD90CE12952F4FBC920AC /* PlayerCatalog.swift in SleeperScore */,
@@ -268,6 +284,7 @@
 				C6DA29FAD2E61DF050748E30 /* RootView.swift in SleeperScore */,
 				71F6B29CF9FE0FE20B3C9AD5 /* ScoreboardView.swift in SleeperScore */,
 				5BB1FFBCF225159ABC9A8FE6 /* AccountsView.swift in SleeperScore */,
+				50BE8AE4816B3EE031CEB93D /* PaywallView.swift in SleeperScore */,
 				82606A21EEF631F7A0CCE86C /* SleeperSettingsView.swift in SleeperScore */,
 				8351630F35B9C4E00D24189C /* YahooAuth.swift in SleeperScore */,
 			);
@@ -300,6 +317,10 @@
 		4DDDE3071D9582391BFE9D0D = {
 			isa = PBXBuildFile;
 			fileRef = A55CC726808CF50732E54964 /* SharedStore.swift */;
+		};
+		50BE8AE4816B3EE031CEB93D = {
+			isa = PBXBuildFile;
+			fileRef = EA428F9B7B2AC331FC76A403 /* PaywallView.swift */;
 		};
 		518DA81DB9B99529C0C0AEBE = {
 			isa = PBXGroup;
@@ -478,6 +499,12 @@
 			isa = PBXBuildFile;
 			fileRef = 76D85F12774713AC80C39647 /* SleeperSettingsView.swift */;
 		};
+		829D3BCA1A0DC5A3F4AD3F49 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = PrivacyInfo.xcprivacy;
+			sourceTree = "<group>";
+		};
 		82CF2A43A7100F086D7FCFDD = {
 			isa = PBXGroup;
 			children = (
@@ -487,9 +514,11 @@
 				678B11228DF3B271F8486C38 /* RootView.swift */,
 				B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */,
 				F5E4EB23F502600ABFDA7CF7 /* AccountsView.swift */,
+				EA428F9B7B2AC331FC76A403 /* PaywallView.swift */,
 				76D85F12774713AC80C39647 /* SleeperSettingsView.swift */,
 				394D755F24F129EE7716E89F /* YahooAuth.swift */,
 				931226496DCE20872776D15D /* Assets.xcassets */,
+				908BC9110B5449E87359BFDE /* PrivacyInfo.xcprivacy */,
 				36CBBEEECA3A305005C30BB5 /* Info.plist */,
 				024892A436DE54D2493F20CE /* SleeperScore.entitlements */,
 			);
@@ -517,6 +546,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.entitlements;
 			path = ScoreWidget.entitlements;
+			sourceTree = "<group>";
+		};
+		908BC9110B5449E87359BFDE = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.plist.xml;
+			path = PrivacyInfo.xcprivacy;
 			sourceTree = "<group>";
 		};
 		92E165A9035A603BE73D2E62 = {
@@ -581,6 +616,7 @@
 				A55CC726808CF50732E54964 /* SharedStore.swift */,
 				3EB54807A73C03E3C475C2EF /* KeychainStore.swift */,
 				195E05D9D0E5FE526308E629 /* HostKind.swift */,
+				203F74635AA1CE200A0E9736 /* Entitlements.swift */,
 				688026E8C814351531673AE2 /* AvatarLoader.swift */,
 				E37BCAA6E1080EA572DA4D1E /* HeadshotCache.swift */,
 				C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */,
@@ -623,6 +659,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				77AEDF226E1B82E972C1B282 /* Assets.xcassets in ScoreWidgetExtension */,
+				EC6697FD0BE94254B305B1CB /* PrivacyInfo.xcprivacy in ScoreWidgetExtension */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -741,6 +778,10 @@
 			isa = PBXBuildFile;
 			fileRef = 207AE7F7BF7702CED53D696C /* Theme.swift */;
 		};
+		D9CB6B243E001BECBFFFF30F = {
+			isa = PBXBuildFile;
+			fileRef = 908BC9110B5449E87359BFDE /* PrivacyInfo.xcprivacy */;
+		};
 		DCBEC3B50E0D25141FE1D888 = {
 			isa = PBXBuildFile;
 			fileRef = B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */;
@@ -802,6 +843,12 @@
 			isa = PBXBuildFile;
 			fileRef = C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */;
 		};
+		EA428F9B7B2AC331FC76A403 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = PaywallView.swift;
+			sourceTree = "<group>";
+		};
 		EB0BABE71F931600D48BB98F = {
 			isa = PBXBuildFile;
 			fileRef = A55CC726808CF50732E54964 /* SharedStore.swift */;
@@ -818,11 +865,16 @@
 				C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */,
 				3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */,
 				C67A2D71EF5298D30645961D /* Assets.xcassets */,
+				829D3BCA1A0DC5A3F4AD3F49 /* PrivacyInfo.xcprivacy */,
 				CDC15F89DB2640D57277623E /* Info.plist */,
 				889A34C747900C87EE5F896E /* ScoreWidget.entitlements */,
 			);
 			path = ScoreWidget;
 			sourceTree = "<group>";
+		};
+		EC6697FD0BE94254B305B1CB = {
+			isa = PBXBuildFile;
+			fileRef = 829D3BCA1A0DC5A3F4AD3F49 /* PrivacyInfo.xcprivacy */;
 		};
 		F360A9C432F944F1E4F4246B = {
 			isa = PBXFileReference;
@@ -845,6 +897,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EBA88E926D54C1F60AED6990 /* Assets.xcassets in SleeperScore */,
+				D9CB6B243E001BECBFFFF30F /* PrivacyInfo.xcprivacy in SleeperScore */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -105,7 +105,9 @@ final class SettingsModel: ObservableObject {
             rosterID: selectedRosterID ?? AppConfig.defaultRosterID,
             teamName: selectedTeam?.name,
             username: account?.user.username ?? (username.isEmpty ? nil : username),
-            userID: account?.user.userID
+            userID: account?.user.userID,
+            leagueName: leagueName,
+            host: .sleeper
         )
     }
 }
@@ -115,6 +117,7 @@ struct SleeperSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var settings: SettingsModel
     @State private var showingManualLeague = false
+    @State private var showingPaywall = false
 
     init() {
         _settings = StateObject(wrappedValue: SettingsModel(config: SharedStore.loadConfig()))
@@ -134,20 +137,33 @@ struct SleeperSettingsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Guardar") {
-                    model.update(config: settings.config())
-                    if let cuenta = settings.account?.user {
-                        SharedStore.connect(.sleeper, accountName: cuenta.name)
-                    }
-                    dismiss()
-                }
-                .disabled(!settings.canSave)
+                Button("Guardar") { guardar() }
+                    .disabled(!settings.canSave)
             }
         }
         .task {
             // Si ya había liga elegida, se carga para poder cambiar de equipo.
             if !settings.leagueID.isEmpty { await settings.loadTeams() }
         }
+        .sheet(isPresented: $showingPaywall) {
+            PaywallView().preferredColorScheme(.dark)
+        }
+    }
+
+    /// El plan gratis sigue una liga. Añadir otra abre la pantalla de Pro en
+    /// vez de fallar en silencio.
+    private func guardar() {
+        let nueva = settings.config()
+        let yaEstaba = model.book.leagues.contains { $0.id == nueva.id }
+        guard yaEstaba || EntitlementStore.current.canAddLeague(current: model.book.leagues.count) else {
+            showingPaywall = true
+            return
+        }
+        model.update(config: nueva)
+        if let cuenta = settings.account?.user {
+            SharedStore.connect(.sleeper, accountName: cuenta.name)
+        }
+        dismiss()
     }
 
     // MARK: - Cuenta

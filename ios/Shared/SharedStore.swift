@@ -7,17 +7,28 @@
 
 import Foundation
 
-/// Liga y equipo elegidos.
+/// Una liga tuya: dónde juegas y con qué equipo.
 ///
 /// `username` y `userID` se guardan cuando entras con tu cuenta de Sleeper:
 /// no hacen falta para pintar el marcador, pero permiten volver a encontrar
 /// tu equipo si cambias de liga sin tener que preguntarte nada otra vez.
-struct LeagueConfig: Codable, Equatable {
+struct LeagueConfig: Codable, Equatable, Identifiable, Hashable {
     var leagueID: String
     var rosterID: Int
     var teamName: String?
     var username: String? = nil
     var userID: String? = nil
+    /// Para el selector de ligas: el nombre que enseña Sleeper.
+    var leagueName: String? = nil
+    /// Preparado para cuando haya Yahoo: dos ligas de plataformas distintas
+    /// pueden compartir número. Opcional en el archivo para que una
+    /// configuración guardada por la versión anterior se siga leyendo.
+    var host: HostKind?
+
+    /// La plataforma, ya sin opcional.
+    var platform: HostKind { host ?? .sleeper }
+
+    var id: String { "\(platform.rawValue):\(leagueID)" }
 
     static let `default` = LeagueConfig(
         leagueID: AppConfig.defaultLeagueID,
@@ -26,12 +37,54 @@ struct LeagueConfig: Codable, Equatable {
     )
 
     var isComplete: Bool { !leagueID.trimmingCharacters(in: .whitespaces).isEmpty }
+
+    var displayName: String {
+        if let leagueName, !leagueName.isEmpty { return leagueName }
+        return "Liga \(leagueID)"
+    }
+}
+
+/// Todas tus ligas y cuál se está mirando.
+struct LeagueBook: Codable, Equatable {
+    var leagues: [LeagueConfig] = []
+    var activeID: String?
+
+    var active: LeagueConfig? {
+        if let activeID, let encontrada = leagues.first(where: { $0.id == activeID }) {
+            return encontrada
+        }
+        return leagues.first
+    }
+
+    var isEmpty: Bool { leagues.isEmpty }
+
+    mutating func upsert(_ league: LeagueConfig, makeActive: Bool = true) {
+        if let indice = leagues.firstIndex(where: { $0.id == league.id }) {
+            leagues[indice] = league
+        } else {
+            leagues.append(league)
+        }
+        if makeActive { activeID = league.id }
+    }
+
+    mutating func remove(_ league: LeagueConfig) {
+        leagues.removeAll { $0.id == league.id }
+        if activeID == league.id { activeID = leagues.first?.id }
+    }
 }
 
 enum SharedStore {
     private static let configKey = "leagueConfig"
+    private static let bookKey = "leagueBook"
     private static let connectionsKey = "hostConnections"
     private static let snapshotFile = "matchup-snapshot.json"
+
+    private static func snapshotFile(for league: LeagueConfig?) -> String {
+        guard let league else { return snapshotFile }
+        // Un archivo por liga: cambiar de liga no debe borrar el marcador de
+        // la otra ni enseñar el de quien no toca.
+        return "matchup-\(stableHash(league.id)).json"
+    }
 
     // MARK: - Dónde se guarda
 
@@ -60,19 +113,42 @@ enum SharedStore {
 
     // MARK: - Liga elegida
 
+    /// La liga que se está mirando. Es lo que usan el widget y la Live Activity.
     static func loadConfig() -> LeagueConfig {
-        guard
-            let data = defaults.data(forKey: configKey),
-            let config = try? SharedJSON.decoder.decode(LeagueConfig.self, from: data)
-        else {
-            return .default
-        }
-        return config
+        loadBook().active ?? .default
     }
 
+    /// Todas las ligas guardadas.
+    ///
+    /// Si solo hay una configuración de la versión anterior (una liga suelta),
+    /// se convierte en un cuaderno de una liga: nadie pierde lo que tenía.
+    static func loadBook() -> LeagueBook {
+        if let data = defaults.data(forKey: bookKey),
+           let libro = try? SharedJSON.decoder.decode(LeagueBook.self, from: data),
+           !libro.isEmpty {
+            return libro
+        }
+        if let data = defaults.data(forKey: configKey),
+           let antigua = try? SharedJSON.decoder.decode(LeagueConfig.self, from: data),
+           antigua.isComplete {
+            var libro = LeagueBook()
+            libro.upsert(antigua)
+            save(libro)
+            return libro
+        }
+        return LeagueBook()
+    }
+
+    static func save(_ book: LeagueBook) {
+        guard let data = try? SharedJSON.encoder.encode(book) else { return }
+        defaults.set(data, forKey: bookKey)
+    }
+
+    /// Guarda una liga suelta (la deja activa).
     static func save(_ config: LeagueConfig) {
-        guard let data = try? SharedJSON.encoder.encode(config) else { return }
-        defaults.set(data, forKey: configKey)
+        var libro = loadBook()
+        libro.upsert(config)
+        save(libro)
     }
 
     // MARK: - Cuentas conectadas
@@ -116,19 +192,23 @@ enum SharedStore {
 
     // MARK: - Último marcador conocido
 
-    static func cachedSnapshot() -> MatchupSnapshot? {
-        guard let data = try? Data(contentsOf: fileURL(snapshotFile)) else { return nil }
+    static func cachedSnapshot(for league: LeagueConfig? = nil) -> MatchupSnapshot? {
+        let liga = league ?? loadBook().active
+        guard let data = try? Data(contentsOf: fileURL(snapshotFile(for: liga))) else {
+            return nil
+        }
         return try? SharedJSON.decoder.decode(MatchupSnapshot.self, from: data)
     }
 
-    static func cache(_ snapshot: MatchupSnapshot) {
+    static func cache(_ snapshot: MatchupSnapshot, for league: LeagueConfig? = nil) {
+        let liga = league ?? loadBook().active
         guard let data = try? SharedJSON.encoder.encode(snapshot) else { return }
-        try? data.write(to: fileURL(snapshotFile), options: .atomic)
+        try? data.write(to: fileURL(snapshotFile(for: liga)), options: .atomic)
     }
 
     /// El marcador guardado, marcado ya como viejo para que la interfaz lo diga.
-    static func staleSnapshot() -> MatchupSnapshot? {
-        guard var snapshot = cachedSnapshot() else { return nil }
+    static func staleSnapshot(for league: LeagueConfig? = nil) -> MatchupSnapshot? {
+        guard var snapshot = cachedSnapshot(for: league) else { return nil }
         snapshot.isStale = true
         return snapshot
     }

@@ -16,9 +16,11 @@ struct RootView: View {
                     ScoreboardView()
                 }
             }
-            .navigationTitle("Marcador")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    LeaguePicker()
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         showingSettings = true
@@ -38,6 +40,45 @@ struct RootView: View {
         }
         .task {
             model.startAutoRefresh()
+        }
+    }
+}
+
+/// El título de la barra: el nombre de la liga y, si hay varias, un menú para
+/// saltar entre ellas sin pasar por ajustes.
+struct LeaguePicker: View {
+    @EnvironmentObject private var model: ScoreboardModel
+
+    var body: some View {
+        if model.hasMultipleLeagues {
+            Menu {
+                ForEach(model.book.leagues) { liga in
+                    Button {
+                        model.activate(liga)
+                    } label: {
+                        if liga.id == model.book.activeID {
+                            Label(liga.displayName, systemImage: "checkmark")
+                        } else {
+                            Text(liga.displayName)
+                        }
+                    }
+                }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(model.config.displayName)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(Theme.accent)
+                }
+            }
+        } else {
+            Text(model.needsSetup ? "Marcador" : model.config.displayName)
+                .font(.headline)
+                .foregroundStyle(.white)
+                .lineLimit(1)
         }
     }
 }
