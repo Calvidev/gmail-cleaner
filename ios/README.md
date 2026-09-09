@@ -259,6 +259,21 @@ del proyecto anterior y lo vuelve a escribir.
 Como plan B está `project.yml`, la misma estructura para
 [XcodeGen](https://github.com/yonaskolb/XcodeGen): `brew install xcodegen && cd ios && xcodegen generate`.
 
+## Idiomas
+
+La app está en español y trae una traducción al inglés en
+`Localizable.xcstrings` (113 cadenas), que es el idioma del mercado al que va
+dirigida: el fantasy de la NFL se juega sobre todo en Estados Unidos.
+
+Va por catálogo de cadenas, así que la clave de cada texto **es el propio texto
+en español**. Lo que no cubre todavía —y conviene saberlo antes de publicar en
+inglés— son los textos que se construyen dentro de vistas con interpolación y
+no están en el catálogo: si falta una clave, esa frase sale en español. Los
+avisos y los mensajes de error sí están marcados con `String(localized:)`.
+
+Para revisar cómo va: abre el catálogo en Xcode, que enseña el porcentaje
+traducido y marca las cadenas nuevas según se añaden.
+
 ## Lo que aún no está probado
 
 El proyecto se escribió en Linux, donde no hay Xcode: **no se ha compilado ni

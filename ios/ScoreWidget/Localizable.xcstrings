@@ -1,0 +1,1136 @@
+{
+  "sourceLanguage": "es",
+  "strings": {
+    "#": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "#"
+          }
+        }
+      }
+    },
+    "API de Sleeper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeper API"
+          }
+        }
+      }
+    },
+    "Abriendo Yahoo…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opening Yahoo…"
+          }
+        }
+      }
+    },
+    "Actualizar catálogo de jugadores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update player catalog"
+          }
+        }
+      }
+    },
+    "Alineación": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lineup"
+          }
+        }
+      }
+    },
+    "Anota el rival (+6)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opponent scores (+6)"
+          }
+        }
+      }
+    },
+    "Anota en 2 segundos… cierra la app": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoring in 2 seconds… close the app"
+          }
+        }
+      }
+    },
+    "Anota tu jugador (+6)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your player scores (+6)"
+          }
+        }
+      }
+    },
+    "Aún no se ha descargado. Son unos 5 MB y solo hace falta una vez al día.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not downloaded yet. It's about 5 MB and only once a day."
+          }
+        }
+      }
+    },
+    "Buscando tus ligas…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finding your leagues…"
+          }
+        }
+      }
+    },
+    "Buscar equipos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find teams"
+          }
+        }
+      }
+    },
+    "Buscar mis ligas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find my leagues"
+          }
+        }
+      }
+    },
+    "Cerrar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "Cerrar sesión": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign out"
+          }
+        }
+      }
+    },
+    "Clasificación": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standings"
+          }
+        }
+      }
+    },
+    "Client ID": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Client ID"
+          }
+        }
+      }
+    },
+    "Client Secret": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Client Secret"
+          }
+        }
+      }
+    },
+    "Conecta tu cuenta y elige la liga. Con Sleeper basta tu nombre de usuario: no hace falta contraseña.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect your account and pick a league. With Sleeper your username is enough — no password needed."
+          }
+        }
+      }
+    },
+    "Cuentas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accounts"
+          }
+        }
+      }
+    },
+    "Cuentas y ajustes": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accounts and settings"
+          }
+        }
+      }
+    },
+    "Datos guardados": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved data"
+          }
+        }
+      }
+    },
+    "De tus jugadores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From your players"
+          }
+        }
+      }
+    },
+    "Descargando…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloading…"
+          }
+        }
+      }
+    },
+    "Dónde juegas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Where you play"
+          }
+        }
+      }
+    },
+    "ESPN y NFL.com llegarán más adelante: sus API no son públicas y hace falta resolver antes cómo entrar en cada una.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ESPN and NFL.com are coming later: their APIs aren't public and sign-in has to be solved first."
+          }
+        }
+      }
+    },
+    "El plan gratis sigue una liga. Pro quita el límite.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The free plan follows one league. Pro removes the limit."
+          }
+        }
+      }
+    },
+    "Elegir liga": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick league"
+          }
+        }
+      }
+    },
+    "Elegir plataforma": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose platform"
+          }
+        }
+      }
+    },
+    "Elige tu liga en la app": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pick your league in the app"
+          }
+        }
+      }
+    },
+    "Entra con tu Sleeper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with Sleeper"
+          }
+        }
+      }
+    },
+    "Equipo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team"
+          }
+        }
+      }
+    },
+    "Equipos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teams"
+          }
+        }
+      }
+    },
+    "Field goal (+3)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Field goal (+3)"
+          }
+        }
+      }
+    },
+    "Guardar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "Id de la liga": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "League ID"
+          }
+        }
+      }
+    },
+    "Iniciar sesión con Yahoo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in with Yahoo"
+          }
+        }
+      }
+    },
+    "Jornada de descanso": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bye week"
+          }
+        }
+      }
+    },
+    "Ligas ilimitadas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlimited leagues"
+          }
+        }
+      }
+    },
+    "Marcador": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scoreboard"
+          }
+        }
+      }
+    },
+    "Mi temporada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My season"
+          }
+        }
+      }
+    },
+    "Mis ligas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My leagues"
+          }
+        }
+      }
+    },
+    "Nombres de los jugadores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player names"
+          }
+        }
+      }
+    },
+    "Nombres y fotos de los jugadores": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Player names and photos"
+          }
+        }
+      }
+    },
+    "Noticias": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News"
+          }
+        }
+      }
+    },
+    "Parar el partido simulado": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop the simulated game"
+          }
+        }
+      }
+    },
+    "Partido simulado (cada 12 s)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Simulated game (every 12s)"
+          }
+        }
+      }
+    },
+    "Plan (pruebas)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan (testing)"
+          }
+        }
+      }
+    },
+    "Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro"
+          }
+        }
+      }
+    },
+    "Pro activo: ligas ilimitadas.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro active: unlimited leagues."
+          }
+        }
+      }
+    },
+    "Próximamente": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coming soon"
+          }
+        }
+      }
+    },
+    "Pruebas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testing"
+          }
+        }
+      }
+    },
+    "Puntos por jornada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points by week"
+          }
+        }
+      }
+    },
+    "Redirect URI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redirect URI"
+          }
+        }
+      }
+    },
+    "Seguir en la pantalla de bloqueo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Follow on the Lock Screen"
+          }
+        }
+      }
+    },
+    "Dejar de seguir el partido": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop following the game"
+          }
+        }
+      }
+    },
+    "Sesión iniciada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signed in"
+          }
+        }
+      }
+    },
+    "Sin rival": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No opponent"
+          }
+        }
+      }
+    },
+    "Sleeper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeper"
+          }
+        }
+      }
+    },
+    "Todas tus ligas en una app": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All your leagues in one app"
+          }
+        }
+      }
+    },
+    "Toca para abrirla": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to open"
+          }
+        }
+      }
+    },
+    "Tocar una para verla en el marcador; desliza para quitarla.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap one to show it on the scoreboard; swipe to remove it."
+          }
+        }
+      }
+    },
+    "Tu cuenta de Sleeper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Sleeper account"
+          }
+        }
+      }
+    },
+    "Tu app de Yahoo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Yahoo app"
+          }
+        }
+      }
+    },
+    "Tu equipo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your team"
+          }
+        }
+      }
+    },
+    "Tu usuario de Sleeper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Sleeper username"
+          }
+        }
+      }
+    },
+    "Tus ligas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your leagues"
+          }
+        }
+      }
+    },
+    "Un widget por liga": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One widget per league"
+          }
+        }
+      }
+    },
+    "Usar el id de la liga": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the league ID"
+          }
+        }
+      }
+    },
+    "Ver Pro": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "See Pro"
+          }
+        }
+      }
+    },
+    "Versión": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        }
+      }
+    },
+    "Widget": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget"
+          }
+        }
+      }
+    },
+    "Yahoo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yahoo"
+          }
+        }
+      }
+    },
+    "Añade otra desde Sleeper, aquí abajo.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add another from Sleeper, below."
+          }
+        }
+      }
+    },
+    "Compartir": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share"
+          }
+        }
+      }
+    },
+    "Avisos de todas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alerts from all of them"
+          }
+        }
+      }
+    },
+    "Varias plataformas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Multiple platforms"
+          }
+        }
+      }
+    },
+    "de ganar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "to win"
+          }
+        }
+      }
+    },
+    "faltan": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "left"
+          }
+        }
+      }
+    },
+    "jornada cerrada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "week closed"
+          }
+        }
+      }
+    },
+    "Proyección": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projection"
+          }
+        }
+      }
+    },
+    "En el banquillo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On the bench"
+          }
+        }
+      }
+    },
+    "Rival": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opponent"
+          }
+        }
+      }
+    },
+    "Compartido con el widget": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shared with the widget"
+          }
+        }
+      }
+    },
+    "Widget sin datos compartidos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Widget without shared data"
+          }
+        }
+      }
+    },
+    "Marcador Fantasy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fantasy Scoreboard"
+          }
+        }
+      }
+    },
+    "Últimas anotaciones": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest scoring"
+          }
+        }
+      }
+    },
+    "Semana %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week %lld"
+          }
+        }
+      }
+    },
+    "Sem. %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wk. %lld"
+          }
+        }
+      }
+    },
+    "Actualizado %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updated %@"
+          }
+        }
+      }
+    },
+    "Titulares %lld:%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starters %lld:%lld"
+          }
+        }
+      }
+    },
+    "faltan %lld:%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld:%lld left"
+          }
+        }
+      }
+    },
+    "Conectado como %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected as %@"
+          }
+        }
+      }
+    },
+    "Plan %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ plan"
+          }
+        }
+      }
+    },
+    "Tu equipo: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your team: %@"
+          }
+        }
+      }
+    },
+    "%lld equipos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld teams"
+          }
+        }
+      }
+    },
+    "Anotó tu jugador": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your player scored"
+          }
+        }
+      }
+    },
+    "Anotó el rival": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opponent scored"
+          }
+        }
+      }
+    },
+    "+%@ pts · %@ en total": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "+%@ pts · %@ total"
+          }
+        }
+      }
+    },
+    "Vuelves a ir ganando": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're back in front"
+          }
+        }
+      }
+    },
+    "Te acaban de pasar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You just got passed"
+          }
+        }
+      }
+    },
+    "Vas por delante de %@ por %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You lead %@ by %@."
+          }
+        }
+      }
+    },
+    "%@ se pone por delante por %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ takes the lead by %@."
+          }
+        }
+      }
+    },
+    "Parte de lesión": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Injury report"
+          }
+        }
+      }
+    },
+    "Buenas noticias": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Good news"
+          }
+        }
+      }
+    },
+    "Noticia de %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News about %@"
+          }
+        }
+      }
+    },
+    "Noticia de tu equipo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "News about your team"
+          }
+        }
+      }
+    },
+    "Sleeper no encuentra %@. Revisa el id de la liga.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeper can't find %@. Check the league ID."
+          }
+        }
+      }
+    },
+    "Sleeper respondió %lld en %@.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeper returned %lld for %@."
+          }
+        }
+      }
+    },
+    "No se pudo conectar con Sleeper: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't reach Sleeper: %@"
+          }
+        }
+      }
+    },
+    "Sleeper devolvió algo inesperado: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeper returned something unexpected: %@"
+          }
+        }
+      }
+    },
+    "El equipo %lld no juega esta jornada en esa liga.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Team %lld isn't playing this week in that league."
+          }
+        }
+      }
+    },
+    "Todavía no has elegido liga y equipo.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You haven't picked a league and team yet."
+          }
+        }
+      }
+    },
+    "Sleeper no conoce a «%@». Es tu nombre de usuario, no el correo.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleeper doesn't know “%@”. That's your username, not your email."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

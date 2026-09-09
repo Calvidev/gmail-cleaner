@@ -81,6 +81,7 @@ FILE_TYPES = {
     ".xcassets": "folder.assetcatalog",
     ".plist": "text.plist.xml",
     ".xcprivacy": "text.plist.xml",
+    ".xcstrings": "text.json.xcstrings",
     ".entitlements": "text.plist.entitlements",
 }
 
@@ -322,11 +323,13 @@ def build() -> str:
     # -- referencias a archivos ---------------------------------------------
     shared_refs = [file_ref("Shared", name) for name in SHARED_SOURCES]
     app_file_names = APP_SOURCES + [
-        "Assets.xcassets", "PrivacyInfo.xcprivacy", "Info.plist", "SleeperScore.entitlements"
+        "Assets.xcassets", "Localizable.xcstrings", "PrivacyInfo.xcprivacy",
+        "Info.plist", "SleeperScore.entitlements"
     ]
     app_refs = [file_ref("SleeperScore", name) for name in app_file_names]
     widget_file_names = WIDGET_SOURCES + [
-        "Assets.xcassets", "PrivacyInfo.xcprivacy", "Info.plist", "ScoreWidget.entitlements"
+        "Assets.xcassets", "Localizable.xcstrings", "PrivacyInfo.xcprivacy",
+        "Info.plist", "ScoreWidget.entitlements"
     ]
     widget_refs = [file_ref("ScoreWidget", name) for name in widget_file_names]
 
@@ -366,10 +369,12 @@ def build() -> str:
     app_resources = [
         build_file(APP_TARGET, "SleeperScore", "Assets.xcassets"),
         build_file(APP_TARGET, "SleeperScore", "PrivacyInfo.xcprivacy"),
+        build_file(APP_TARGET, "SleeperScore", "Localizable.xcstrings"),
     ]
     widget_resources = [
         build_file(WIDGET_TARGET, "ScoreWidget", "Assets.xcassets"),
         build_file(WIDGET_TARGET, "ScoreWidget", "PrivacyInfo.xcprivacy"),
+        build_file(WIDGET_TARGET, "ScoreWidget", "Localizable.xcstrings"),
     ]
 
     app_sources_phase = add("phase:app:sources", {

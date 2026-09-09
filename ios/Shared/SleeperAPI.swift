@@ -14,19 +14,19 @@ enum SleeperError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .badStatus(code, path) where code == 404:
-            return "Sleeper no encuentra \(path). Revisa el id de la liga."
+            return String(localized: "Sleeper no encuentra \(path). Revisa el id de la liga.")
         case let .badStatus(code, path):
-            return "Sleeper respondió \(code) en \(path)."
+            return String(localized: "Sleeper respondió \(code) en \(path).")
         case let .network(detail):
-            return "No se pudo conectar con Sleeper: \(detail)"
+            return String(localized: "No se pudo conectar con Sleeper: \(detail)")
         case let .decoding(detail):
-            return "Sleeper devolvió algo inesperado: \(detail)"
+            return String(localized: "Sleeper devolvió algo inesperado: \(detail)")
         case let .rosterNotFound(rosterID):
-            return "El equipo \(rosterID) no juega esta jornada en esa liga."
+            return String(localized: "El equipo \(rosterID) no juega esta jornada en esa liga.")
         case .leagueNotSet:
-            return "Todavía no has elegido liga y equipo."
+            return String(localized: "Todavía no has elegido liga y equipo.")
         case let .userNotFound(username):
-            return "Sleeper no conoce a «\(username)». Es tu nombre de usuario, no el correo."
+            return String(localized: "Sleeper no conoce a «\(username)». Es tu nombre de usuario, no el correo.")
         }
     }
 }

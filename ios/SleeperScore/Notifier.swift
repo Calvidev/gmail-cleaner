@@ -25,8 +25,12 @@ enum Notifier {
         guard await authorized() else { return }
 
         let contenido = UNMutableNotificationContent()
-        contenido.title = play.isMine ? "Anotó tu jugador" : "Anotó el rival"
-        contenido.subtitle = "+\(play.delta.fantasyPoints) pts · \(play.total.fantasyPoints) en total"
+        contenido.title = play.isMine
+            ? String(localized: "Anotó tu jugador")
+            : String(localized: "Anotó el rival")
+        contenido.subtitle = String(
+            localized: "+\(play.delta.fantasyPoints) pts · \(play.total.fantasyPoints) en total"
+        )
         let detalle = play.stats ?? play.subtitle
         contenido.body = detalle.isEmpty ? play.name : "\(play.name) — \(detalle)"
         contenido.sound = .default
@@ -46,7 +50,9 @@ enum Notifier {
         guard await authorized() else { return }
 
         let contenido = UNMutableNotificationContent()
-        contenido.title = playerName.map { "Noticia de \($0)" } ?? "Noticia de tu equipo"
+        contenido.title = playerName
+            .map { String(localized: "Noticia de \($0)") }
+            ?? String(localized: "Noticia de tu equipo")
         contenido.body = item.headline
         if let resumen = item.summary, !resumen.isEmpty { contenido.subtitle = resumen }
         contenido.sound = .default
@@ -61,10 +67,12 @@ enum Notifier {
         guard await authorized() else { return }
 
         let contenido = UNMutableNotificationContent()
-        contenido.title = tookLead ? "Vuelves a ir ganando" : "Te acaban de pasar"
+        contenido.title = tookLead
+            ? String(localized: "Vuelves a ir ganando")
+            : String(localized: "Te acaban de pasar")
         contenido.body = tookLead
-            ? "Vas por delante de \(opponent) por \(abs(difference).fantasyPoints)."
-            : "\(opponent) se pone por delante por \(abs(difference).fantasyPoints)."
+            ? String(localized: "Vas por delante de \(opponent) por \(abs(difference).fantasyPoints).")
+            : String(localized: "\(opponent) se pone por delante por \(abs(difference).fantasyPoints).")
         contenido.sound = .default
         contenido.interruptionLevel = .timeSensitive
         await add(contenido, id: "lead-\(Int(Date().timeIntervalSince1970))")
@@ -76,7 +84,9 @@ enum Notifier {
         guard await authorized() else { return }
 
         let contenido = UNMutableNotificationContent()
-        contenido.title = change.isWorse ? "Parte de lesión" : "Buenas noticias"
+        contenido.title = change.isWorse
+            ? String(localized: "Parte de lesión")
+            : String(localized: "Buenas noticias")
         contenido.body = change.headline
         let posicion = [change.position, change.team].compactMap { $0 }.joined(separator: " ")
         if !posicion.isEmpty { contenido.subtitle = posicion }

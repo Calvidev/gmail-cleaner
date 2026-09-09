@@ -83,6 +83,12 @@
 			path = SeasonHistory.swift;
 			sourceTree = "<group>";
 		};
+		12F4BAE95B619C58E3357920 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json.xcstrings;
+			path = Localizable.xcstrings;
+			sourceTree = "<group>";
+		};
 		135690DDA1A4229C7D65F29F = {
 			isa = PBXBuildFile;
 			fileRef = AA51B72FDC0256F52E46C66F /* SeasonView.swift */;
@@ -625,6 +631,7 @@
 				76D85F12774713AC80C39647 /* SleeperSettingsView.swift */,
 				394D755F24F129EE7716E89F /* YahooAuth.swift */,
 				931226496DCE20872776D15D /* Assets.xcassets */,
+				B041D0F408A86A2673A4E9C4 /* Localizable.xcstrings */,
 				908BC9110B5449E87359BFDE /* PrivacyInfo.xcprivacy */,
 				36CBBEEECA3A305005C30BB5 /* Info.plist */,
 				024892A436DE54D2493F20CE /* SleeperScore.entitlements */,
@@ -654,6 +661,10 @@
 			lastKnownFileType = text.plist.entitlements;
 			path = ScoreWidget.entitlements;
 			sourceTree = "<group>";
+		};
+		8A724435669360B7E3023935 = {
+			isa = PBXBuildFile;
+			fileRef = 12F4BAE95B619C58E3357920 /* Localizable.xcstrings */;
 		};
 		904AB9B259C5D8083B7B4DA3 = {
 			isa = PBXBuildFile;
@@ -785,6 +796,12 @@
 			path = MatchupService.swift;
 			sourceTree = "<group>";
 		};
+		B041D0F408A86A2673A4E9C4 = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json.xcstrings;
+			path = Localizable.xcstrings;
+			sourceTree = "<group>";
+		};
 		B3F8241004CFBF529E7D6903 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -797,12 +814,17 @@
 			path = LeagueIntent.swift;
 			sourceTree = "<group>";
 		};
+		B4E85E2EE51ABBA5FDFE36FA = {
+			isa = PBXBuildFile;
+			fileRef = B041D0F408A86A2673A4E9C4 /* Localizable.xcstrings */;
+		};
 		B56E96530BC9DC2EBA288692 = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				77AEDF226E1B82E972C1B282 /* Assets.xcassets in ScoreWidgetExtension */,
 				EC6697FD0BE94254B305B1CB /* PrivacyInfo.xcprivacy in ScoreWidgetExtension */,
+				8A724435669360B7E3023935 /* Localizable.xcstrings in ScoreWidgetExtension */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1047,6 +1069,7 @@
 				C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */,
 				3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */,
 				C67A2D71EF5298D30645961D /* Assets.xcassets */,
+				12F4BAE95B619C58E3357920 /* Localizable.xcstrings */,
 				829D3BCA1A0DC5A3F4AD3F49 /* PrivacyInfo.xcprivacy */,
 				CDC15F89DB2640D57277623E /* Info.plist */,
 				889A34C747900C87EE5F896E /* ScoreWidget.entitlements */,
@@ -1080,6 +1103,7 @@
 			files = (
 				EBA88E926D54C1F60AED6990 /* Assets.xcassets in SleeperScore */,
 				D9CB6B243E001BECBFFFF30F /* PrivacyInfo.xcprivacy in SleeperScore */,
+				B4E85E2EE51ABBA5FDFE36FA /* Localizable.xcstrings in SleeperScore */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
