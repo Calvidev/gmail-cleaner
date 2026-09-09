@@ -401,6 +401,7 @@ struct LineupRowView: View {
                 .onTapGesture { if let theirs = row.theirs { onTap(theirs) } }
         }
         .padding(.vertical, 7)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -504,7 +505,7 @@ struct InjuryTag: View {
                 (severe ? Color.red : Color.orange).opacity(0.2),
                 in: RoundedRectangle(cornerRadius: 4)
             )
-            .foregroundStyle(severe ? .red : .orange)
+            .foregroundStyle(severe ? Color.red : Color.orange)
             .fixedSize()
     }
 }
@@ -535,6 +536,7 @@ struct PlayerHeadshot: View {
         .frame(width: size, height: size)
         .background(Theme.pill, in: Circle())
         .clipShape(Circle())
+        .accessibilityHidden(true)
         .task(id: line?.playerID) { await load() }
     }
 

@@ -67,7 +67,7 @@ struct PlayerDetailView: View {
                             (line.injuryIsSevere ? Color.red : Color.orange).opacity(0.18),
                             in: Capsule()
                         )
-                        .foregroundStyle(line.injuryIsSevere ? .red : .orange)
+                        .foregroundStyle(line.injuryIsSevere ? Color.red : Color.orange)
                 }
             }
         }

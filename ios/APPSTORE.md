@@ -15,6 +15,8 @@ hacer yo desde aquí.
 - [x] La sección de pruebas está entre `#if DEBUG`, así que no viaja en la
       compilación de Release
 - [x] Modo oscuro forzado y coherente en app, widgets y Live Activity
+- [x] Traducción al inglés (`Localizable.xcstrings`), incluido el nombre visible
+- [x] Nombre visible sin marcas ajenas: "Marcador Fantasy" / "Fantasy Scoreboard"
 
 ## Pendiente, y lo tienes que hacer tú
 
@@ -47,6 +49,7 @@ hacer yo desde aquí.
    publicar —y mucho más antes de cobrar— conviene escribirles y preguntar. Es
    la fuente de todos los datos y la única dependencia real del producto.
 2. **Marcas.** Nada de logos de la NFL ni nombres de equipos en el icono, el
-   nombre de la app o las capturas. El nombre "SleeperScore" incluye una marca
-   ajena: **cámbialo antes de enviar**. Algo como "Marcador Fantasy" evita el
-   problema de raíz.
+   nombre de la app o las capturas. El nombre visible ya es **"Marcador
+   Fantasy"** ("Fantasy Scoreboard" en inglés), que evita la marca ajena;
+   `SleeperScore` se queda solo como nombre interno del proyecto, que no ve
+   nadie. Al crear la ficha en App Store Connect, usa el nombre visible.

@@ -24,6 +24,7 @@ struct AvatarBadge: View {
         }
         .frame(width: size, height: size)
         .clipShape(Circle())
+        .accessibilityHidden(true)
     }
 }
 

@@ -325,8 +325,8 @@ def build() -> str:
     # -- referencias a archivos ---------------------------------------------
     shared_refs = [file_ref("Shared", name) for name in SHARED_SOURCES]
     app_file_names = APP_SOURCES + [
-        "Assets.xcassets", "Localizable.xcstrings", "PrivacyInfo.xcprivacy",
-        "Info.plist", "SleeperScore.entitlements"
+        "Assets.xcassets", "Localizable.xcstrings", "InfoPlist.xcstrings",
+        "PrivacyInfo.xcprivacy", "Info.plist", "SleeperScore.entitlements"
     ]
     app_refs = [file_ref("SleeperScore", name) for name in app_file_names]
     widget_file_names = WIDGET_SOURCES + [
@@ -372,6 +372,7 @@ def build() -> str:
         build_file(APP_TARGET, "SleeperScore", "Assets.xcassets"),
         build_file(APP_TARGET, "SleeperScore", "PrivacyInfo.xcprivacy"),
         build_file(APP_TARGET, "SleeperScore", "Localizable.xcstrings"),
+        build_file(APP_TARGET, "SleeperScore", "InfoPlist.xcstrings"),
     ]
     widget_resources = [
         build_file(WIDGET_TARGET, "ScoreWidget", "Assets.xcassets"),

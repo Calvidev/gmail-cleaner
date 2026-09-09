@@ -128,6 +128,12 @@
 			};
 			name = Release;
 		};
+		17506FF4BE1E0916C2A31EEE = {
+			isa = PBXFileReference;
+			lastKnownFileType = text.json.xcstrings;
+			path = InfoPlist.xcstrings;
+			sourceTree = "<group>";
+		};
 		195E05D9D0E5FE526308E629 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -644,6 +650,7 @@
 				394D755F24F129EE7716E89F /* YahooAuth.swift */,
 				931226496DCE20872776D15D /* Assets.xcassets */,
 				B041D0F408A86A2673A4E9C4 /* Localizable.xcstrings */,
+				17506FF4BE1E0916C2A31EEE /* InfoPlist.xcstrings */,
 				908BC9110B5449E87359BFDE /* PrivacyInfo.xcprivacy */,
 				36CBBEEECA3A305005C30BB5 /* Info.plist */,
 				024892A436DE54D2493F20CE /* SleeperScore.entitlements */,
@@ -1129,6 +1136,7 @@
 				EBA88E926D54C1F60AED6990 /* Assets.xcassets in SleeperScore */,
 				D9CB6B243E001BECBFFFF30F /* PrivacyInfo.xcprivacy in SleeperScore */,
 				B4E85E2EE51ABBA5FDFE36FA /* Localizable.xcstrings in SleeperScore */,
+				F87D179DA1A4D3804601548F /* InfoPlist.xcstrings in SleeperScore */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1136,6 +1144,10 @@
 			isa = PBXTargetDependency;
 			target = 0661F517A86C8F5C87C0EDBA /* ScoreWidgetExtension */;
 			targetProxy = 99E6A51DA0B86FE48AEB34ED /* PBXContainerItemProxy */;
+		};
+		F87D179DA1A4D3804601548F = {
+			isa = PBXBuildFile;
+			fileRef = 17506FF4BE1E0916C2A31EEE /* InfoPlist.xcstrings */;
 		};
 		FAEBD90CE12952F4FBC920AC = {
 			isa = PBXBuildFile;
