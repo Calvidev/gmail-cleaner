@@ -3,6 +3,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 import WidgetKit
 
 @MainActor
@@ -13,6 +14,8 @@ final class ScoreboardModel: ObservableObject {
     @Published private(set) var config: LeagueConfig
     /// True mientras corre el partido de mentira del menú de pruebas.
     @Published private(set) var isSimulating = false
+    /// True durante la cuenta atrás de una anotación simulada.
+    @Published private(set) var pendingSimulation = false
 
     private let service = MatchupService()
     private let live = LiveActivityController.shared
@@ -76,12 +79,31 @@ final class ScoreboardModel: ObservableObject {
     // MARK: - Pruebas
 
     /// Mete una anotación de mentira por el mismo camino que las de verdad.
-    func simulate(_ play: MatchSimulator.Play, mine: Bool? = nil) async {
+    ///
+    /// El retraso da tiempo a cerrar la app y ver llegar el aviso y la Live
+    /// Activity, que es de lo que se trata. Se pide una prórroga al sistema
+    /// para que el trabajo no se corte al salir de la app.
+    func simulate(
+        _ play: MatchSimulator.Play,
+        mine: Bool? = nil,
+        delay: TimeInterval = 2
+    ) async {
         guard let actual = snapshot,
               let simulado = MatchSimulator.apply(play, to: actual, mine: mine)
         else { return }
+
         await live.requestNotificationPermission()
-        await apply(simulado)
+
+        if delay > 0 {
+            pendingSimulation = true
+            let prorroga = UIApplication.shared.beginBackgroundTask(withName: "anotación simulada")
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            pendingSimulation = false
+            await apply(simulado)
+            if prorroga != .invalid { UIApplication.shared.endBackgroundTask(prorroga) }
+        } else {
+            await apply(simulado)
+        }
     }
 
     /// Un partido de mentira: alguien anota cada pocos segundos.
@@ -95,7 +117,7 @@ final class ScoreboardModel: ObservableObject {
                 if Task.isCancelled { return }
                 guard let self else { return }
                 let jugada = MatchSimulator.Play.allCases.randomElement() ?? .touchdown
-                await self.simulate(jugada)
+                await self.simulate(jugada, delay: 0)
             }
         }
     }

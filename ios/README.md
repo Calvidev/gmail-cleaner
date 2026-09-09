@@ -167,6 +167,11 @@ de cuentas tiene una sección **Pruebas**:
 | Field goal (+3) | Una jugada más pequeña |
 | Partido simulado | Alguien anota cada 12 segundos hasta que lo pares |
 
+Las jugadas sueltas tardan **2 segundos** a propósito: da tiempo a cerrar la app
+y ver llegar la notificación y la Live Activity, que es donde se aprecian. El
+trabajo pide una prórroga al sistema, así que la anotación llega aunque ya hayas
+salido de la app.
+
 No falsea la interfaz: fabrica un marcador con los puntos sumados y lo mete por
 la misma puerta que los datos reales, así que lo que se prueba es el
 `ScoringDetector`, la Live Activity y las notificaciones de verdad. Mientras el

@@ -86,6 +86,10 @@ struct AccountsView: View {
     private var testingSection: some View {
         #if DEBUG
         Section {
+            if model.pendingSimulation {
+                Label("Anota en 2 segundos… cierra la app", systemImage: "timer")
+                    .foregroundStyle(Theme.accent)
+            }
             Button("Anota tu jugador (+6)") {
                 Task { await model.simulate(.touchdown, mine: true) }
             }
@@ -106,7 +110,7 @@ struct AccountsView: View {
         } header: {
             Text("Pruebas")
         } footer: {
-            Text("Suma puntos a un titular al azar y lo mete por el mismo camino que los datos reales: detección de anotación, Live Activity y notificación. Mientras el partido simulado esté en marcha no se descargan los puntos de verdad.")
+            Text("Suma puntos a un titular al azar y lo mete por el mismo camino que los datos reales: detección de anotación, Live Activity y notificación. La jugada tarda 2 segundos a propósito, para darte tiempo a cerrar la app y verla llegar. Mientras el partido simulado esté en marcha no se descargan los puntos de verdad.")
         }
         #endif
     }
