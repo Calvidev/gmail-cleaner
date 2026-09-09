@@ -100,6 +100,7 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 | App | Marcador, **probabilidad de ganar**, proyección, puntos dejados en el banquillo, últimas anotaciones y la alineación con foto y puntos |
 | Clasificación | La tabla de la liga con récord y puntos a favor y en contra |
 | Mi temporada | Puntos por jornada en gráfica, récord, media, mejor y peor semana |
+| Agentes libres | Quién está libre en tu liga, por proyección y por lo que se está fichando |
 | Noticias | Las de tus jugadores, cruzadas por id de ESPN, con aviso |
 | Compartir | Una imagen del marcador para el grupo de la liga |
 | Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |

@@ -131,6 +131,26 @@ struct SleeperAPI {
         try await get("/league/\(leagueID)/matchups/\(week)")
     }
 
+    /// Los jugadores que más se están fichando (o cortando) en Sleeper.
+    /// Es el pulso de la comunidad entera, no solo de tu liga.
+    func trending(kind: String = "add", lookbackHours: Int = 24, limit: Int = 100) async throws -> [String: Int] {
+        struct Entrada: Decodable {
+            let playerID: String
+            let count: Int?
+            enum CodingKeys: String, CodingKey {
+                case playerID = "player_id"
+                case count
+            }
+        }
+        let entradas: [Entrada] = try await get(
+            "/players/nfl/trending/\(kind)?lookback_hours=\(lookbackHours)&limit=\(limit)"
+        )
+        return Dictionary(
+            entradas.map { ($0.playerID, $0.count ?? 0) },
+            uniquingKeysWith: { primero, _ in primero }
+        )
+    }
+
     /// Catálogo completo de jugadores (~5 MB). Sleeper pide no bajarlo más de
     /// una vez al día: de eso se encarga `PlayerCatalog`.
     func playersCatalog() async throws -> [String: RawCatalogPlayer] {

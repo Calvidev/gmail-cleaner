@@ -1130,6 +1130,146 @@
           }
         }
       }
+    },
+    "Agentes libres": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free agents"
+          }
+        }
+      }
+    },
+    "Todos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All"
+          }
+        }
+      }
+    },
+    "No hay agentes libres con proyección en esa posición.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No free agents with a projection at that position."
+          }
+        }
+      }
+    },
+    "proyección": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "projection"
+          }
+        }
+      }
+    },
+    "Libres": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free agents"
+          }
+        }
+      }
+    },
+    "Temporada": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Season"
+          }
+        }
+      }
+    },
+    "Récord": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record"
+          }
+        }
+      }
+    },
+    "Media": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Average"
+          }
+        }
+      }
+    },
+    "Mejor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Best"
+          }
+        }
+      }
+    },
+    "Peor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Worst"
+          }
+        }
+      }
+    },
+    "Puntos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Points"
+          }
+        }
+      }
+    },
+    "Diferencia": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Difference"
+          }
+        }
+      }
+    },
+    "Todavía no hay jornadas jugadas esta temporada.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No weeks played yet this season."
+          }
+        }
+      }
+    },
+    "No se pudo saber la temporada en curso.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't determine the current season."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -70,14 +70,15 @@ struct SeasonView: View {
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.white)
 
-            Chart(historia.played) { jornada in
-                BarMark(
-                    x: .value("Jornada", jornada.week),
-                    y: .value("Puntos", jornada.points)
-                )
-                .foregroundStyle(color(for: jornada))
-                .cornerRadius(4)
-
+            Chart {
+                ForEach(historia.played) { jornada in
+                    BarMark(
+                        x: .value("Jornada", jornada.week),
+                        y: .value("Puntos", jornada.points)
+                    )
+                    .foregroundStyle(color(for: jornada))
+                    .cornerRadius(4)
+                }
                 if historia.average > 0 {
                     RuleMark(y: .value("Media", historia.average))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4, 3]))

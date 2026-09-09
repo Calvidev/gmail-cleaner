@@ -256,6 +256,7 @@
 				3523BFD0D7C29A78E0466695 /* OptimalLineup.swift in ScoreWidgetExtension */,
 				BE9755B885CA955671AA3752 /* PlayerNews.swift in ScoreWidgetExtension */,
 				1C4F7F3429814B3CC0DDFDC4 /* SeasonHistory.swift in ScoreWidgetExtension */,
+				43D4360474A5ED124FEF8CA8 /* FreeAgents.swift in ScoreWidgetExtension */,
 				CBBBE19B4682C29799DAE9F0 /* MatchupService.swift in ScoreWidgetExtension */,
 				9A14ACA83648BAAD0A7B4F62 /* Theme.swift in ScoreWidgetExtension */,
 				71DAAFA211708FECC42DA14A /* MatchupComponents.swift in ScoreWidgetExtension */,
@@ -294,6 +295,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = BackgroundRefresh.swift;
 			sourceTree = "<group>";
+		};
+		43D4360474A5ED124FEF8CA8 = {
+			isa = PBXBuildFile;
+			fileRef = F2282486E0753A66D5795486 /* FreeAgents.swift */;
 		};
 		45DE0911B50B5D5508CA0B61 = {
 			isa = PBXBuildFile;
@@ -364,6 +369,7 @@
 				16A2A2EC5CD5F576C05BD458 /* OptimalLineup.swift in SleeperScore */,
 				1C506A9A7240F3BA5A60F45A /* PlayerNews.swift in SleeperScore */,
 				D2CFDBA3102D6FCABBFB8476 /* SeasonHistory.swift in SleeperScore */,
+				FDD0259102F3D7948F60CADB /* FreeAgents.swift in SleeperScore */,
 				58AA38ADA353BE33F5AF5C3A /* MatchupService.swift in SleeperScore */,
 				D80B18A2F5944D5736AB7143 /* Theme.swift in SleeperScore */,
 				241B5769E28CE18570E5F2F8 /* MatchupComponents.swift in SleeperScore */,
@@ -378,6 +384,7 @@
 				50BE8AE4816B3EE031CEB93D /* PaywallView.swift in SleeperScore */,
 				904AB9B259C5D8083B7B4DA3 /* StandingsView.swift in SleeperScore */,
 				135690DDA1A4229C7D65F29F /* SeasonView.swift in SleeperScore */,
+				4D995A0783A2C090C2175455 /* FreeAgentsView.swift in SleeperScore */,
 				BB8BB6390AE84ECD131C0A06 /* PlayerDetailView.swift in SleeperScore */,
 				C2AF9442A8E7CCC9C3394F69 /* ShareCard.swift in SleeperScore */,
 				82606A21EEF631F7A0CCE86C /* SleeperSettingsView.swift in SleeperScore */,
@@ -408,6 +415,10 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		4D995A0783A2C090C2175455 = {
+			isa = PBXBuildFile;
+			fileRef = D19C259EB90F6308128CB7DF /* FreeAgentsView.swift */;
 		};
 		4DDDE3071D9582391BFE9D0D = {
 			isa = PBXBuildFile;
@@ -626,6 +637,7 @@
 				EA428F9B7B2AC331FC76A403 /* PaywallView.swift */,
 				105E01A849C6AC17353F5BFB /* StandingsView.swift */,
 				AA51B72FDC0256F52E46C66F /* SeasonView.swift */,
+				D19C259EB90F6308128CB7DF /* FreeAgentsView.swift */,
 				922A331227386C532CB1DA58 /* PlayerDetailView.swift */,
 				24A2525A50D463D43174024B /* ShareCard.swift */,
 				76D85F12774713AC80C39647 /* SleeperSettingsView.swift */,
@@ -759,6 +771,7 @@
 				24CB73DD8085DAD185EBE7EA /* OptimalLineup.swift */,
 				8238C6F408B14E52156812E2 /* PlayerNews.swift */,
 				11EFC0520AE3ED4F58D2E14D /* SeasonHistory.swift */,
+				F2282486E0753A66D5795486 /* FreeAgents.swift */,
 				ADE09ECB837E05A3414451DB /* MatchupService.swift */,
 				207AE7F7BF7702CED53D696C /* Theme.swift */,
 				6017835189AFFF5EC9046AAB /* MatchupComponents.swift */,
@@ -965,6 +978,12 @@
 			isa = PBXBuildFile;
 			fileRef = C447792AF8760633BC09EF93 /* WeekStats.swift */;
 		};
+		D19C259EB90F6308128CB7DF = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = FreeAgentsView.swift;
+			sourceTree = "<group>";
+		};
 		D2CFDBA3102D6FCABBFB8476 = {
 			isa = PBXBuildFile;
 			fileRef = 11EFC0520AE3ED4F58D2E14D /* SeasonHistory.swift */;
@@ -1081,6 +1100,12 @@
 			isa = PBXBuildFile;
 			fileRef = 829D3BCA1A0DC5A3F4AD3F49 /* PrivacyInfo.xcprivacy */;
 		};
+		F2282486E0753A66D5795486 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = FreeAgents.swift;
+			sourceTree = "<group>";
+		};
 		F360A9C432F944F1E4F4246B = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -1144,6 +1169,10 @@
 		FDB001CE42806C546F6ED13F = {
 			isa = PBXBuildFile;
 			fileRef = 368E8DA1F8408B5A9BB46F2F /* WinProbability.swift */;
+		};
+		FDD0259102F3D7948F60CADB = {
+			isa = PBXBuildFile;
+			fileRef = F2282486E0753A66D5795486 /* FreeAgents.swift */;
 		};
 	};
 	rootObject = 46F86FAA6BBF9AC94A7E4595 /* Project object */;

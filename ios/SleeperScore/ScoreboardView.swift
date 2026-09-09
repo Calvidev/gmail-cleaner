@@ -19,9 +19,14 @@ struct ScoreboardView: View {
                             ActionTile(title: "Clasificación", icon: "list.number")
                         }
                         NavigationLink {
+                            FreeAgentsView(league: model.config)
+                        } label: {
+                            ActionTile(title: "Libres", icon: "person.badge.plus")
+                        }
+                        NavigationLink {
                             SeasonView(league: model.config, week: snapshot.week)
                         } label: {
-                            ActionTile(title: "Mi temporada", icon: "chart.bar.fill")
+                            ActionTile(title: "Temporada", icon: "chart.bar.fill")
                         }
                         ShareScoreButton(snapshot: snapshot)
                     }
