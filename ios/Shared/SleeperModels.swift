@@ -87,8 +87,10 @@ struct LeagueUser: Decodable, Identifiable {
         avatar = try container.decodeIfPresent(String.self, forKey: .avatar)
         // `metadata` es un cajón de sastre y no siempre trae solo textos, así
         // que se lee con tolerancia y solo se rescata el nombre del equipo.
+        // Ojo: `try?` sobre algo que ya devuelve opcional NO anida opcionales
+        // (Swift los aplana), así que aquí solo hay un nivel que desenvolver.
         let metadata = try? container.decodeIfPresent(LenientStringDictionary.self, forKey: .metadata)
-        teamName = metadata??.values["team_name"]
+        teamName = metadata?.values["team_name"]
     }
 }
 
