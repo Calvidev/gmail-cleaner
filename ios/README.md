@@ -32,12 +32,20 @@ ios/
 Para no pelearse con `xcodebuild`:
 
 ```bash
-./ios/build.sh            # ¿compila? (rápido, sin firmar ni simulador)
-./ios/build.sh iphone     # compila, firma e instala en el iPhone conectado
-./ios/build.sh sim        # compila para el simulador
-./ios/build.sh runtime    # descarga el simulador de iOS que falte
-./ios/build.sh abrir      # abre el proyecto en Xcode
+./ios/build.sh              # ¿compila? (rápido, sin firmar ni simulador)
+./ios/build.sh actualizar   # trae los cambios de git sin pelearse por la firma
+./ios/build.sh equipo ABC   # guarda tu Team ID (una vez y para siempre)
+./ios/build.sh iphone       # compila, firma e instala en el iPhone conectado
+./ios/build.sh sim          # compila para el simulador
+./ios/build.sh runtime      # descarga el simulador de iOS que falte
+./ios/build.sh abrir        # abre el proyecto en Xcode
 ```
+
+**Por qué existe `actualizar`**: Xcode escribe tu equipo de firma dentro del
+`project.pbxproj`, que está versionado, así que cada `git pull` choca con él.
+`actualizar` rescata ese Team ID a `ios/.team` (que git ignora), descarta el
+cambio y hace el pull. A partir de ahí `iphone` firma con lo que haya en
+`.team` y ya nadie se pisa.
 
 Por pantalla salen solo los errores y el resultado; el log entero queda en
 `/tmp/sleeperscore-build.log`.
@@ -48,8 +56,11 @@ desbloqueado y haber dado a "Confiar". Si nunca abriste el proyecto en Xcode, no
 sabrá con qué cuenta firmar; entonces pásale el equipo a mano:
 
 ```bash
-DEVELOPMENT_TEAM=TU_TEAM_ID ./ios/build.sh iphone
+./ios/build.sh equipo TU_TEAM_ID     # se guarda y no vuelve a preguntar
 ```
+
+El Team ID está en Xcode > Settings > Accounts (columna *Team ID*) o en
+developer.apple.com/account.
 
 ## Cómo arrancarla (5 minutos)
 

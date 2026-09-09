@@ -2,6 +2,8 @@
 # Compila la app sin tener que acordarse del comando de xcodebuild.
 #
 #   ./ios/build.sh            comprueba que compila (rápido, sin firmar)
+#   ./ios/build.sh actualizar trae los cambios de git sin pelearse por la firma
+#   ./ios/build.sh equipo ABC guarda tu Team ID (una vez y para siempre)
 #   ./ios/build.sh iphone     compila, firma e instala en el iPhone conectado
 #   ./ios/build.sh sim        compila para el simulador
 #   ./ios/build.sh runtime    descarga el simulador de iOS que falte
@@ -17,12 +19,20 @@ PROYECTO="SleeperScore.xcodeproj"
 ESQUEMA="SleeperScore"
 LOG="/tmp/sleeperscore-build.log"
 MODO="${1:-check}"
+# Tu Team ID vive aquí, fuera de git: así Xcode y los pull dejan de estorbarse.
+ARCHIVO_EQUIPO=".team"
 
-if ! command -v xcodebuild >/dev/null 2>&1; then
-  echo "✗ No encuentro xcodebuild. ¿Está Xcode instalado y seleccionado?"
-  echo "  sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
-  exit 1
-fi
+# Traer cambios o guardar el Team ID no necesitan Xcode; lo demás sí.
+case "$MODO" in
+  equipo | actualizar) ;;
+  *)
+    if ! command -v xcodebuild >/dev/null 2>&1; then
+      echo "✗ No encuentro xcodebuild. ¿Está Xcode instalado y seleccionado?"
+      echo "  sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
+      exit 1
+    fi
+    ;;
+esac
 
 compilar() {
   local sdk="$1" destino="$2" titulo="$3"
@@ -53,15 +63,39 @@ compilar() {
   return "${codigo:-1}"
 }
 
-# El Team ID sale de lo que pusiste en Xcode al elegir tu cuenta; si no está,
-# se puede pasar a mano:  DEVELOPMENT_TEAM=ABCDE12345 ./ios/build.sh iphone
+# El Team ID, por orden: variable de entorno, archivo local, o lo que Xcode
+# haya dejado escrito en el proyecto.
 equipo_de_firma() {
   if [ -n "${DEVELOPMENT_TEAM:-}" ]; then
     echo "$DEVELOPMENT_TEAM"
     return 0
   fi
+  if [ -s "$ARCHIVO_EQUIPO" ]; then
+    tr -d '[:space:]' < "$ARCHIVO_EQUIPO"
+    return 0
+  fi
   grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' "$PROYECTO/project.pbxproj" 2>/dev/null \
     | awk '{print $3}'
+}
+
+# `git pull` choca siempre con el project.pbxproj porque Xcode escribe ahí tu
+# equipo de firma. Se rescata a .team (que git ignora) y se descarta el cambio.
+actualizar() {
+  local raiz equipo
+  raiz="$(git rev-parse --show-toplevel 2>/dev/null)" || {
+    echo "✗ Esto no parece un repositorio de git."
+    return 1
+  }
+
+  equipo="$(grep -m1 -o 'DEVELOPMENT_TEAM = [A-Z0-9]*' "$PROYECTO/project.pbxproj" 2>/dev/null | awk '{print $3}')"
+  if [ -n "$equipo" ]; then
+    echo "$equipo" > "$ARCHIVO_EQUIPO"
+    echo "▸ Equipo de firma guardado en ios/$ARCHIVO_EQUIPO ($equipo)"
+    git -C "$raiz" checkout -- "ios/$PROYECTO/project.pbxproj" 2>/dev/null || true
+  fi
+
+  echo "▸ Trayendo cambios"
+  git -C "$raiz" pull
 }
 
 # El primer iPhone conectado (por cable o emparejado por red).
@@ -92,8 +126,9 @@ instalar_en_iphone() {
   equipo="$(equipo_de_firma)"
   if [ -z "$equipo" ]; then
     echo "✗ No sé con qué cuenta firmar."
-    echo "  Abre el proyecto en Xcode una vez y elige tu Team en Signing & Capabilities,"
-    echo "  o lánzalo así:  DEVELOPMENT_TEAM=TU_TEAM_ID ./ios/build.sh iphone"
+    echo "  Guárdalo una vez:  ./ios/build.sh equipo TU_TEAM_ID"
+    echo "  (lo encuentras en Xcode > Settings > Accounts, columna Team ID,"
+    echo "   o en developer.apple.com/account, arriba a la derecha)"
     return 1
   fi
 
@@ -142,6 +177,17 @@ case "$MODO" in
     # Contra el SDK de dispositivo: no necesita simulador instalado.
     compilar iphoneos "generic/platform=iOS" "Comprobando que compila (SDK de dispositivo, sin firmar)"
     ;;
+  actualizar)
+    actualizar
+    ;;
+  equipo)
+    if [ -z "${2:-}" ]; then
+      echo "Uso: ./ios/build.sh equipo TU_TEAM_ID"
+      exit 2
+    fi
+    echo "$2" > "$ARCHIVO_EQUIPO"
+    echo "✓ Guardado en ios/$ARCHIVO_EQUIPO ($2)"
+    ;;
   iphone)
     instalar_en_iphone
     ;;
@@ -156,7 +202,7 @@ case "$MODO" in
     open "$PROYECTO"
     ;;
   *)
-    echo "Uso: ./ios/build.sh [check|iphone|sim|runtime|abrir]"
+    echo "Uso: ./ios/build.sh [check|actualizar|equipo|iphone|sim|runtime|abrir]"
     exit 2
     ;;
 esac

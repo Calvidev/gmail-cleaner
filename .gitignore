@@ -28,3 +28,6 @@ xcuserdata/
 DerivedData/
 build/
 *.xcworkspace/xcuserdata/
+
+# El Team ID de firma de cada quien (ios/build.sh equipo ...)
+ios/.team
