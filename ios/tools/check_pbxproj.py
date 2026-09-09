@@ -146,6 +146,21 @@ def main() -> int:
         if not path.exists():
             problems.append(f"declarado pero no está en el disco: {folder}/{body['path']}")
 
+    # Un archivo Swift en disco que nadie compila es un fallo silencioso: no
+    # da error hasta que algo lo usa. Se comprueba al revés que lo anterior.
+    declarados = {
+        body["path"]
+        for body in objects.values()
+        if body.get("isa") == "PBXFileReference" and body.get("path", "").endswith(".swift")
+    }
+    for carpeta in ("Shared", "SleeperScore", "ScoreWidget"):
+        directorio = ROOT / carpeta
+        if not directorio.is_dir():
+            continue
+        for archivo in sorted(directorio.glob("*.swift")):
+            if archivo.name not in declarados:
+                problems.append(f"en disco pero fuera del proyecto: {carpeta}/{archivo.name}")
+
     # Cada objetivo tiene sus fases y su lista de configuraciones.
     targets = [b for b in objects.values() if b.get("isa") == "PBXNativeTarget"]
     if len(targets) != 2:

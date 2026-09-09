@@ -46,6 +46,12 @@
 			productReference = 1B442E42980596EBCD246D51 /* ScoreWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		0A3AFB51459A2B0FB41234F0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = InjuryWatcher.swift;
+			sourceTree = "<group>";
+		};
 		0A598CA0E76491BC2FBFA58E = {
 			isa = PBXBuildFile;
 			fileRef = 203F74635AA1CE200A0E9736 /* Entitlements.swift */;
@@ -175,6 +181,7 @@
 				2C74BDE13991C1ADF223AAEA /* MatchupSnapshot.swift in ScoreWidgetExtension */,
 				DCBEC3B50E0D25141FE1D888 /* MatchupActivity.swift in ScoreWidgetExtension */,
 				48FFC91029B2DA79EDFFA0C1 /* ScoringDetector.swift in ScoreWidgetExtension */,
+				ABFEBEBD551AE490410EDE0B /* InjuryWatcher.swift in ScoreWidgetExtension */,
 				DE2B75DF8FFBAB7A9E66A288 /* MatchSimulator.swift in ScoreWidgetExtension */,
 				EB0BABE71F931600D48BB98F /* SharedStore.swift in ScoreWidgetExtension */,
 				3324523CAE439BA3B0D3A966 /* KeychainStore.swift in ScoreWidgetExtension */,
@@ -210,6 +217,16 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = KeychainStore.swift;
+			sourceTree = "<group>";
+		};
+		4261EEF56592849D4E076E11 = {
+			isa = PBXBuildFile;
+			fileRef = 42E04906F4D01EA240919648 /* BackgroundRefresh.swift */;
+		};
+		42E04906F4D01EA240919648 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = BackgroundRefresh.swift;
 			sourceTree = "<group>";
 		};
 		45DE0911B50B5D5508CA0B61 = {
@@ -266,6 +283,7 @@
 				532D73CF490BB7A11403E875 /* MatchupSnapshot.swift in SleeperScore */,
 				56201EA16EE7691FA1143BCD /* MatchupActivity.swift in SleeperScore */,
 				75831CD06B138A88B2678D6D /* ScoringDetector.swift in SleeperScore */,
+				E47763735724DC7F5E89001B /* InjuryWatcher.swift in SleeperScore */,
 				32733C0A693D9BA930BBCCF3 /* MatchSimulator.swift in SleeperScore */,
 				4DDDE3071D9582391BFE9D0D /* SharedStore.swift in SleeperScore */,
 				6C367E27D171A8E0CF442BD3 /* KeychainStore.swift in SleeperScore */,
@@ -281,6 +299,8 @@
 				55FB7C5417C0B686BCCA94A7 /* SleeperScoreApp.swift in SleeperScore */,
 				2109C7E654CC4E0E38EA26A3 /* ScoreboardModel.swift in SleeperScore */,
 				55CAFCBE481E5EEBB2F99E24 /* LiveActivityController.swift in SleeperScore */,
+				4261EEF56592849D4E076E11 /* BackgroundRefresh.swift in SleeperScore */,
+				9C9031AFD88F66F18BDF50C4 /* Notifier.swift in SleeperScore */,
 				C6DA29FAD2E61DF050748E30 /* RootView.swift in SleeperScore */,
 				71F6B29CF9FE0FE20B3C9AD5 /* ScoreboardView.swift in SleeperScore */,
 				5BB1FFBCF225159ABC9A8FE6 /* AccountsView.swift in SleeperScore */,
@@ -511,6 +531,8 @@
 				C19B50826CD60F84F1157D12 /* SleeperScoreApp.swift */,
 				C5DDC4617D40B315EC9D8E47 /* ScoreboardModel.swift */,
 				77CBDA829DD33A4B108B5998 /* LiveActivityController.swift */,
+				42E04906F4D01EA240919648 /* BackgroundRefresh.swift */,
+				C477BBD7EB60956EBF2D34D5 /* Notifier.swift */,
 				678B11228DF3B271F8486C38 /* RootView.swift */,
 				B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */,
 				F5E4EB23F502600ABFDA7CF7 /* AccountsView.swift */,
@@ -602,6 +624,10 @@
 			isa = PBXBuildFile;
 			fileRef = 207AE7F7BF7702CED53D696C /* Theme.swift */;
 		};
+		9C9031AFD88F66F18BDF50C4 = {
+			isa = PBXBuildFile;
+			fileRef = C477BBD7EB60956EBF2D34D5 /* Notifier.swift */;
+		};
 		9CB302E9C7F6377B351DBEAB = {
 			isa = PBXGroup;
 			children = (
@@ -612,6 +638,7 @@
 				5B082B835ACC628B90347851 /* MatchupSnapshot.swift */,
 				B3F8241004CFBF529E7D6903 /* MatchupActivity.swift */,
 				8777A0A8342E64FFA645DEB6 /* ScoringDetector.swift */,
+				0A3AFB51459A2B0FB41234F0 /* InjuryWatcher.swift */,
 				F360A9C432F944F1E4F4246B /* MatchSimulator.swift */,
 				A55CC726808CF50732E54964 /* SharedStore.swift */,
 				3EB54807A73C03E3C475C2EF /* KeychainStore.swift */,
@@ -637,6 +664,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = SharedStore.swift;
 			sourceTree = "<group>";
+		};
+		ABFEBEBD551AE490410EDE0B = {
+			isa = PBXBuildFile;
+			fileRef = 0A3AFB51459A2B0FB41234F0 /* InjuryWatcher.swift */;
 		};
 		AC44EE7A89E0071831176FE1 = {
 			isa = PBXBuildFile;
@@ -685,6 +716,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = WeekStats.swift;
+			sourceTree = "<group>";
+		};
+		C477BBD7EB60956EBF2D34D5 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Notifier.swift;
 			sourceTree = "<group>";
 		};
 		C5A41E448492DA848F9CAA89 = {
@@ -838,6 +875,10 @@
 			lastKnownFileType = sourcecode.swift;
 			path = HeadshotCache.swift;
 			sourceTree = "<group>";
+		};
+		E47763735724DC7F5E89001B = {
+			isa = PBXBuildFile;
+			fileRef = 0A3AFB51459A2B0FB41234F0 /* InjuryWatcher.swift */;
 		};
 		E97658E1132B2D311B4060A1 = {
 			isa = PBXBuildFile;
