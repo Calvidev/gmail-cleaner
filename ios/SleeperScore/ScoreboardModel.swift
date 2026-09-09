@@ -21,6 +21,7 @@ final class ScoreboardModel: ObservableObject {
     private let live = LiveActivityController.shared
     private var refreshTask: Task<Void, Never>?
     private var simulationTask: Task<Void, Never>?
+    private var statsWeek: Int?
 
     init() {
         config = SharedStore.loadConfig()
@@ -44,6 +45,7 @@ final class ScoreboardModel: ObservableObject {
             let fresh = try await service.snapshot(for: config)
             await apply(fresh)
             lastError = nil
+            Task { await syncWeekStats(week: fresh.week) }
         } catch {
             lastError = error.localizedDescription
             // Si no había nada en pantalla, al menos se enseña lo guardado.
@@ -73,6 +75,19 @@ final class ScoreboardModel: ObservableObject {
         // Si tres jugadores anotan a la vez, tres avisos son demasiados.
         for anotacion in anotaciones.prefix(3) {
             await live.notify(anotacion)
+        }
+    }
+
+    /// Yardas, recepciones y touchdowns de la jornada. Van en otra llamada que
+    /// el marcador, así que se piden aparte y se guardan para el widget.
+    private func syncWeekStats(week: Int) async {
+        guard let season = try? await service.currentSeason(), !season.isEmpty else { return }
+        _ = await WeekStatsStore.shared.refreshIfNeeded(season: season, week: week)
+        // La primera vez de cada jornada el marcador se montó sin ellas:
+        // se vuelve a montar, ya con yardas. Después el TTL de la caché manda.
+        if statsWeek != week {
+            statsWeek = week
+            await refresh(showSpinner: false)
         }
     }
 

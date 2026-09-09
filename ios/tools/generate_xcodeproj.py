@@ -39,6 +39,7 @@ SHARED_SOURCES = [
     "AvatarLoader.swift",
     "HeadshotCache.swift",
     "PlayerCatalog.swift",
+    "WeekStats.swift",
     "MatchupService.swift",
     "Theme.swift",
     "MatchupComponents.swift",

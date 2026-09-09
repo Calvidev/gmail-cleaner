@@ -159,9 +159,10 @@ struct RecentPlaysSection: View {
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.white)
                             .lineLimit(1)
-                        Text(play.isMine ? "Tu equipo" : "Rival")
+                        Text(play.stats ?? (play.isMine ? "Tu equipo" : "Rival"))
                             .font(.system(size: 10))
-                            .foregroundStyle(.white.opacity(0.45))
+                            .foregroundStyle(.white.opacity(0.5))
+                            .lineLimit(1)
                     }
                     Spacer()
                     Text("+\(play.delta.fantasyPoints)")
@@ -267,7 +268,11 @@ struct PlayerCell: View {
         PlayerHeadshot(line: line, size: 24)
     }
 
-    private var subtitle: String { line?.subtitle ?? "" }
+    /// "6 rec · 88 yds" si hay estadísticas; si no, "WR CIN".
+    private var subtitle: String {
+        if let stats = line?.stats, !stats.isEmpty { return stats }
+        return line?.subtitle ?? ""
+    }
 
     private var points: some View {
         Text((line?.points ?? 0).fantasyPoints)

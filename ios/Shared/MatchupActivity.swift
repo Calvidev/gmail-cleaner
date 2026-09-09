@@ -20,6 +20,8 @@ struct ScoringPlay: Codable, Hashable, Identifiable {
     var delta: Double
     /// True si es de tu equipo (para pintarlo en verde y no en rojo).
     var isMine: Bool
+    /// Qué lleva hecho en la jornada: "6 rec · 88 yds · 1 TD".
+    var stats: String?
     var at: Date
 
     var id: String { "\(playerID)-\(at.timeIntervalSince1970)" }

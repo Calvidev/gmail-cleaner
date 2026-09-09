@@ -78,11 +78,15 @@ struct MatchupService {
         }
 
         let catalog = await PlayerCatalog.shared.cached()
+        // Las estadísticas de la jornada son un extra: si no están descargadas,
+        // el marcador sale igual, solo que sin yardas.
+        let weekStats = await WeekStatsStore.shared.cached()
         let lineup = buildLineup(
             slots: league.starterSlots,
             mine: mineMatchup,
             theirs: theirsMatchup,
-            catalog: catalog
+            catalog: catalog,
+            weekStats: weekStats
         )
 
         return MatchupSnapshot(
@@ -114,7 +118,8 @@ struct MatchupService {
         slots: [String],
         mine: Matchup,
         theirs: Matchup?,
-        catalog: [String: CatalogPlayer]
+        catalog: [String: CatalogPlayer],
+        weekStats: WeekStats?
     ) -> [LineupRow] {
         let count = max(
             slots.count,
@@ -129,8 +134,10 @@ struct MatchupService {
             let row = LineupRow(
                 index: index,
                 slot: slot,
-                mine: line(from: mine, at: index, catalog: catalog),
-                theirs: theirs.flatMap { line(from: $0, at: index, catalog: catalog) }
+                mine: line(from: mine, at: index, catalog: catalog, weekStats: weekStats),
+                theirs: theirs.flatMap {
+                    line(from: $0, at: index, catalog: catalog, weekStats: weekStats)
+                }
             )
             if row.mine == nil && row.theirs == nil { continue }
             rows.append(row)
@@ -141,7 +148,8 @@ struct MatchupService {
     private func line(
         from matchup: Matchup,
         at index: Int,
-        catalog: [String: CatalogPlayer]
+        catalog: [String: CatalogPlayer],
+        weekStats: WeekStats?
     ) -> PlayerLine? {
         guard let starters = matchup.starters, index < starters.count else { return nil }
         let playerID = starters[index]
@@ -152,7 +160,8 @@ struct MatchupService {
             points: matchup.pointsForSlot(index),
             name: entry?.name,
             position: entry?.position,
-            team: entry?.team
+            team: entry?.team,
+            stats: weekStats?.line(for: playerID, position: entry?.position)
         )
     }
 }

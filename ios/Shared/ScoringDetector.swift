@@ -55,6 +55,7 @@ enum ScoringDetector {
             total: line.points,
             delta: delta,
             isMine: isMine,
+            stats: line.stats,
             at: moment
         )
     }

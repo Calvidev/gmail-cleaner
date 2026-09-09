@@ -24,6 +24,9 @@ struct PlayerLine: Codable, Hashable {
     var name: String?
     var position: String?
     var team: String?
+    /// "6 rec · 88 yds · 1 TD". Opcional: solo hay línea si se han descargado
+    /// las estadísticas de la jornada.
+    var stats: String?
 
     /// "T. Hill · WR KC" cuando hay catálogo; si no, algo legible igualmente.
     var subtitle: String {

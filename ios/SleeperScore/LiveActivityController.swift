@@ -99,8 +99,10 @@ final class LiveActivityController: ObservableObject {
 
         let contenido = UNMutableNotificationContent()
         contenido.title = play.isMine ? "Anotó tu jugador" : "Anotó el rival"
-        let sufijo = play.subtitle.isEmpty ? "" : " · \(play.subtitle)"
-        contenido.body = "\(play.name)\(sufijo)  +\(play.delta.fantasyPoints) pts (\(play.total.fantasyPoints))"
+        contenido.subtitle = "+\(play.delta.fantasyPoints) pts · \(play.total.fantasyPoints) en total"
+        // Lo que ha hecho, que es lo que uno quiere saber: "6 rec · 88 yds · 1 TD".
+        let detalle = play.stats ?? play.subtitle
+        contenido.body = detalle.isEmpty ? play.name : "\(play.name) — \(detalle)"
         contenido.sound = .default
         contenido.interruptionLevel = .timeSensitive
 

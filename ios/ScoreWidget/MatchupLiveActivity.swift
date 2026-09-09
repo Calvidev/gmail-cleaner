@@ -23,17 +23,24 @@ struct MatchupLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.trailing) {
                     IslandTeam(name: context.attributes.opponentTeam, points: context.state.opponentPoints, mine: false)
                 }
-                DynamicIslandExpandedRegion(.center) {
-                    if let play = context.state.lastPlay {
-                        PlayBanner(play: play, compact: true)
-                    } else {
-                        Text("Semana \(context.attributes.week)")
-                            .font(.system(size: 11))
-                            .foregroundStyle(.white.opacity(0.5))
-                    }
-                }
+                // Nada en el centro: compite por el ancho con las columnas de
+                // los equipos y las deja sin sitio. La jugada va abajo, que es
+                // la única región que ocupa todo el ancho.
                 DynamicIslandExpandedRegion(.bottom) {
-                    ScoreBar(share: context.state.share, height: 6)
+                    VStack(spacing: 8) {
+                        ScoreBar(share: context.state.share, height: 5)
+                        if let play = context.state.lastPlay {
+                            PlayBanner(play: play, compact: false)
+                        } else {
+                            HStack {
+                                Text("Semana \(context.attributes.week)")
+                                Spacer()
+                                Text("Titulares \(context.state.myStarters):\(context.state.opponentStarters)")
+                            }
+                            .font(.system(size: 10))
+                            .foregroundStyle(.white.opacity(0.5))
+                        }
+                    }
                 }
             } compactLeading: {
                 Text(context.state.myPoints.fantasyPoints)
@@ -130,15 +137,27 @@ struct PlayBanner: View {
                     .font(.system(size: compact ? 11 : 12, weight: .semibold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
+                // Lo que lleva hecho: "6 rec · 88 yds · 1 TD".
+                Text(play.stats ?? play.subtitle)
+                    .font(.system(size: 10))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 Text(play.isMine ? "Tu equipo" : "Rival")
                     .font(.system(size: 9))
-                    .foregroundStyle(.white.opacity(0.45))
+                    .foregroundStyle(.white.opacity(0.4))
             }
             Spacer(minLength: 4)
-            Text("+\(play.delta.fantasyPoints)")
-                .font(.system(size: compact ? 13 : 15, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(play.isMine ? Theme.accent : Color.red)
+            VStack(alignment: .trailing, spacing: 0) {
+                Text("+\(play.delta.fantasyPoints)")
+                    .font(.system(size: compact ? 13 : 16, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(play.isMine ? Theme.accent : Color.red)
+                Text("\(play.total.fantasyPoints) pts")
+                    .font(.system(size: 9))
+                    .monospacedDigit()
+                    .foregroundStyle(.white.opacity(0.45))
+            }
         }
         .padding(.horizontal, compact ? 0 : 10)
         .padding(.vertical, compact ? 0 : 7)
@@ -161,7 +180,7 @@ struct PlayBanner: View {
                     .foregroundStyle(.white.opacity(0.35))
             }
         }
-        .frame(width: compact ? 22 : 28, height: compact ? 22 : 28)
+        .frame(width: compact ? 24 : 34, height: compact ? 24 : 34)
         .background(Color.white.opacity(0.08), in: Circle())
         .clipShape(Circle())
     }

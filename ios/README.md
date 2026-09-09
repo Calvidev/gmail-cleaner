@@ -100,7 +100,7 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 | App | Marcador grande, diferencia, barra, últimas anotaciones y la alineación hueco a hueco, con la foto y los puntos de cada titular |
 | Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |
 | Ajustes de Sleeper | Entrar con tu usuario, tus ligas, equipos con avatar |
-| Live Activity | Marcador en la pantalla de bloqueo y en la Dynamic Island, con la última anotación: foto, nombre y puntos |
+| Live Activity | Marcador en la pantalla de bloqueo y en la Dynamic Island, con la última anotación: foto, nombre, línea estadística ("6 rec · 88 yds · 1 TD") y puntos |
 | Widget pequeño | Los dos equipos con avatar, puntos y barra |
 | Widget mediano | Lo mismo del widget original: cabecera, dos columnas, diferencia, barra y pie |
 | Widget grande | El mediano + los primeros huecos de la alineación con nombres abreviados |
@@ -193,6 +193,7 @@ Las mismas cinco llamadas que hacía el widget de Scriptable, en
 | `GET /league/{id}/rosters` | qué manager lleva cada roster, y su récord |
 | `GET /league/{id}/matchups/{semana}` | los puntos, titular a titular |
 | `GET /players/nfl` | los nombres de los jugadores (5 MB, una vez al día, solo desde la app) |
+| `GET /stats/nfl/regular/{año}/{jornada}` | yardas, recepciones y touchdowns de la jornada |
 
 Y dos del CDN, cacheadas en el grupo de apps: `sleepercdn.com/avatars/thumbs/…`
 para los managers y `sleepercdn.com/content/nfl/players/thumb/…` para las caras

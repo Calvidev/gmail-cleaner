@@ -128,6 +128,10 @@
 			isa = PBXBuildFile;
 			fileRef = 3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */;
 		};
+		3224D5599600DB32E6707465 = {
+			isa = PBXBuildFile;
+			fileRef = C447792AF8760633BC09EF93 /* WeekStats.swift */;
+		};
 		32733C0A693D9BA930BBCCF3 = {
 			isa = PBXBuildFile;
 			fileRef = F360A9C432F944F1E4F4246B /* MatchSimulator.swift */;
@@ -164,6 +168,7 @@
 				D0143AE3927E5100A6257CF1 /* AvatarLoader.swift in ScoreWidgetExtension */,
 				74B9E9A0D86F399917DBF509 /* HeadshotCache.swift in ScoreWidgetExtension */,
 				1011B10BE33E7445720286C5 /* PlayerCatalog.swift in ScoreWidgetExtension */,
+				3224D5599600DB32E6707465 /* WeekStats.swift in ScoreWidgetExtension */,
 				CBBBE19B4682C29799DAE9F0 /* MatchupService.swift in ScoreWidgetExtension */,
 				9A14ACA83648BAAD0A7B4F62 /* Theme.swift in ScoreWidgetExtension */,
 				71DAAFA211708FECC42DA14A /* MatchupComponents.swift in ScoreWidgetExtension */,
@@ -253,6 +258,7 @@
 				F5A30E0A9EB43FB9E5566673 /* AvatarLoader.swift in SleeperScore */,
 				73AA4EBD467F0E330299F7C4 /* HeadshotCache.swift in SleeperScore */,
 				FAEBD90CE12952F4FBC920AC /* PlayerCatalog.swift in SleeperScore */,
+				D11F48B53881037F9CF0F7EF /* WeekStats.swift in SleeperScore */,
 				58AA38ADA353BE33F5AF5C3A /* MatchupService.swift in SleeperScore */,
 				D80B18A2F5944D5736AB7143 /* Theme.swift in SleeperScore */,
 				241B5769E28CE18570E5F2F8 /* MatchupComponents.swift in SleeperScore */,
@@ -578,6 +584,7 @@
 				688026E8C814351531673AE2 /* AvatarLoader.swift */,
 				E37BCAA6E1080EA572DA4D1E /* HeadshotCache.swift */,
 				C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */,
+				C447792AF8760633BC09EF93 /* WeekStats.swift */,
 				ADE09ECB837E05A3414451DB /* MatchupService.swift */,
 				207AE7F7BF7702CED53D696C /* Theme.swift */,
 				6017835189AFFF5EC9046AAB /* MatchupComponents.swift */,
@@ -635,6 +642,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
 			path = SleeperScoreApp.swift;
+			sourceTree = "<group>";
+		};
+		C447792AF8760633BC09EF93 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = WeekStats.swift;
 			sourceTree = "<group>";
 		};
 		C5A41E448492DA848F9CAA89 = {
@@ -715,6 +728,10 @@
 		D0143AE3927E5100A6257CF1 = {
 			isa = PBXBuildFile;
 			fileRef = 688026E8C814351531673AE2 /* AvatarLoader.swift */;
+		};
+		D11F48B53881037F9CF0F7EF = {
+			isa = PBXBuildFile;
+			fileRef = C447792AF8760633BC09EF93 /* WeekStats.swift */;
 		};
 		D43102C6B7124A44BB8B79D2 = {
 			isa = PBXBuildFile;
