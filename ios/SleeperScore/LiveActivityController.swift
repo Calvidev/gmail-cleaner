@@ -62,6 +62,18 @@ final class LiveActivityController: ObservableObject {
 
     func update(with snapshot: MatchupSnapshot, play: ScoringPlay? = nil) {
         guard let activity else { return }
+
+        // Los nombres de los equipos y la liga son fijos en una Live Activity.
+        // Si el usuario ha cambiado de liga, hay que rehacerla o enseñaría el
+        // marcador de una con el título de otra.
+        if activity.attributes.leagueName != snapshot.leagueName
+            || activity.attributes.myTeam != snapshot.me.name {
+            Task {
+                await restart(with: snapshot)
+            }
+            return
+        }
+
         Task {
             // Que la foto esté en disco antes de enseñarla: la Live Activity no
             // puede salir a la red mientras se pinta.
@@ -75,13 +87,18 @@ final class LiveActivityController: ObservableObject {
         }
     }
 
-    func stop() {
-        guard let activity else { return }
-        Task {
-            await activity.end(nil, dismissalPolicy: .immediate)
-            self.activity = nil
-            self.isRunning = false
-        }
+    func stop() async {
+        guard let viva = activity else { return }
+        // Primero el estado, luego el trabajo: si no, el botón se queda con la
+        // cara de "encendido" hasta que el sistema termine de cerrarla.
+        activity = nil
+        isRunning = false
+        await viva.end(nil, dismissalPolicy: .immediate)
+    }
+
+    private func restart(with snapshot: MatchupSnapshot) async {
+        await stop()
+        start(with: snapshot)
     }
 
     // MARK: - Avisos

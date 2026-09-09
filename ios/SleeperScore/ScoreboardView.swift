@@ -101,30 +101,34 @@ struct ScoreCard: View {
 /// Encender el seguimiento en la pantalla de bloqueo y la Dynamic Island.
 struct LiveActivityButton: View {
     @EnvironmentObject private var model: ScoreboardModel
+    /// Se observa el controlador directamente: es quien sabe si la actividad
+    /// está viva, y su `isRunning` cambia después de que el sistema la cierre.
+    @ObservedObject private var live = LiveActivityController.shared
 
     var body: some View {
-        if model.canStartLiveActivity {
+        if live.areActivitiesEnabled {
             Button {
-                if model.isLiveActivityRunning {
-                    model.stopLiveActivity()
+                if live.isRunning {
+                    Task { await model.stopLiveActivity() }
                 } else {
                     Task { await model.startLiveActivity() }
                 }
             } label: {
                 Label(
-                    model.isLiveActivityRunning
+                    live.isRunning
                         ? "Dejar de seguir el partido"
                         : "Seguir en la pantalla de bloqueo",
-                    systemImage: model.isLiveActivityRunning ? "stop.circle" : "bolt.badge.clock"
+                    systemImage: live.isRunning ? "stop.circle" : "bolt.badge.clock"
                 )
                 .font(.system(size: 13, weight: .medium))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
                 .background(
-                    model.isLiveActivityRunning ? Theme.pill : Theme.accent.opacity(0.16),
+                    live.isRunning ? Theme.pill : Theme.accent.opacity(0.16),
                     in: RoundedRectangle(cornerRadius: 14, style: .continuous)
                 )
-                .foregroundStyle(model.isLiveActivityRunning ? Color.white.opacity(0.7) : Theme.accent)
+                .foregroundStyle(live.isRunning ? Color.white.opacity(0.7) : Theme.accent)
+                .animation(.easeInOut(duration: 0.2), value: live.isRunning)
             }
             .buttonStyle(.plain)
         }

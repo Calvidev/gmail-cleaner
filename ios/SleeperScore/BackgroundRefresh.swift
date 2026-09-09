@@ -50,28 +50,40 @@ enum BackgroundRefresh {
     /// Descarga el marcador, avisa de lo que haya pasado y deja todo guardado.
     /// Sin interfaz de por medio: esto corre con la app cerrada.
     static func run() async {
-        let config = SharedStore.loadConfig()
-        guard config.isComplete else { return }
+        let libro = SharedStore.loadBook()
+        guard !libro.isEmpty else { return }
 
-        let anterior = SharedStore.cachedSnapshot(for: config)
-        guard var fresco = try? await MatchupService().snapshot(for: config) else { return }
+        // Todas las ligas, no solo la que estés mirando: si sigues dos equipos,
+        // quieres enterarte de los dos.
+        var ultimo: MatchupSnapshot?
+        for liga in libro.leagues where liga.isComplete {
+            guard let fresco = await refreshLeague(liga) else { continue }
+            ultimo = fresco
+        }
+        WidgetCenter.shared.reloadAllTimelines()
+
+        // El parte de lesiones cambia mucho más despacio que el marcador, así
+        // que solo se mira cuando el catálogo ya toca renovarse.
+        if let ultimo, await PlayerCatalog.shared.isStale {
+            let catalogo = await PlayerCatalog.shared.refreshIfNeeded()
+            for cambio in InjuryWatcher.changes(in: ultimo, catalog: catalogo).prefix(3) {
+                await Notifier.injury(cambio)
+            }
+        }
+    }
+
+    /// Una liga: descarga, compara, avisa y guarda.
+    private static func refreshLeague(_ league: LeagueConfig) async -> MatchupSnapshot? {
+        let anterior = SharedStore.cachedSnapshot(for: league)
+        guard var fresco = try? await MatchupService().snapshot(for: league) else { return nil }
 
         let anotaciones = ScoringDetector.plays(previous: anterior, current: fresco)
         fresco.recentPlays = Array((anotaciones + (anterior?.plays ?? [])).prefix(6))
-        SharedStore.cache(fresco, for: config)
-        WidgetCenter.shared.reloadAllTimelines()
+        SharedStore.cache(fresco, for: league)
 
         for anotacion in anotaciones.prefix(3) {
             await Notifier.play(anotacion)
         }
-
-        // El parte de lesiones cambia mucho más despacio que el marcador, así
-        // que solo se mira cuando el catálogo ya toca renovarse.
-        if await PlayerCatalog.shared.isStale {
-            let catalogo = await PlayerCatalog.shared.refreshIfNeeded()
-            for cambio in InjuryWatcher.changes(in: fresco, catalog: catalogo).prefix(3) {
-                await Notifier.injury(cambio)
-            }
-        }
+        return fresco
     }
 }

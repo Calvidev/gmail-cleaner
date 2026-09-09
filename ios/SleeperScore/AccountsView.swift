@@ -11,11 +11,13 @@ struct AccountsView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var yahoo = YahooAuth()
 
-    @State private var connections: [HostKind: HostConnection] = SharedStore.connections()
     @State private var showingYahoo = false
     @State private var showingPaywall = false
     @State private var catalogDate: Date?
     @State private var isRefreshingCatalog = false
+    /// Cambia al conectar una cuenta o al volver de la pantalla de Pro; se lee
+    /// en cada dibujado en vez de guardarse, que era lo que se quedaba viejo.
+    @State private var revision = 0
 
     var body: some View {
         NavigationStack {
@@ -48,9 +50,26 @@ struct AccountsView: View {
                 catalogDate = await PlayerCatalog.shared.savedAt
             }
             .onChange(of: showingYahoo) { _, abierto in
-                if !abierto { connections = SharedStore.connections() }
+                if !abierto { revision += 1 }
+            }
+            .onChange(of: showingPaywall) { _, abierto in
+                if !abierto { revision += 1 }
+            }
+            .onChange(of: model.book) { _, _ in
+                revision += 1
             }
         }
+    }
+
+    /// Estado actual de las cuentas conectadas. `revision` fuerza a releerlo.
+    private var connections: [HostKind: HostConnection] {
+        _ = revision
+        return SharedStore.connections()
+    }
+
+    private var plan: Plan {
+        _ = revision
+        return EntitlementStore.current.plan
     }
 
     // MARK: - Mis ligas
@@ -107,10 +126,10 @@ struct AccountsView: View {
                 showingPaywall = true
             } label: {
                 HStack {
-                    Label("Plan \(EntitlementStore.current.plan.title)", systemImage: "sparkles")
+                    Label("Plan \(plan.title)", systemImage: "sparkles")
                         .foregroundStyle(.primary)
                     Spacer()
-                    if EntitlementStore.current.plan == .free {
+                    if plan == .free {
                         Text("Ver Pro")
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(Theme.accent)
@@ -118,7 +137,7 @@ struct AccountsView: View {
                 }
             }
         } footer: {
-            Text(EntitlementStore.current.plan == .free
+            Text(plan == .free
                  ? "El plan gratis sigue una liga. Pro quita el límite."
                  : "Pro activo: ligas ilimitadas.")
         }

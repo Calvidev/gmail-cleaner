@@ -64,15 +64,24 @@ final class ScoreboardModel: ObservableObject {
     /// se detectan las anotaciones, se guarda, se avisa a los widgets, a la
     /// Live Activity y al usuario.
     private func apply(_ fresh: MatchupSnapshot) async {
+        let anterior = snapshot
         var actualizado = fresh
 
         // Lo que ha pasado desde la última lectura: quién ha anotado.
         let anotaciones = ScoringDetector.plays(previous: snapshot, current: fresh)
         actualizado.recentPlays = Array((anotaciones + (snapshot?.plays ?? [])).prefix(6))
 
+        let cambioAlgo = anterior?.me.points != actualizado.me.points
+            || anterior?.opponentPoints != actualizado.opponentPoints
+            || !anotaciones.isEmpty
+
         snapshot = actualizado
         SharedStore.cache(actualizado, for: config)
-        WidgetCenter.shared.reloadAllTimelines()
+        // iOS raciona las recargas de widget: pedirlas cada minuto sin que haya
+        // cambiado nada agota el presupuesto y luego no recarga cuando importa.
+        if cambioAlgo {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
 
         // Las fotos, en disco, para el widget y la Live Activity.
         Task { await HeadshotCache.prefetch(lineup: actualizado.lineup) }
@@ -118,10 +127,13 @@ final class ScoreboardModel: ObservableObject {
         if delay > 0 {
             pendingSimulation = true
             let prorroga = UIApplication.shared.beginBackgroundTask(withName: "anotación simulada")
+            defer {
+                pendingSimulation = false
+                if prorroga != .invalid { UIApplication.shared.endBackgroundTask(prorroga) }
+            }
             try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-            pendingSimulation = false
+            guard !Task.isCancelled else { return }
             await apply(simulado)
-            if prorroga != .invalid { UIApplication.shared.endBackgroundTask(prorroga) }
         } else {
             await apply(simulado)
         }
@@ -179,20 +191,14 @@ final class ScoreboardModel: ObservableObject {
 
     // MARK: - Live Activity
 
-    var isLiveActivityRunning: Bool { live.isRunning }
-
-    var canStartLiveActivity: Bool { live.areActivitiesEnabled }
-
     func startLiveActivity() async {
         guard let snapshot else { return }
         await live.requestNotificationPermission()
         live.start(with: snapshot)
-        objectWillChange.send()
     }
 
-    func stopLiveActivity() {
-        live.stop()
-        objectWillChange.send()
+    func stopLiveActivity() async {
+        await live.stop()
     }
 
     // MARK: - Ajustes

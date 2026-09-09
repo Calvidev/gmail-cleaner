@@ -98,18 +98,21 @@ enum InjuryWatcher {
         }
 
         let anteriores = saved()
-        let esPrimeraVez = anteriores.isEmpty
-        var actuales: [String: String] = [:]
+        // Se parte de lo que ya había: con varias ligas, quedarse solo con los
+        // jugadores de la liga que miras ahora haría que los de la otra
+        // parecieran nuevos al volver, y avisaría de cambios que no existen.
+        var actuales = anteriores
         var cambios: [InjuryChange] = []
 
         for playerID in mios {
             guard let jugador = catalog[playerID] else { continue }
             let estado = jugador.injuryStatus ?? ""
+            let anterior = anteriores[playerID]
             actuales[playerID] = estado
 
-            guard !esPrimeraVez else { continue }
-            let anterior = anteriores[playerID] ?? ""
-            guard anterior != estado else { continue }
+            // Un jugador que no habíamos visto nunca solo se apunta: su estado
+            // actual no es una noticia.
+            guard let anterior, anterior != estado else { continue }
             cambios.append(
                 InjuryChange(
                     playerID: playerID,

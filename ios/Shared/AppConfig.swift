@@ -9,9 +9,10 @@ enum AppConfig {
     /// `.entitlements` (App > Signing & Capabilities > App Groups).
     static let appGroupID = "group.dev.calvi.sleeperscore"
 
-    /// Liga y equipo por defecto: los mismos del widget de Scriptable. Sirven
-    /// para que la app funcione nada más instalarla, antes de tocar Ajustes.
-    static let defaultLeagueID = "1263745758830530560"
+    /// Liga de arranque. **Vacía a propósito**: una app publicada no puede
+    /// traer la liga de su autor escrita dentro, o el primero que la instale
+    /// vería un marcador ajeno. Para desarrollo se puede poner una aquí.
+    static let defaultLeagueID = ""
     static let defaultRosterID = 1
 
     /// Verde menta del widget original.
