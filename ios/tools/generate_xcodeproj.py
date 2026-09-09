@@ -71,6 +71,7 @@ APP_SOURCES = [
 WIDGET_SOURCES = [
     "ScoreWidgetBundle.swift",
     "ScoreProvider.swift",
+    "LeagueIntent.swift",
     "ScoreWidgetViews.swift",
     "MatchupLiveActivity.swift",
 ]

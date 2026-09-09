@@ -105,10 +105,13 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 | Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |
 | Ajustes de Sleeper | Entrar con tu usuario, tus ligas, equipos con avatar |
 | Live Activity | Marcador en la pantalla de bloqueo y en la Dynamic Island, con la última anotación: foto, nombre, línea estadística ("6 rec · 88 yds · 1 TD") y puntos |
-| Widget pequeño | Los dos equipos con avatar, puntos y barra |
+| Widget pequeño | Los dos equipos con avatar, puntos, barra y probabilidad |
 | Widget mediano | Lo mismo del widget original: cabecera, dos columnas, diferencia, barra y pie |
 | Widget grande | El mediano + los primeros huecos de la alineación con nombres abreviados |
 | Bloqueo (rectangular / línea) | Jornada y marcador |
+
+Cada widget puede seguir **una liga distinta**: mantén pulsado el widget >
+Editar widget > Liga. Sin elegir nada sigue la liga activa en la app.
 
 La app se refresca sola cada minuto mientras la tienes abierta, y al tirar hacia
 abajo. El widget pide refresco cada 10 minutos si hay partido en marcha y cada

@@ -1,5 +1,6 @@
 //  ScoreWidgetBundle.swift
 
+import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -15,11 +16,15 @@ struct ScoreWidget: Widget {
     private let kind = "ScoreWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: ScoreProvider()) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: SelectLeagueIntent.self,
+            provider: ScoreProvider()
+        ) { entry in
             ScoreWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Marcador Sleeper")
-        .description("Tu enfrentamiento de la jornada, en vivo.")
+        .configurationDisplayName("Marcador")
+        .description("Tu enfrentamiento de la jornada, en vivo. Mantén pulsado para elegir liga.")
         .supportedFamilies([
             .systemSmall,
             .systemMedium,

@@ -46,6 +46,10 @@
 			productReference = 1B442E42980596EBCD246D51 /* ScoreWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		0824408262801EA67B4761AE = {
+			isa = PBXBuildFile;
+			fileRef = B4AD56D7B721690BB178E897 /* LeagueIntent.swift */;
+		};
 		0A3AFB51459A2B0FB41234F0 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -251,6 +255,7 @@
 				71DAAFA211708FECC42DA14A /* MatchupComponents.swift in ScoreWidgetExtension */,
 				553B51B711A499F0543A1AF3 /* ScoreWidgetBundle.swift in ScoreWidgetExtension */,
 				9DC05096FC383F2E372383D0 /* ScoreProvider.swift in ScoreWidgetExtension */,
+				0824408262801EA67B4761AE /* LeagueIntent.swift in ScoreWidgetExtension */,
 				E97658E1132B2D311B4060A1 /* ScoreWidgetViews.swift in ScoreWidgetExtension */,
 				3151BC39D6A2698E68E6D340 /* MatchupLiveActivity.swift in ScoreWidgetExtension */,
 			);
@@ -786,6 +791,12 @@
 			path = MatchupActivity.swift;
 			sourceTree = "<group>";
 		};
+		B4AD56D7B721690BB178E897 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = LeagueIntent.swift;
+			sourceTree = "<group>";
+		};
 		B56E96530BC9DC2EBA288692 = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1032,6 +1043,7 @@
 			children = (
 				C5A41E448492DA848F9CAA89 /* ScoreWidgetBundle.swift */,
 				BD3A67CAFF664165392226E0 /* ScoreProvider.swift */,
+				B4AD56D7B721690BB178E897 /* LeagueIntent.swift */,
 				C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */,
 				3CC877DCD46ABB61F63E8488 /* MatchupLiveActivity.swift */,
 				C67A2D71EF5298D30645961D /* Assets.xcassets */,

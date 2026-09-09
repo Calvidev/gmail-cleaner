@@ -139,6 +139,12 @@ enum SharedStore {
         return LeagueBook()
     }
 
+    /// Una liga concreta por su id; nil si ya no está guardada.
+    static func league(withID id: String?) -> LeagueConfig? {
+        guard let id else { return nil }
+        return loadBook().leagues.first { $0.id == id }
+    }
+
     static func save(_ book: LeagueBook) {
         guard let data = try? SharedJSON.encoder.encode(book) else { return }
         defaults.set(data, forKey: bookKey)
