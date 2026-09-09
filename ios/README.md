@@ -99,6 +99,8 @@ pago, cambia `defaultLeagueID` y `defaultRosterID` en `Shared/AppConfig.swift`.
 | --- | --- |
 | App | Marcador, **probabilidad de ganar**, proyección, puntos dejados en el banquillo, últimas anotaciones y la alineación con foto y puntos |
 | Clasificación | La tabla de la liga con récord y puntos a favor y en contra |
+| Mi temporada | Puntos por jornada en gráfica, récord, media, mejor y peor semana |
+| Noticias | Las de tus jugadores, cruzadas por id de ESPN, con aviso |
 | Compartir | Una imagen del marcador para el grupo de la liga |
 | Cuentas | Sleeper y Yahoo conectables; ESPN y NFL.com apagadas hasta que se integren |
 | Ajustes de Sleeper | Entrar con tu usuario, tus ligas, equipos con avatar |
@@ -213,6 +215,12 @@ Las mismas cinco llamadas que hacía el widget de Scriptable, en
 | `GET /players/nfl` | los nombres de los jugadores (5 MB, una vez al día, solo desde la app) |
 | `GET /stats/nfl/regular/{año}/{jornada}` | yardas, recepciones y touchdowns de la jornada |
 | `GET /projections/nfl/regular/{año}/{jornada}` | lo que se espera que anote cada jugador |
+
+Y una de ESPN para las noticias
+(`site.api.espn.com/apis/site/v2/sports/football/nfl/news`), que etiqueta cada
+artículo con los atletas que aparecen: cruzando ese id con el `espn_id` del
+catálogo de Sleeper, el emparejamiento noticia-jugador es exacto y no hay que
+buscar nombres dentro del texto.
 
 Y dos del CDN, cacheadas en el grupo de apps: `sleepercdn.com/avatars/thumbs/…`
 para los managers y `sleepercdn.com/content/nfl/players/thumb/…` para las caras

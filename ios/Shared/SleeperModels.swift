@@ -274,6 +274,10 @@ struct RawCatalogPlayer: Decodable {
     let position: String?
     let team: String?
     let injuryStatus: String?
+    /// El id de ESPN, que es lo que permite casar noticias con jugadores sin
+    /// adivinar por el nombre. Sleeper lo manda unas veces como número y otras
+    /// como texto, así que se lee de las dos formas.
+    let espnID: String?
 
     enum CodingKeys: String, CodingKey {
         case fullName = "full_name"
@@ -282,6 +286,24 @@ struct RawCatalogPlayer: Decodable {
         case position
         case team
         case injuryStatus = "injury_status"
+        case espnID = "espn_id"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        fullName = try container.decodeIfPresent(String.self, forKey: .fullName)
+        firstName = try container.decodeIfPresent(String.self, forKey: .firstName)
+        lastName = try container.decodeIfPresent(String.self, forKey: .lastName)
+        position = try container.decodeIfPresent(String.self, forKey: .position)
+        team = try container.decodeIfPresent(String.self, forKey: .team)
+        injuryStatus = try container.decodeIfPresent(String.self, forKey: .injuryStatus)
+        if let texto = try? container.decodeIfPresent(String.self, forKey: .espnID) {
+            espnID = texto
+        } else if let numero = try? container.decodeIfPresent(Int.self, forKey: .espnID) {
+            espnID = String(numero)
+        } else {
+            espnID = nil
+        }
     }
 }
 
@@ -293,4 +315,6 @@ struct CatalogPlayer: Codable, Hashable {
     /// "Questionable", "Out", "IR"… Nil cuando está sano. Opcional también en
     /// el archivo: un catálogo guardado por la versión anterior se sigue leyendo.
     var injuryStatus: String?
+    /// Para casar las noticias de ESPN con este jugador.
+    var espnID: String?
 }

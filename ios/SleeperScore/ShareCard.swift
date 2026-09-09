@@ -130,12 +130,7 @@ struct ShareScoreButton: View {
     }
 
     private var label: some View {
-        Label("Compartir", systemImage: "square.and.arrow.up")
-            .font(.system(size: 13, weight: .medium))
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 11)
-            .background(Theme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .foregroundStyle(.white.opacity(0.85))
+        ActionTile(title: "Compartir", icon: "square.and.arrow.up")
     }
 
     @MainActor

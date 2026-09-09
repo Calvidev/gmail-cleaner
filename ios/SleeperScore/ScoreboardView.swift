@@ -12,16 +12,16 @@ struct ScoreboardView: View {
             VStack(spacing: 16) {
                 if let snapshot = model.snapshot {
                     ScoreCard(snapshot: snapshot)
-                    HStack(spacing: 10) {
+                    HStack(spacing: 8) {
                         NavigationLink {
                             StandingsView(league: model.config)
                         } label: {
-                            Label("Clasificación", systemImage: "list.number")
-                                .font(.system(size: 13, weight: .medium))
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 11)
-                                .background(Theme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                                .foregroundStyle(.white.opacity(0.85))
+                            ActionTile(title: "Clasificación", icon: "list.number")
+                        }
+                        NavigationLink {
+                            SeasonView(league: model.config, week: snapshot.week)
+                        } label: {
+                            ActionTile(title: "Mi temporada", icon: "chart.bar.fill")
                         }
                         ShareScoreButton(snapshot: snapshot)
                     }
@@ -31,6 +31,9 @@ struct ScoreboardView: View {
                     }
                     if !snapshot.plays.isEmpty {
                         RecentPlaysSection(plays: snapshot.plays)
+                    }
+                    if !model.news.isEmpty {
+                        NewsCard(items: model.news)
                     }
                     if !snapshot.lineup.isEmpty {
                         LineupSection(rows: snapshot.lineup)
@@ -116,6 +119,77 @@ struct ScoreCard: View {
             "\(snapshot.me.name) \(snapshot.me.points.fantasyPoints) puntos, "
             + "\(snapshot.opponent?.name ?? "sin rival") \(snapshot.opponentPoints.fantasyPoints) puntos"
         )
+    }
+}
+
+/// Los tres accesos bajo el marcador, todos con la misma pinta.
+struct ActionTile: View {
+    var title: String
+    var icon: String
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 15))
+            Text(title)
+                .font(.system(size: 10, weight: .medium))
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .foregroundStyle(.white.opacity(0.85))
+    }
+}
+
+// MARK: - Noticias
+
+/// Noticias de tus jugadores. No de la NFL: de los tuyos.
+struct NewsCard: View {
+    var items: [NewsItem]
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("De tus jugadores", systemImage: "newspaper.fill")
+                .font(.system(size: 13, weight: .semibold))
+                .foregroundStyle(.white)
+
+            ForEach(items.prefix(4)) { noticia in
+                Button {
+                    if let url = noticia.url { openURL(url) }
+                } label: {
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(noticia.headline)
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(2)
+                        HStack(spacing: 6) {
+                            if let resumen = noticia.summary, !resumen.isEmpty {
+                                Text(resumen)
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.white.opacity(0.5))
+                                    .lineLimit(1)
+                            }
+                            Spacer(minLength: 0)
+                            Text(noticia.age)
+                                .font(.system(size: 10))
+                                .foregroundStyle(.white.opacity(0.35))
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .buttonStyle(.plain)
+
+                if noticia.id != items.prefix(4).last?.id {
+                    Divider().overlay(Color.white.opacity(0.06))
+                }
+            }
+        }
+        .padding(16)
+        .background(Theme.card, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }
 

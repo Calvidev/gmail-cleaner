@@ -17,6 +17,8 @@ final class ScoreboardModel: ObservableObject {
     @Published private(set) var isSimulating = false
     /// True durante la cuenta atrás de una anotación simulada.
     @Published private(set) var pendingSimulation = false
+    /// Noticias de tus jugadores, las últimas primero.
+    @Published private(set) var news: [NewsItem] = []
 
     private let service = MatchupService()
     private let live = LiveActivityController.shared
@@ -52,6 +54,7 @@ final class ScoreboardModel: ObservableObject {
             await apply(fresh)
             lastError = nil
             Task { await syncWeekStats(week: fresh.week) }
+            Task { await syncNews(for: fresh) }
         } catch {
             lastError = error.localizedDescription
             // Si no había nada en pantalla, al menos se enseña lo guardado.
@@ -115,6 +118,31 @@ final class ScoreboardModel: ObservableObject {
         if statsWeek != week {
             statsWeek = week
             await refresh(showSpinner: false)
+        }
+    }
+
+    /// Noticias de los jugadores del marcador. ESPN etiqueta cada artículo con
+    /// los atletas que salen en él, así que el cruce es exacto.
+    private func syncNews(for snapshot: MatchupSnapshot) async {
+        let catalogo = await PlayerCatalog.shared.cached()
+        guard !catalogo.isEmpty else { return }
+
+        var jugadores = Set<String>()
+        for fila in snapshot.lineup {
+            if let mine = fila.mine { jugadores.insert(mine.playerID) }
+        }
+        for suplente in snapshot.bench ?? [] { jugadores.insert(suplente.playerID) }
+        guard !jugadores.isEmpty else { return }
+
+        let recibidas = await NewsFeed.shared.refresh(for: jugadores, catalog: catalogo)
+        news = recibidas
+
+        // Solo se avisa de lo que no se había avisado ya.
+        for noticia in NewsSeen.filterNew(recibidas).prefix(2) {
+            let nombre = noticia.playerIDs
+                .compactMap { catalogo[$0]?.name }
+                .first
+            await Notifier.news(noticia, playerName: nombre)
         }
     }
 

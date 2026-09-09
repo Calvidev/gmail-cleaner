@@ -62,7 +62,8 @@ actor PlayerCatalog {
                 name: name,
                 position: entry.position,
                 team: entry.team,
-                injuryStatus: entry.injuryStatus
+                injuryStatus: entry.injuryStatus,
+                espnID: entry.espnID
             )
         }
 

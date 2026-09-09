@@ -40,6 +40,21 @@ enum Notifier {
         await add(contenido, id: play.id)
     }
 
+    // MARK: - Noticia
+
+    static func news(_ item: NewsItem, playerName: String?) async {
+        guard await authorized() else { return }
+
+        let contenido = UNMutableNotificationContent()
+        contenido.title = playerName.map { "Noticia de \($0)" } ?? "Noticia de tu equipo"
+        contenido.body = item.headline
+        if let resumen = item.summary, !resumen.isEmpty { contenido.subtitle = resumen }
+        contenido.sound = .default
+        // Una noticia no interrumpe: no es una jugada en directo.
+        contenido.interruptionLevel = .active
+        await add(contenido, id: "news-\(item.id.hashValue)")
+    }
+
     // MARK: - Cambio de liderato
 
     static func leadChange(tookLead: Bool, difference: Double, opponent: String) async {
