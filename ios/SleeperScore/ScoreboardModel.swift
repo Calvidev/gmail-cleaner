@@ -114,6 +114,16 @@ final class ScoreboardModel: ObservableObject {
             )
         }
 
+        // Si el partido ya se mueve y no hay actividad encendida, se enciende
+        // sola. Solo funciona con la app abierta: iOS no permite arrancar una
+        // Live Activity desde segundo plano sin push.
+        if SharedStore.autoStartLiveActivity,
+           !live.isRunning,
+           actualizado.looksLive,
+           actualizado.opponent != nil {
+            live.start(with: actualizado)
+        }
+
         live.update(with: actualizado, play: anotaciones.first)
         // Si tres jugadores anotan a la vez, tres avisos son demasiados.
         for anotacion in anotaciones.prefix(3) {

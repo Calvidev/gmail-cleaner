@@ -76,6 +76,7 @@ struct LeagueBook: Codable, Equatable {
 enum SharedStore {
     private static let configKey = "leagueConfig"
     private static let bookKey = "leagueBook"
+    private static let autoStartKey = "autoStartLiveActivity"
     private static let connectionsKey = "hostConnections"
     private static let snapshotFile = "matchup-snapshot.json"
 
@@ -155,6 +156,19 @@ enum SharedStore {
         var libro = loadBook()
         libro.upsert(config)
         save(libro)
+    }
+
+    // MARK: - Preferencias
+
+    /// Encender la Live Activity sola en cuanto el enfrentamiento se mueve.
+    /// Solo puede pasar con la app abierta: iOS no deja arrancar una Live
+    /// Activity desde segundo plano sin push (y el push es de pago).
+    static var autoStartLiveActivity: Bool {
+        get {
+            guard defaults.object(forKey: autoStartKey) != nil else { return true }
+            return defaults.bool(forKey: autoStartKey)
+        }
+        set { defaults.set(newValue, forKey: autoStartKey) }
     }
 
     // MARK: - Cuentas conectadas

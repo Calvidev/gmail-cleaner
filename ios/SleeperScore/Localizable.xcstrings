@@ -1270,6 +1270,36 @@
           }
         }
       }
+    },
+    "Live Activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Live Activity"
+          }
+        }
+      }
+    },
+    "Encenderla sola al empezar el partido": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start it automatically when the game begins"
+          }
+        }
+      }
+    },
+    "La Live Activity se enciende cuando alguien anota, siempre que la app esté abierta en ese momento: iOS no deja arrancarla desde segundo plano sin notificaciones push, que piden cuenta de desarrollador de pago. También puedes encenderla a mano desde el marcador.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Live Activity starts when someone scores, as long as the app is open at that moment: iOS won't let it start from the background without push notifications, which require a paid developer account. You can also start it by hand from the scoreboard."
+          }
+        }
+      }
     }
   },
   "version": "1.0"

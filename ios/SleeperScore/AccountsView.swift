@@ -18,12 +18,14 @@ struct AccountsView: View {
     /// Cambia al conectar una cuenta o al volver de la pantalla de Pro; se lee
     /// en cada dibujado en vez de guardarse, que era lo que se quedaba viejo.
     @State private var revision = 0
+    @State private var autoStart = SharedStore.autoStartLiveActivity
 
     var body: some View {
         NavigationStack {
             Form {
                 leaguesSection
                 accountsSection
+                lockScreenSection
                 planSection
                 testingSection
                 widgetSection
@@ -115,6 +117,21 @@ struct AccountsView: View {
                      ? "Toca una para verla en el marcador; desliza para quitarla."
                      : "Añade otra desde Sleeper, aquí abajo.")
             }
+        }
+    }
+
+    // MARK: - Pantalla de bloqueo
+
+    private var lockScreenSection: some View {
+        Section {
+            Toggle("Encenderla sola al empezar el partido", isOn: $autoStart)
+                .onChange(of: autoStart) { _, nuevo in
+                    SharedStore.autoStartLiveActivity = nuevo
+                }
+        } header: {
+            Text("Live Activity")
+        } footer: {
+            Text("La Live Activity se enciende cuando alguien anota, siempre que la app esté abierta en ese momento: iOS no deja arrancarla desde segundo plano sin notificaciones push, que piden cuenta de desarrollador de pago. También puedes encenderla a mano desde el marcador.")
         }
     }
 

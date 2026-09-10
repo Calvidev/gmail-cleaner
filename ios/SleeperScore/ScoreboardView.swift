@@ -11,14 +11,21 @@ struct ScoreboardView: View {
 
     var body: some View {
         if model.book.leagues.count > 1 {
-            TabView(selection: seleccion) {
-                ForEach(model.book.leagues) { liga in
-                    LeaguePage(league: liga)
-                        .tag(liga.id)
+            VStack(spacing: 0) {
+                LeagueDots(
+                    count: model.book.leagues.count,
+                    index: model.book.leagues.firstIndex { $0.id == model.book.activeID } ?? 0
+                )
+                TabView(selection: seleccion) {
+                    ForEach(model.book.leagues) { liga in
+                        LeaguePage(league: liga)
+                            .tag(liga.id)
+                    }
                 }
+                // Los puntos propios van arriba: los del sistema flotan sobre
+                // el contenido y tapaban la última fila de la alineación.
+                .tabViewStyle(.page(indexDisplayMode: .never))
             }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
         } else {
             LeaguePage(league: model.config)
         }
@@ -30,6 +37,26 @@ struct ScoreboardView: View {
             get: { model.book.activeID ?? model.config.id },
             set: { model.activate(id: $0) }
         )
+    }
+}
+
+/// Los puntos que dicen cuántas ligas hay y en cuál estás.
+struct LeagueDots: View {
+    var count: Int
+    var index: Int
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(0..<count, id: \.self) { posicion in
+                Capsule()
+                    .fill(posicion == index ? Theme.accent : Color.white.opacity(0.22))
+                    .frame(width: posicion == index ? 16 : 6, height: 6)
+                    .animation(.easeInOut(duration: 0.2), value: index)
+            }
+        }
+        .padding(.top, 4)
+        .padding(.bottom, 8)
+        .accessibilityHidden(true)
     }
 }
 
@@ -94,10 +121,6 @@ struct LeaguePage: View {
                     ErrorNote(text: error)
                 }
 
-                // Hueco para los puntitos de las páginas, que van encima.
-                if model.hasMultipleLeagues {
-                    Color.clear.frame(height: 24)
-                }
             }
             .padding(16)
         }
@@ -147,10 +170,14 @@ struct ScoreCard: View {
             }
 
             HStack {
-                Label(
-                    "Titulares \(snapshot.me.startersCount):\(snapshot.opponent?.startersCount ?? 0)",
-                    systemImage: "person.3.fill"
-                )
+                // Con proyección arriba ya se dice cuántos faltan; repetir los
+                // titulares aquí era decir dos veces lo mismo.
+                if snapshot.projection == nil {
+                    Label(
+                        "Titulares \(snapshot.me.startersCount):\(snapshot.opponent?.startersCount ?? 0)",
+                        systemImage: "person.3.fill"
+                    )
+                }
                 Spacer()
                 if snapshot.isStale {
                     Label("Datos guardados", systemImage: "wifi.slash")
