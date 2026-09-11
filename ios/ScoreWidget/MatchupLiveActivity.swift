@@ -69,72 +69,82 @@ struct LockScreenLiveView: View {
     var attributes: MatchupActivityAttributes
     var state: MatchupActivityAttributes.ContentState
 
+    // La pantalla de bloqueo da unos 160 puntos de alto y recorta lo que
+    // sobre, así que aquí se cuenta cada punto: cuatro filas y ninguna más.
     var body: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 6) {
-                Image(systemName: "trophy.fill")
-                    .font(.system(size: 11))
-                    .foregroundStyle(Theme.accent)
-                Text(attributes.leagueName)
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(.white.opacity(0.8))
-                    .lineLimit(1)
-                Spacer(minLength: 0)
-                Text("Semana \(attributes.week)")
-                    .font(.system(size: 10))
-                    .foregroundStyle(.white.opacity(0.5))
-            }
-
-            HStack(alignment: .center, spacing: 10) {
-                sideColumn(name: attributes.myTeam, points: state.myPoints, alignment: .leading)
-                Text(state.difference.signedFantasyPoints)
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(state.difference >= 0 ? Theme.accent : Color.red)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 3)
-                    .background(Color.white.opacity(0.08), in: Capsule())
-                sideColumn(name: attributes.opponentTeam, points: state.opponentPoints, alignment: .trailing)
-            }
-
-            ScoreBar(share: state.share, height: 6)
-
-            if let winChance = state.winChanceText {
-                HStack(spacing: 6) {
-                    Text(winChance)
-                        .font(.system(size: 11, weight: .bold, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundStyle((state.isFavorite ?? true) ? Theme.accent : Color.red)
-                    Text("de ganar")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.white.opacity(0.45))
-                    Spacer(minLength: 0)
-                    if let proyeccion = state.projectionText {
-                        Text(proyeccion)
-                            .font(.system(size: 10))
-                            .monospacedDigit()
-                            .foregroundStyle(.white.opacity(0.45))
-                    }
-                }
-            }
-
+        VStack(spacing: 7) {
+            cabecera
+            marcador
+            ScoreBar(share: state.share, height: 5)
             if let play = state.lastPlay {
                 PlayBanner(play: play, compact: false)
             }
         }
-        .padding(14)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 11)
+    }
+
+    /// Liga a la izquierda; jornada y proyección a la derecha, en una sola fila.
+    private var cabecera: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "trophy.fill")
+                .font(.system(size: 10))
+                .foregroundStyle(Theme.accent)
+            Text(attributes.leagueName)
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(.white.opacity(0.8))
+                .lineLimit(1)
+            Spacer(minLength: 4)
+            if let proyeccion = state.projectionText {
+                Text(proyeccion)
+                    .monospacedDigit()
+            }
+            Text("· Sem. \(attributes.week)")
+        }
+        .font(.system(size: 10))
+        .foregroundStyle(.white.opacity(0.45))
+        .lineLimit(1)
+    }
+
+    /// Los dos equipos, y en el centro la diferencia con la probabilidad
+    /// debajo: así el dato más mirado no gasta una fila para él solo.
+    private var marcador: some View {
+        HStack(alignment: .center, spacing: 8) {
+            sideColumn(name: attributes.myTeam, points: state.myPoints, alignment: .leading)
+
+            VStack(spacing: 2) {
+                Text(state.difference.signedFantasyPoints)
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(state.difference >= 0 ? Theme.accent : Color.red)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2)
+                    .background(Color.white.opacity(0.08), in: Capsule())
+                if let winChance = state.winChanceText {
+                    Text(winChance)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle((state.isFavorite ?? true) ? Theme.accent : Color.red)
+                }
+            }
+            .fixedSize()
+
+            sideColumn(name: attributes.opponentTeam, points: state.opponentPoints, alignment: .trailing)
+        }
     }
 
     private func sideColumn(name: String, points: Double, alignment: HorizontalAlignment) -> some View {
-        VStack(alignment: alignment, spacing: 1) {
+        VStack(alignment: alignment, spacing: 0) {
             Text(name)
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.white.opacity(0.65))
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.white.opacity(0.6))
                 .lineLimit(1)
             Text(points.fantasyPoints)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.white)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
         }
         .frame(maxWidth: .infinity, alignment: alignment == .leading ? .leading : .trailing)
     }
@@ -151,7 +161,7 @@ struct PlayBanner: View {
     var body: some View {
         HStack(spacing: 8) {
             headshot
-            VStack(alignment: .leading, spacing: 1) {
+            VStack(alignment: .leading, spacing: 0) {
                 Text(play.name)
                     .font(.system(size: compact ? 11 : 12, weight: .semibold))
                     .foregroundStyle(.white)
@@ -162,14 +172,13 @@ struct PlayBanner: View {
                     .foregroundStyle(.white.opacity(0.6))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
-                Text(play.isMine ? "Tu equipo" : "Rival")
-                    .font(.system(size: 9))
-                    .foregroundStyle(.white.opacity(0.4))
+                // Quién es se sabe por el color de los puntos: en verde los
+                // tuyos, en rojo los del rival. Una línea menos.
             }
             Spacer(minLength: 4)
             VStack(alignment: .trailing, spacing: 0) {
                 Text("+\(play.delta.fantasyPoints)")
-                    .font(.system(size: compact ? 13 : 16, weight: .bold, design: .rounded))
+                    .font(.system(size: compact ? 13 : 15, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(play.isMine ? Theme.accent : Color.red)
                 Text("\(play.total.fantasyPoints) pts")
@@ -178,8 +187,8 @@ struct PlayBanner: View {
                     .foregroundStyle(.white.opacity(0.45))
             }
         }
-        .padding(.horizontal, compact ? 0 : 10)
-        .padding(.vertical, compact ? 0 : 7)
+        .padding(.horizontal, compact ? 0 : 8)
+        .padding(.vertical, compact ? 0 : 5)
         .background(
             compact ? Color.clear : Color.white.opacity(0.06),
             in: RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -199,7 +208,7 @@ struct PlayBanner: View {
                     .foregroundStyle(.white.opacity(0.35))
             }
         }
-        .frame(width: compact ? 24 : 34, height: compact ? 24 : 34)
+        .frame(width: compact ? 22 : 26, height: compact ? 22 : 26)
         .background(Color.white.opacity(0.08), in: Circle())
         .clipShape(Circle())
     }
