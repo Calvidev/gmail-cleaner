@@ -170,6 +170,12 @@ preparado para recibir un `pushType`.
 
 ## La probabilidad de ganar
 
+La barra del marcador **pinta esa probabilidad**, no el reparto de puntos. Es
+una diferencia que se nota: con 3.2 a 1.0 el domingo por la tarde, repartir
+puntos da 76 % —un pateador y poco más— mientras la probabilidad real es 51 %,
+porque quedan veinte jugadores por jugar. Lo que uno lee en esa barra es "cómo
+voy", y eso es la probabilidad.
+
 Es el número que convierte un marcador en una historia: "vas ganando de 10, pero
 tienes un 38 % de ganar" dice mucho más que el marcador solo.
 

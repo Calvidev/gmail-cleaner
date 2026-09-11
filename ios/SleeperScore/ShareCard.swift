@@ -42,7 +42,7 @@ struct MatchupShareCard: View {
                 side(snapshot.opponent, points: snapshot.opponentPoints, alignment: .trailing)
             }
 
-            ScoreBar(share: snapshot.myShare, height: 8)
+            ScoreBar(share: snapshot.barShare, height: 8)
 
             if let projection = snapshot.projection {
                 HStack(spacing: 8) {

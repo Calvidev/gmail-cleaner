@@ -43,6 +43,8 @@ struct MatchupActivityAttributes: ActivityAttributes {
         /// "62 %". Texto ya hecho: el estado viaja serializado y tiene un
         /// límite de 4 KB, así que aquí no van estructuras enteras.
         var winChanceText: String?
+        /// La probabilidad en número, que es lo que pinta la barra.
+        var winShare: Double?
         var projectionText: String?
         /// Opcional para que un estado escrito por una versión anterior de la
         /// app se siga leyendo.
@@ -50,7 +52,10 @@ struct MatchupActivityAttributes: ActivityAttributes {
 
         var difference: Double { myPoints - opponentPoints }
 
+        /// Lo que pinta la barra: la probabilidad de ganar, y si no la hay,
+        /// el reparto de puntos.
         var share: Double {
+            if let winShare { return winShare }
             let total = myPoints + opponentPoints
             guard total > 0 else { return 0.5 }
             return myPoints / total
@@ -85,6 +90,7 @@ extension MatchupSnapshot {
             lastPlay: lastPlay ?? plays.first,
             updatedAt: updatedAt,
             winChanceText: projection?.percentText,
+            winShare: projection?.winProbability,
             projectionText: projection.map {
                 "\($0.mine.fantasyPoints) – \($0.theirs.fantasyPoints)"
             },

@@ -101,11 +101,23 @@ struct MatchupSnapshot: Codable, Hashable {
 
     var difference: Double { me.points - opponentPoints }
 
-    /// Parte de la barra que ocupa mi equipo. Con 0-0 se pinta a la mitad.
+    /// Reparto de los puntos ya anotados. Sirve para poco en mitad de la
+    /// jornada —un pateador puede dejarlo en 76 %— pero es el respaldo cuando
+    /// no hay proyección.
     var myShare: Double {
         let total = me.points + opponentPoints
         guard total > 0 else { return 0.5 }
         return me.points / total
+    }
+
+    /// Lo que pinta la barra: la probabilidad de ganar.
+    ///
+    /// Antes repartía los puntos actuales y contradecía al número de al lado:
+    /// con 3.2 a 1.0 la barra decía 76 % mientras la probabilidad era 51 %.
+    /// Lo que la gente lee en esa barra es "cómo voy", y eso es la
+    /// probabilidad, no quién lleva más puntos a media tarde del domingo.
+    var barShare: Double {
+        projection?.winProbability ?? myShare
     }
 
     var isLeading: Bool { difference >= 0 }

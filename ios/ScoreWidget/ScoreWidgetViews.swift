@@ -55,7 +55,7 @@ struct SmallScore: View {
                 .lineLimit(1)
 
             side(snapshot.me, points: snapshot.me.points)
-            ScoreBar(share: snapshot.myShare, height: 6)
+            ScoreBar(share: snapshot.barShare, height: 6)
                 .padding(.vertical, 2)
             side(snapshot.opponent, points: snapshot.opponentPoints)
 
@@ -117,7 +117,7 @@ struct MediumScore: View {
                 )
             }
 
-            ScoreBar(share: snapshot.myShare)
+            ScoreBar(share: snapshot.barShare)
 
             if let play = snapshot.plays.first {
                 WidgetPlayRow(play: play)

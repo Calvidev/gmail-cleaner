@@ -160,7 +160,7 @@ struct ScoreCard: View {
                 )
             }
 
-            ScoreBar(share: snapshot.myShare, height: 10)
+            ScoreBar(share: snapshot.barShare, height: 10)
 
             if let projection = snapshot.projection {
                 HStack(spacing: 10) {
