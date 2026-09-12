@@ -81,9 +81,7 @@ enum BackgroundRefresh {
         fresco.recentPlays = Array((anotaciones + (anterior?.plays ?? [])).prefix(6))
         SharedStore.cache(fresco, for: league)
 
-        for anotacion in anotaciones.prefix(3) {
-            await Notifier.play(anotacion)
-        }
+        await Notifier.plays(anotaciones)
         if let anterior, anterior.opponent != nil, anterior.isLeading != fresco.isLeading {
             await Notifier.leadChange(
                 tookLead: fresco.isLeading,

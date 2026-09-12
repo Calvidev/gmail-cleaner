@@ -133,10 +133,7 @@ final class ScoreboardModel: ObservableObject {
         }
 
         live.update(with: actualizado, play: anotaciones.first)
-        // Si tres jugadores anotan a la vez, tres avisos son demasiados.
-        for anotacion in anotaciones.prefix(3) {
-            await live.notify(anotacion)
-        }
+        await live.notify(plays: anotaciones)
     }
 
     /// Yardas y proyecciones de la jornada. Van en llamadas aparte del

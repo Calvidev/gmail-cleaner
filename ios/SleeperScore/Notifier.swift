@@ -12,12 +12,32 @@ enum Notifier {
     /// o AIFF de menos de 30 segundos, y hay que nombrarlos con su extensión.
     /// Se generan con `tools/generate_sounds.py`.
     private enum Sonido {
-        /// Tres notas subiendo: anotó uno de los tuyos.
+        /// Dos notas subiendo una quinta: anotó uno de los tuyos.
         static let anotacion = UNNotificationSound(named: UNNotificationSoundName("anotacion.wav"))
-        /// Dos notas bajando: una lesión o una noticia, nada que celebrar.
+        /// Una nota grave y sola: una lesión, nada que celebrar.
         static let aviso = UNNotificationSound(named: UNNotificationSoundName("aviso.wav"))
-        /// Dos golpes iguales: te han pasado (o has vuelto a pasar tú).
+        /// Dos notas iguales: te han pasado (o has vuelto a pasar tú).
         static let alerta = UNNotificationSound(named: UNNotificationSoundName("alerta.wav"))
+    }
+
+    /// Cuánto tiene que pasar para que un aviso vuelva a sonar. Los demás
+    /// llegan igual, pero en silencio.
+    ///
+    /// Una tarde de domingo puede haber veinte anotaciones. Veinte sonidos
+    /// seguidos hacen que la gente apague las notificaciones de la app, y
+    /// entonces se pierde también el aviso que sí importaba.
+    private static let silencioEntreSonidos: TimeInterval = 90
+    private static let claveUltimoSonido = "lastNotificationSound"
+
+    /// El sonido que toca, o nada si acaba de sonar uno.
+    private static func sonido(_ propuesto: UNNotificationSound) -> UNNotificationSound? {
+        let ahora = Date()
+        if let ultimo = SharedStore.defaults.object(forKey: claveUltimoSonido) as? Date,
+           ahora.timeIntervalSince(ultimo) < silencioEntreSonidos {
+            return nil
+        }
+        SharedStore.defaults.set(ahora, forKey: claveUltimoSonido)
+        return propuesto
     }
 
     static func requestPermission() async {
@@ -33,6 +53,44 @@ enum Notifier {
 
     // MARK: - Anotación
 
+    /// Un aviso por tanda, no uno por jugador. Si tres de los tuyos anotan
+    /// entre dos lecturas, tres notificaciones seguidas son ruido.
+    static func plays(_ plays: [ScoringPlay]) async {
+        guard !plays.isEmpty else { return }
+        if plays.count == 1 {
+            await play(plays[0])
+        } else {
+            await resumen(plays)
+        }
+    }
+
+    private static func resumen(_ plays: [ScoringPlay]) async {
+        guard await authorized() else { return }
+        let mias = plays.filter(\.isMine).count
+
+        let contenido = UNMutableNotificationContent()
+        contenido.title = String(localized: "\(plays.count) anotaciones")
+        contenido.subtitle = mias == plays.count
+            ? String(localized: "Todas tuyas")
+            : String(localized: "\(mias) tuyas")
+        contenido.body = plays
+            .prefix(4)
+            .map { "\($0.name) +\($0.delta.fantasyPoints)" }
+            .joined(separator: " · ")
+        contenido.sound = sonido(Sonido.anotacion)
+        contenido.interruptionLevel = .active
+        contenido.threadIdentifier = "anotaciones"
+
+        // La foto de la jugada más gorda representa a la tanda.
+        if let principal = plays.max(by: { $0.delta < $1.delta }),
+           let adjunto = await attachment(
+               playerID: principal.playerID, position: principal.position, team: principal.team
+           ) {
+            contenido.attachments = [adjunto]
+        }
+        await add(contenido, id: "resumen-\(Int(Date().timeIntervalSince1970))")
+    }
+
     static func play(_ play: ScoringPlay) async {
         guard await authorized() else { return }
 
@@ -45,8 +103,11 @@ enum Notifier {
         )
         let detalle = play.stats ?? play.subtitle
         contenido.body = detalle.isEmpty ? play.name : "\(play.name) — \(detalle)"
-        contenido.sound = Sonido.anotacion
-        contenido.interruptionLevel = .timeSensitive
+        contenido.sound = sonido(Sonido.anotacion)
+        // Solo un touchdown (seis puntos y pico) merece romper un modo de
+        // concentración. Una recepción de 1.4 no.
+        contenido.interruptionLevel = play.delta >= 5 ? .timeSensitive : .active
+        contenido.threadIdentifier = "anotaciones"
 
         if let adjunto = await attachment(
             playerID: play.playerID, position: play.position, team: play.team
@@ -67,9 +128,11 @@ enum Notifier {
             ?? String(localized: "Noticia de tu equipo")
         contenido.body = item.headline
         if let resumen = item.summary, !resumen.isEmpty { contenido.subtitle = resumen }
-        contenido.sound = Sonido.aviso
-        // Una noticia no interrumpe: no es una jugada en directo.
-        contenido.interruptionLevel = .active
+        contenido.sound = nil
+        // Una noticia no interrumpe ni suele merecer sonido: no es una jugada
+        // en directo y puede esperar a que mires el teléfono.
+        contenido.interruptionLevel = .passive
+        contenido.threadIdentifier = "noticias"
         await add(contenido, id: "news-\(item.id.hashValue)")
     }
 
@@ -85,8 +148,9 @@ enum Notifier {
         contenido.body = tookLead
             ? String(localized: "Vas por delante de \(opponent) por \(abs(difference).fantasyPoints).")
             : String(localized: "\(opponent) se pone por delante por \(abs(difference).fantasyPoints).")
-        contenido.sound = Sonido.alerta
+        contenido.sound = sonido(Sonido.alerta)
         contenido.interruptionLevel = .timeSensitive
+        contenido.threadIdentifier = "marcador"
         await add(contenido, id: "lead-\(Int(Date().timeIntervalSince1970))")
     }
 
@@ -102,9 +166,12 @@ enum Notifier {
         contenido.body = change.headline
         let posicion = [change.position, change.team].compactMap { $0 }.joined(separator: " ")
         if !posicion.isEmpty { contenido.subtitle = posicion }
-        contenido.sound = Sonido.aviso
+        // Un parte a peor es raro y no espera: suena aunque acabe de sonar otro.
+        // El alta médica puede llegar callada si hay ruido.
+        contenido.sound = change.isWorse ? Sonido.aviso : sonido(Sonido.aviso)
         // Un cambio a peor el domingo por la mañana sí interrumpe.
         contenido.interruptionLevel = change.isWorse ? .timeSensitive : .active
+        contenido.threadIdentifier = "lesiones"
 
         if let adjunto = await attachment(
             playerID: change.playerID, position: change.position, team: change.team

@@ -107,8 +107,8 @@ final class LiveActivityController: ObservableObject {
         await Notifier.requestPermission()
     }
 
-    func notify(_ play: ScoringPlay) async {
-        await Notifier.play(play)
+    func notify(plays: [ScoringPlay]) async {
+        await Notifier.plays(plays)
     }
 }
 

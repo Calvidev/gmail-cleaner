@@ -20,20 +20,25 @@ FRECUENCIA = 44_100
 
 
 def nota(hz: float, duracion: float, inicio: float, volumen: float = 0.5) -> list:
-    """Una nota con timbre de marimba: la fundamental más dos armónicos que
-    se apagan antes, que es lo que da la sensación de golpe y no de pitido."""
+    """Una nota suave, de campana lejana.
+
+    Estos sonidos se oyen decenas de veces una tarde de domingo, así que están
+    hechos para pasar desapercibidos a la décima vez:
+
+    - Ataque lento (25 ms). Un ataque seco suena a alerta; uno lento, a que
+      algo aparece.
+    - Un solo armónico y flojo. Con tres, la nota suena a juguete.
+    - Caída larga y suave, sin cola metálica.
+    """
     muestras = []
     total = int(duracion * FRECUENCIA)
     for i in range(total):
         t = i / FRECUENCIA
-        # Caída exponencial: fuerte al principio, cola corta.
-        envolvente = math.exp(-t * 9)
-        # Los primeros milisegundos suben desde cero para que no chasquee.
-        ataque = min(1.0, t / 0.004)
+        envolvente = math.exp(-t * 4.5)
+        ataque = min(1.0, t / 0.025)
         onda = (
             math.sin(2 * math.pi * hz * t)
-            + 0.35 * math.sin(2 * math.pi * hz * 2 * t) * math.exp(-t * 16)
-            + 0.15 * math.sin(2 * math.pi * hz * 3 * t) * math.exp(-t * 24)
+            + 0.12 * math.sin(2 * math.pi * hz * 2 * t) * math.exp(-t * 9)
         )
         muestras.append((inicio + t, onda * envolvente * ataque * volumen))
     return muestras
@@ -52,8 +57,8 @@ def mezclar(capas: list, duracion: float) -> bytes:
     pico = max((abs(v) for v in pista), default=1.0) or 1.0
     datos = bytearray()
     for valor in pista:
-        # Se normaliza al 85% para dejar aire y no saturar en el altavoz.
-        muestra = int(max(-1.0, min(1.0, valor / pico * 0.85)) * 32767)
+        # Al 55%: por debajo de los sonidos del sistema, que es la idea.
+        muestra = int(max(-1.0, min(1.0, valor / pico * 0.55)) * 32767)
         datos += struct.pack("<h", muestra)
     return bytes(datos)
 
@@ -71,36 +76,35 @@ def escribir(nombre: str, capas: list, duracion: float) -> None:
 def main() -> None:
     print("Sonidos:")
 
-    # Anotación: tres notas subiendo (do-mi-sol), rápido y alegre.
+    # Anotación: dos notas subiendo una quinta, en registro medio-grave. Lo
+    # justo para reconocerlo sin que parezca una fanfarria.
     escribir(
         "anotacion.wav",
         [
-            nota(523.25, 0.5, 0.00),           # do
-            nota(659.25, 0.5, 0.075),          # mi
-            nota(1046.50, 0.7, 0.15, 0.6),     # do agudo
+            nota(392.00, 0.55, 0.00, 0.5),     # sol
+            nota(587.33, 0.75, 0.09, 0.42),    # re
+        ],
+        0.95,
+    )
+
+    # Aviso: una sola nota grave, apagada. Para lesiones y noticias.
+    escribir(
+        "aviso.wav",
+        [
+            nota(329.63, 0.8, 0.00, 0.42),     # mi grave
         ],
         0.9,
     )
 
-    # Aviso: dos notas bajando, más apagado. Para lesiones y noticias, que no
-    # son para celebrar.
-    escribir(
-        "aviso.wav",
-        [
-            nota(587.33, 0.45, 0.00, 0.45),    # re
-            nota(440.00, 0.6, 0.11, 0.45),     # la
-        ],
-        0.8,
-    )
-
-    # Adelantamiento: dos notas iguales, secas. Llama la atención sin celebrar.
+    # Adelantamiento: dos notas iguales, separadas. Llama la atención sin
+    # celebrar y sin sobresaltar.
     escribir(
         "alerta.wav",
         [
-            nota(783.99, 0.3, 0.00, 0.5),      # sol
-            nota(783.99, 0.4, 0.13, 0.5),
+            nota(493.88, 0.45, 0.00, 0.45),    # si
+            nota(493.88, 0.6, 0.16, 0.38),
         ],
-        0.6,
+        0.85,
     )
 
 

@@ -220,16 +220,40 @@ depender de un banco de sonidos con licencia:
 
 | Sonido | Cuándo | Cómo suena |
 | --- | --- | --- |
-| `anotacion.wav` | Anota uno de los tuyos | Tres notas subiendo (do-mi-do), alegre |
-| `alerta.wav` | Te pasan o vuelves a pasar | Dos golpes iguales, secos |
-| `aviso.wav` | Lesión o noticia | Dos notas bajando, apagado |
+| `anotacion.wav` | Anota uno de los tuyos | Dos notas subiendo una quinta (sol-re), en registro medio |
+| `alerta.wav` | Te pasan o vuelves a pasar | La misma nota dos veces, separadas |
+| `aviso.wav` | Lesión | Una sola nota grave, apagada |
 
 iOS solo admite WAV, CAF o AIFF de menos de 30 segundos, dentro del paquete de
-la app. El timbre es de marimba —la fundamental más dos armónicos que se apagan
-antes— porque un seno puro suena a pitido de microondas.
+la app.
+
+Están hechos para aguantar la décima vez, no para lucirse la primera. Un sonido
+que suena veinte veces un domingo tiene que ser casi mobiliario, así que el
+generador ataca despacio (25 ms: un ataque seco suena a alarma, uno lento a que
+algo aparece), deja caer la nota largo y suave, y añade un solo armónico flojo
+—con tres, la nota suena a juguete— que además se apaga antes que la
+fundamental. Todo se normaliza al 55%, por debajo de los sonidos del sistema.
 
 Para cambiarlos, se tocan las frecuencias y los tiempos en el generador y se
 vuelve a ejecutar. No hace falta ningún programa de audio.
+
+## Cuántas veces suena
+
+El sonido bonito no arregla nada si llegan veinte. Lo que evita que la gente
+acabe apagando las notificaciones de la app —y se pierda con ellas la que sí
+importaba— es mandar menos:
+
+- **Una notificación por tanda, no una por jugador.** Si entre dos lecturas
+  anotan tres de los tuyos, llega un resumen: «3 anotaciones · Chase +12.4 ·
+  Kittle +6.0», con la foto del que más sumó.
+- **Noventa segundos de silencio entre sonidos.** Los avisos siguen llegando,
+  pero callados. La única excepción es un parte de lesión a peor, que es raro y
+  no espera.
+- **Agrupadas por tema** (`threadIdentifier`): anotaciones, marcador, lesiones y
+  noticias se apilan cada una en su montón en la pantalla de bloqueo.
+- **Interrupción según lo que sea.** Un touchdown (≥5 puntos) y un
+  adelantamiento son `timeSensitive` y atraviesan un modo de concentración; una
+  recepción de 1.4 es `active`; una noticia es `passive` y ni siquiera suena.
 
 ## Cuando anota uno de los tuyos
 
