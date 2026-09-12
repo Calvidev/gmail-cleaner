@@ -192,6 +192,12 @@ multiplican por lo que vale cada una en tu liga, que es exactamente lo que hace
 Sleeper. Usar el total PPR que viene precalculado desviaba unos siete puntos por
 equipo en una liga de media PPR, porque cada recepción vale la mitad.
 
+Y no cuenta lo que ya no puede pasar: si el partido de un jugador ha terminado,
+lo que hizo es lo definitivo y no se le suponen más puntos. Eso hay que
+preguntárselo al marcador de ESPN, porque Sleeper no dice si el partido acabó, y
+era la diferencia entre los 136.1 que enseñaba la app y los 129.3 de Sleeper con
+un solo jugador con el partido cerrado.
+
 Aun así es una estimación, no un oráculo: no sabe de lesiones en directo ni de
 reparto de balón. Para lo que sirve —saber si hay que seguir mirando— aguanta
 bien.

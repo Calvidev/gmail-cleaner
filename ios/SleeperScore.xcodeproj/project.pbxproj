@@ -60,6 +60,12 @@
 			isa = PBXBuildFile;
 			fileRef = 203F74635AA1CE200A0E9736 /* Entitlements.swift */;
 		};
+		0DD13316DF6FE38BA82C3C23 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = GameStatus.swift;
+			sourceTree = "<group>";
+		};
 		1011B10BE33E7445720286C5 = {
 			isa = PBXBuildFile;
 			fileRef = C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */;
@@ -196,6 +202,10 @@
 			path = OptimalLineup.swift;
 			sourceTree = "<group>";
 		};
+		2760B263360C54E51106D5B4 = {
+			isa = PBXBuildFile;
+			fileRef = 0DD13316DF6FE38BA82C3C23 /* GameStatus.swift */;
+		};
 		2C74BDE13991C1ADF223AAEA = {
 			isa = PBXBuildFile;
 			fileRef = 5B082B835ACC628B90347851 /* MatchupSnapshot.swift */;
@@ -258,6 +268,7 @@
 				1011B10BE33E7445720286C5 /* PlayerCatalog.swift in ScoreWidgetExtension */,
 				3224D5599600DB32E6707465 /* WeekStats.swift in ScoreWidgetExtension */,
 				C716D99812EACED16CCF5CC5 /* Projections.swift in ScoreWidgetExtension */,
+				2760B263360C54E51106D5B4 /* GameStatus.swift in ScoreWidgetExtension */,
 				CAADC64843CA3C3E7BED06BD /* WinProbability.swift in ScoreWidgetExtension */,
 				3523BFD0D7C29A78E0466695 /* OptimalLineup.swift in ScoreWidgetExtension */,
 				BE9755B885CA955671AA3752 /* PlayerNews.swift in ScoreWidgetExtension */,
@@ -371,6 +382,7 @@
 				FAEBD90CE12952F4FBC920AC /* PlayerCatalog.swift in SleeperScore */,
 				D11F48B53881037F9CF0F7EF /* WeekStats.swift in SleeperScore */,
 				BB02DB3256C02EB45CE301EF /* Projections.swift in SleeperScore */,
+				D9280DAF83781BD315C92529 /* GameStatus.swift in SleeperScore */,
 				FDB001CE42806C546F6ED13F /* WinProbability.swift in SleeperScore */,
 				16A2A2EC5CD5F576C05BD458 /* OptimalLineup.swift in SleeperScore */,
 				1C506A9A7240F3BA5A60F45A /* PlayerNews.swift in SleeperScore */,
@@ -774,6 +786,7 @@
 				C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */,
 				C447792AF8760633BC09EF93 /* WeekStats.swift */,
 				64B0C5A622253848870C83BC /* Projections.swift */,
+				0DD13316DF6FE38BA82C3C23 /* GameStatus.swift */,
 				368E8DA1F8408B5A9BB46F2F /* WinProbability.swift */,
 				24CB73DD8085DAD185EBE7EA /* OptimalLineup.swift */,
 				8238C6F408B14E52156812E2 /* PlayerNews.swift */,
@@ -1002,6 +1015,10 @@
 		D80B18A2F5944D5736AB7143 = {
 			isa = PBXBuildFile;
 			fileRef = 207AE7F7BF7702CED53D696C /* Theme.swift */;
+		};
+		D9280DAF83781BD315C92529 = {
+			isa = PBXBuildFile;
+			fileRef = 0DD13316DF6FE38BA82C3C23 /* GameStatus.swift */;
 		};
 		D9CB6B243E001BECBFFFF30F = {
 			isa = PBXBuildFile;

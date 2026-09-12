@@ -43,6 +43,7 @@ SHARED_SOURCES = [
     "PlayerCatalog.swift",
     "WeekStats.swift",
     "Projections.swift",
+    "GameStatus.swift",
     "WinProbability.swift",
     "OptimalLineup.swift",
     "PlayerNews.swift",

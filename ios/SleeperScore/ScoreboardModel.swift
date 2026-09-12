@@ -137,9 +137,16 @@ final class ScoreboardModel: ObservableObject {
         guard let season = try? await service.currentSeason(), !season.isEmpty else { return }
         async let estadisticas = WeekStatsStore.shared.refreshIfNeeded(season: season, week: week)
         async let proyecciones = ProjectionStore.shared.refreshIfNeeded(season: season, week: week)
-        _ = await (estadisticas, proyecciones)
+        // Qué partidos han acabado: sin eso la proyección cuenta puntos que
+        // ya no pueden llegar.
+        async let partidos = GameStatusStore.shared.refreshIfNeeded()
+        _ = await (estadisticas, proyecciones, partidos)
         // La primera vez de cada jornada el marcador se montó sin ellas:
         // se vuelve a montar, ya con yardas. Después el TTL de la caché manda.
+        // Ojo: `refresh()` llama a este método, así que volver a refrescar sin
+        // condición sería un bucle infinito. Solo se rehace la primera vez de
+        // cada jornada, cuando el marcador se montó sin estadísticas; el resto
+        // de las veces lo recoge el refresco automático del minuto siguiente.
         if statsWeek != week {
             statsWeek = week
             await refresh(showSpinner: false)

@@ -83,7 +83,12 @@ enum WinProbability {
 
     /// Lo que le queda por anotar: su proyección menos lo que lleva, nunca
     /// negativo. Un jugador que ya superó su proyección no "devuelve" puntos.
+    ///
+    /// Y si su partido terminó, no le queda nada: lo que hizo es lo que hay.
+    /// Sin esa comprobación la proyección se queda alta toda la tarde —era la
+    /// diferencia entre los 136.1 que enseñaba la app y los 129.3 de Sleeper.
     private static func remaining(for line: PlayerLine) -> Double {
+        if line.gameFinished == true { return 0 }
         guard let proyectado = line.projected else { return 0 }
         return max(0, proyectado - line.points)
     }

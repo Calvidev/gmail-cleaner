@@ -31,6 +31,9 @@ struct PlayerLine: Codable, Hashable, Identifiable {
     var projected: Double?
     /// "Questionable", "Out"… Nil cuando está sano.
     var injury: String?
+    /// True cuando el partido de su equipo ya ha terminado: entonces lo que
+    /// lleva anotado es lo definitivo y no le queda nada por sumar.
+    var gameFinished: Bool?
 
     var id: String { playerID }
 
