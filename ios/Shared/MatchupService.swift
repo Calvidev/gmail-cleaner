@@ -131,7 +131,7 @@ struct MatchupService {
     /// El formato de puntuación en dos palabras. Lo decide el valor de la
     /// recepción, que es lo que separa a las ligas más comunes.
     static func scoringLabel(for scoring: [String: Double]?) -> String? {
-        guard let scoring, !scoring.isEmpty else { return nil }
+        guard let scoring, !scoring.isEmpty else { return "sin reglas de liga" }
         guard let recepcion = scoring["rec"] else { return "personalizada" }
         switch recepcion {
         case 1: return "PPR"

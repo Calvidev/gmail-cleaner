@@ -85,6 +85,12 @@ struct PlayerDetailView: View {
                 )
                 StatTile(title: "Diferencia", value: diferencia)
             }
+            if let proyectado = line.projected {
+                Text("Proyección calculada con las reglas de tu liga: \(proyectado.fantasyPoints) pts.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.white.opacity(0.4))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
             if let stats = line.stats, !stats.isEmpty {
                 Text(stats)
                     .font(.system(size: 13))
