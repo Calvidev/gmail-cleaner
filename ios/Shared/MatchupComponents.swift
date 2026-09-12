@@ -147,6 +147,8 @@ struct WinChanceBadge: View {
 struct ProjectionLine: View {
     var projection: MatchupProjection
     var size: CGFloat = 11
+    /// El formato de puntuación, si se quiere enseñar (en el widget no cabe).
+    var note: String?
 
     var body: some View {
         HStack(spacing: 6) {
@@ -154,6 +156,9 @@ struct ProjectionLine: View {
             Text("\(projection.mine.fantasyPoints) – \(projection.theirs.fantasyPoints)")
                 .monospacedDigit()
                 .foregroundStyle(.white.opacity(0.8))
+            if let note {
+                Text("· \(note)")
+            }
             Spacer(minLength: 0)
             if projection.playersLeftMine > 0 || projection.playersLeftTheirs > 0 {
                 Text("faltan \(projection.playersLeftMine):\(projection.playersLeftTheirs)")

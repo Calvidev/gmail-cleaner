@@ -89,6 +89,10 @@ struct MatchupSnapshot: Codable, Hashable {
     var recentPlays: [ScoringPlay]?
     /// Marcador final esperado y probabilidad de ganar.
     var projection: MatchupProjection?
+    /// Cómo puntúa esta liga: "PPR", "media PPR", "estándar"… Se enseña junto
+    /// a la proyección para poder comprobar de un vistazo que la app está
+    /// usando las reglas de tu liga y no unas genéricas.
+    var scoringLabel: String?
     /// Tu banquillo, para poder decir qué te dejaste sin alinear.
     var bench: [PlayerLine]?
     /// Lo que costó no alinear lo mejor posible.

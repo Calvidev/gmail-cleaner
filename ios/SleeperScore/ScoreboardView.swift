@@ -165,7 +165,9 @@ struct ScoreCard: View {
             if let projection = snapshot.projection {
                 HStack(spacing: 10) {
                     WinChanceBadge(projection: projection)
-                    ProjectionLine(projection: projection, size: 12)
+                    ProjectionLine(
+                        projection: projection, size: 12, note: snapshot.scoringLabel
+                    )
                 }
             }
 

@@ -118,6 +118,7 @@ struct MatchupService {
             recentPlays: nil
         )
         snapshot.projection = WinProbability.compute(for: snapshot)
+        snapshot.scoringLabel = Self.scoringLabel(for: league.scoringSettings)
         snapshot.bench = bench
         snapshot.benchReport = OptimalLineup.report(
             starters: lineup.compactMap(\.mine),
@@ -125,6 +126,19 @@ struct MatchupService {
             slots: league.starterSlots
         )
         return snapshot
+    }
+
+    /// El formato de puntuación en dos palabras. Lo decide el valor de la
+    /// recepción, que es lo que separa a las ligas más comunes.
+    static func scoringLabel(for scoring: [String: Double]?) -> String? {
+        guard let scoring, !scoring.isEmpty else { return nil }
+        guard let recepcion = scoring["rec"] else { return "personalizada" }
+        switch recepcion {
+        case 1: return "PPR"
+        case 0.5: return "media PPR"
+        case 0: return "estándar"
+        default: return "\(recepcion.fantasyPoints) por recepción"
+        }
     }
 
     // MARK: - Piezas
