@@ -45,7 +45,9 @@ struct MatchupActivityAttributes: ActivityAttributes {
         var winChanceText: String?
         /// La probabilidad en número, que es lo que pinta la barra.
         var winShare: Double?
-        var projectionText: String?
+        /// Proyección de cada lado, para enseñarla junto a sus puntos.
+        var myProjection: Double?
+        var opponentProjection: Double?
         /// Opcional para que un estado escrito por una versión anterior de la
         /// app se siga leyendo.
         var isFavorite: Bool?
@@ -67,6 +69,10 @@ struct MatchupActivityAttributes: ActivityAttributes {
     var week: Int
     var myTeam: String
     var opponentTeam: String
+    /// Las fotos no caben en el estado (4 KB), así que viajan las direcciones
+    /// y la vista lee el archivo que la app dejó en el grupo de apps.
+    var myAvatarURL: String?
+    var opponentAvatarURL: String?
 }
 
 extension MatchupSnapshot {
@@ -76,7 +82,9 @@ extension MatchupSnapshot {
             leagueName: leagueName,
             week: week,
             myTeam: me.name,
-            opponentTeam: opponent?.name ?? "Sin rival"
+            opponentTeam: opponent?.name ?? "Sin rival",
+            myAvatarURL: me.avatarURL?.absoluteString,
+            opponentAvatarURL: opponent?.avatarURL?.absoluteString
         )
     }
 
@@ -91,9 +99,8 @@ extension MatchupSnapshot {
             updatedAt: updatedAt,
             winChanceText: projection?.percentText,
             winShare: projection?.winProbability,
-            projectionText: projection.map {
-                "\($0.mine.fantasyPoints) – \($0.theirs.fantasyPoints)"
-            },
+            myProjection: projection?.mine,
+            opponentProjection: projection?.theirs,
             isFavorite: (projection?.winProbability ?? 0.5) >= 0.5
         )
     }

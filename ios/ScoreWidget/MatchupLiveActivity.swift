@@ -18,10 +18,20 @@ struct MatchupLiveActivity: Widget {
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
-                    IslandTeam(name: context.attributes.myTeam, points: context.state.myPoints, mine: true)
+                    IslandTeam(
+                        name: context.attributes.myTeam,
+                        points: context.state.myPoints,
+                        projection: context.state.myProjection,
+                        mine: true
+                    )
                 }
                 DynamicIslandExpandedRegion(.trailing) {
-                    IslandTeam(name: context.attributes.opponentTeam, points: context.state.opponentPoints, mine: false)
+                    IslandTeam(
+                        name: context.attributes.opponentTeam,
+                        points: context.state.opponentPoints,
+                        projection: context.state.opponentProjection,
+                        mine: false
+                    )
                 }
                 // Nada en el centro: compite por el ancho con las columnas de
                 // los equipos y las deja sin sitio. La jugada va abajo, que es
@@ -84,7 +94,6 @@ struct LockScreenLiveView: View {
         .padding(.vertical, 11)
     }
 
-    /// Liga a la izquierda; jornada y proyección a la derecha, en una sola fila.
     private var cabecera: some View {
         HStack(spacing: 5) {
             Image(systemName: "trophy.fill")
@@ -95,29 +104,31 @@ struct LockScreenLiveView: View {
                 .foregroundStyle(.white.opacity(0.8))
                 .lineLimit(1)
             Spacer(minLength: 4)
-            if let proyeccion = state.projectionText {
-                Text(proyeccion)
-                    .monospacedDigit()
-            }
-            Text("· Sem. \(attributes.week)")
+            Text("Sem. \(attributes.week)")
         }
         .font(.system(size: 10))
         .foregroundStyle(.white.opacity(0.45))
         .lineLimit(1)
     }
 
-    /// Los dos equipos, y en el centro la diferencia con la probabilidad
-    /// debajo: así el dato más mirado no gasta una fila para él solo.
+    /// Cada equipo con su foto, sus puntos y —más pequeña— su proyección,
+    /// como en Sleeper. En el centro, la diferencia y la probabilidad.
     private var marcador: some View {
         HStack(alignment: .center, spacing: 8) {
-            sideColumn(name: attributes.myTeam, points: state.myPoints, alignment: .leading)
+            TeamLine(
+                avatarURL: attributes.myAvatarURL,
+                name: attributes.myTeam,
+                points: state.myPoints,
+                projection: state.myProjection,
+                alignment: .leading
+            )
 
             VStack(spacing: 2) {
                 Text(state.difference.signedFantasyPoints)
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .font(.system(size: 11, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(state.difference >= 0 ? Theme.accent : Color.red)
-                    .padding(.horizontal, 7)
+                    .padding(.horizontal, 6)
                     .padding(.vertical, 2)
                     .background(Color.white.opacity(0.08), in: Capsule())
                 if let winChance = state.winChanceText {
@@ -129,24 +140,78 @@ struct LockScreenLiveView: View {
             }
             .fixedSize()
 
-            sideColumn(name: attributes.opponentTeam, points: state.opponentPoints, alignment: .trailing)
+            TeamLine(
+                avatarURL: attributes.opponentAvatarURL,
+                name: attributes.opponentTeam,
+                points: state.opponentPoints,
+                projection: state.opponentProjection,
+                alignment: .trailing
+            )
         }
     }
+}
 
-    private func sideColumn(name: String, points: Double, alignment: HorizontalAlignment) -> some View {
-        VStack(alignment: alignment, spacing: 0) {
-            Text(name)
-                .font(.system(size: 10, weight: .medium))
-                .foregroundStyle(.white.opacity(0.6))
-                .lineLimit(1)
-            Text(points.fantasyPoints)
-                .font(.system(size: 22, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(.white)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
+/// Foto, puntos y proyección de un equipo, en una fila.
+struct TeamLine: View {
+    var avatarURL: String?
+    var name: String
+    var points: Double
+    var projection: Double?
+    var alignment: HorizontalAlignment
+
+    private var esIzquierda: Bool { alignment == .leading }
+
+    var body: some View {
+        HStack(spacing: 6) {
+            if esIzquierda { avatar }
+            VStack(alignment: alignment, spacing: 0) {
+                Text(name)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.white.opacity(0.6))
+                    .lineLimit(1)
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    if !esIzquierda, let projection {
+                        proyeccion(projection)
+                    }
+                    Text(points.fantasyPoints)
+                        .font(.system(size: 21, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    if esIzquierda, let projection {
+                        proyeccion(projection)
+                    }
+                }
+            }
+            if !esIzquierda { avatar }
         }
-        .frame(maxWidth: .infinity, alignment: alignment == .leading ? .leading : .trailing)
+        .frame(maxWidth: .infinity, alignment: esIzquierda ? .leading : .trailing)
+    }
+
+    /// La foto sale del archivo que la app dejó en el grupo de apps: aquí no
+    /// hay red que valga.
+    private var avatar: some View {
+        Group {
+            if let datos = AvatarLoader.cachedData(for: avatarURL.flatMap(URL.init(string:))),
+               let imagen = UIImage(data: datos) {
+                Image(uiImage: imagen).resizable().scaledToFill()
+            } else {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(.white.opacity(0.3))
+            }
+        }
+        .frame(width: 26, height: 26)
+        .clipShape(Circle())
+    }
+
+    private func proyeccion(_ valor: Double) -> some View {
+        Text(valor.fantasyPoints)
+            .font(.system(size: 11, weight: .medium, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(.white.opacity(0.4))
     }
 }
 
@@ -217,6 +282,7 @@ struct PlayBanner: View {
 struct IslandTeam: View {
     var name: String
     var points: Double
+    var projection: Double?
     var mine: Bool
 
     var body: some View {
@@ -225,10 +291,18 @@ struct IslandTeam: View {
                 .font(.system(size: 10))
                 .foregroundStyle(.white.opacity(0.6))
                 .lineLimit(1)
-            Text(points.fantasyPoints)
-                .font(.system(size: 18, weight: .bold, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(mine ? Theme.accent : .white)
+            HStack(alignment: .firstTextBaseline, spacing: 3) {
+                Text(points.fantasyPoints)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(mine ? Theme.accent : .white)
+                if let projection {
+                    Text(projection.fantasyPoints)
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .monospacedDigit()
+                        .foregroundStyle(.white.opacity(0.4))
+                }
+            }
         }
     }
 }

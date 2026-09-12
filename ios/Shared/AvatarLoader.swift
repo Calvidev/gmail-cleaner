@@ -15,6 +15,14 @@ enum AvatarLoader {
         return url
     }
 
+    /// Lo que haya en disco, sin red ni espera. Es lo único que pueden hacer
+    /// el widget y la Live Activity mientras pintan.
+    static func cachedData(for url: URL?) -> Data? {
+        guard let url else { return nil }
+        let archivo = folderURL.appendingPathComponent("\(stableHash(url.absoluteString)).img")
+        return try? Data(contentsOf: archivo)
+    }
+
     /// Bytes del avatar: de disco si están frescos, si no del CDN de Sleeper.
     /// Nunca lanza: un avatar que falta no puede tumbar el marcador.
     static func data(for url: URL?) async -> Data? {
