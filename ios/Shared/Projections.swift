@@ -10,13 +10,36 @@
 import Foundation
 
 struct Projections: Codable {
-    /// player_id -> puntos proyectados para la jornada.
-    var byPlayer: [String: Double]
+    /// player_id -> estadísticas proyectadas ("rec": 5.2, "rec_yd": 68.4…).
+    ///
+    /// Se guardan crudas a propósito: los puntos dependen de cómo puntúe cada
+    /// liga, y dos ligas del mismo usuario pueden puntuar distinto.
+    var byPlayer: [String: [String: Double]]
     var season: String
     var week: Int
     var savedAt: Date
 
-    func projected(for playerID: String) -> Double? { byPlayer[playerID] }
+    /// Los puntos que ese jugador sacaría **en esta liga**.
+    ///
+    /// Es lo mismo que hace Sleeper: multiplicar cada estadística por lo que
+    /// vale en la liga y sumar. Usar `pts_ppr` a secas se desviaba varios
+    /// puntos por equipo en cuanto la liga no era PPR entera.
+    func projected(for playerID: String, scoring: [String: Double]?) -> Double? {
+        guard let stats = byPlayer[playerID] else { return nil }
+
+        if let scoring, !scoring.isEmpty {
+            var total = 0.0
+            for (estadistica, cantidad) in stats {
+                guard let puntosPorUnidad = scoring[estadistica] else { continue }
+                total += cantidad * puntosPorUnidad
+            }
+            if total != 0 { return total }
+        }
+
+        // Sin reglas de liga (o una liga que no puntúa nada de lo proyectado),
+        // el total precalculado de Sleeper es mejor que nada.
+        return stats["pts_ppr"] ?? stats["pts_half_ppr"] ?? stats["pts_std"]
+    }
 }
 
 actor ProjectionStore {
@@ -60,19 +83,8 @@ actor ProjectionStore {
             return cached()
         }
 
-        // Sleeper proyecta en varios formatos; se usa PPR, que es el más común.
-        // Si tu liga puntúa distinto, la proyección se desvía un poco, pero la
-        // probabilidad de victoria aguanta bien esa imprecisión.
-        var puntos: [String: Double] = [:]
-        puntos.reserveCapacity(crudas.count)
-        for (playerID, stats) in crudas {
-            if let ppr = stats["pts_ppr"] ?? stats["pts_half_ppr"] ?? stats["pts_std"] {
-                puntos[playerID] = ppr
-            }
-        }
-
         let nuevas = Projections(
-            byPlayer: puntos, season: season, week: week, savedAt: Date()
+            byPlayer: crudas, season: season, week: week, savedAt: Date()
         )
         memory = nuevas
         if let data = try? SharedJSON.encoder.encode(nuevas) {

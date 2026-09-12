@@ -186,9 +186,15 @@ con lo que queda por jugar —60 % de dispersión por punto pendiente—, así q
 partido con todos los jugadores terminados es casi determinista y uno con cuatro
 por jugar puede darse la vuelta.
 
-Es una estimación, no un oráculo: no sabe de lesiones en directo ni de reparto
-de balón, y usa proyecciones PPR aunque tu liga puntúe distinto. Para lo que
-sirve —saber si hay que seguir mirando— aguanta bien.
+Las proyecciones se calculan **con las reglas de tu liga**: se cogen las
+estadísticas proyectadas de cada jugador (recepciones, yardas, touchdowns) y se
+multiplican por lo que vale cada una en tu liga, que es exactamente lo que hace
+Sleeper. Usar el total PPR que viene precalculado desviaba unos siete puntos por
+equipo en una liga de media PPR, porque cada recepción vale la mitad.
+
+Aun así es una estimación, no un oráculo: no sabe de lesiones en directo ni de
+reparto de balón. Para lo que sirve —saber si hay que seguir mirando— aguanta
+bien.
 
 ## Probar sin esperar al domingo
 

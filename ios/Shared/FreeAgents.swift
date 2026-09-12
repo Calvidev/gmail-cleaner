@@ -50,8 +50,10 @@ extension MatchupService {
         let leagueID = league.leagueID.trimmingCharacters(in: .whitespaces)
         guard !leagueID.isEmpty else { throw SleeperError.leagueNotSet }
 
+        async let leagueTask = api.league(leagueID)
         async let rostersTask = api.rosters(leagueID: leagueID)
         async let trendingTask = api.trending(kind: "add")
+        let reglas = (try? await leagueTask)?.scoringSettings
         let rosters = try await rostersTask
         // Las tendencias son un extra: si fallan, la lista sale igual.
         let trending = (try? await trendingTask) ?? [:]
@@ -74,7 +76,7 @@ extension MatchupService {
             let posicion = (jugador.position ?? "").uppercased()
             guard posiciones.contains(posicion) else { continue }
 
-            let proyectado = projections?.projected(for: playerID) ?? 0
+            let proyectado = projections?.projected(for: playerID, scoring: reglas) ?? 0
             let fichajes = trending[playerID] ?? 0
             // Sin proyección ni movimiento no hay nada que recomendar.
             guard proyectado > 0 || fichajes > 0 else { continue }

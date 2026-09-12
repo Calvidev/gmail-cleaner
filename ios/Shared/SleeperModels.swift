@@ -36,6 +36,9 @@ struct League: Decodable {
     let avatar: String?
     let season: String?
     let rosterPositions: [String]?
+    /// Cuánto vale cada cosa en ESTA liga: "rec": 1.0 en PPR, 0.5 en media
+    /// PPR, 0 en estándar, más touchdowns, yardas, intercepciones…
+    let scoringSettings: [String: Double]?
 
     enum CodingKeys: String, CodingKey {
         case leagueID = "league_id"
@@ -43,6 +46,7 @@ struct League: Decodable {
         case avatar
         case season
         case rosterPositions = "roster_positions"
+        case scoringSettings = "scoring_settings"
     }
 
     /// Los huecos de la alineación titular, en el orden en que Sleeper los

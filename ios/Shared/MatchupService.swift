@@ -88,7 +88,8 @@ struct MatchupService {
             theirs: theirsMatchup,
             catalog: catalog,
             weekStats: weekStats,
-            projections: projections
+            projections: projections,
+            scoring: league.scoringSettings
         )
 
         // El banquillo sale del mismo enfrentamiento: trae la plantilla entera.
@@ -101,7 +102,7 @@ struct MatchupService {
                 position: entry?.position,
                 team: entry?.team,
                 stats: weekStats?.line(for: playerID, position: entry?.position),
-                projected: projections?.projected(for: playerID),
+                projected: projections?.projected(for: playerID, scoring: league.scoringSettings),
                 injury: entry?.injuryStatus
             )
         }
@@ -145,7 +146,8 @@ struct MatchupService {
         theirs: Matchup?,
         catalog: [String: CatalogPlayer],
         weekStats: WeekStats?,
-        projections: Projections?
+        projections: Projections?,
+        scoring: [String: Double]?
     ) -> [LineupRow] {
         let count = max(
             slots.count,
@@ -162,12 +164,12 @@ struct MatchupService {
                 slot: slot,
                 mine: line(
                     from: mine, at: index, catalog: catalog,
-                    weekStats: weekStats, projections: projections
+                    weekStats: weekStats, projections: projections, scoring: scoring
                 ),
                 theirs: theirs.flatMap {
                     line(
                         from: $0, at: index, catalog: catalog,
-                        weekStats: weekStats, projections: projections
+                        weekStats: weekStats, projections: projections, scoring: scoring
                     )
                 }
             )
@@ -182,7 +184,8 @@ struct MatchupService {
         at index: Int,
         catalog: [String: CatalogPlayer],
         weekStats: WeekStats?,
-        projections: Projections?
+        projections: Projections?,
+        scoring: [String: Double]?
     ) -> PlayerLine? {
         guard let starters = matchup.starters, index < starters.count else { return nil }
         let playerID = starters[index]
@@ -195,7 +198,7 @@ struct MatchupService {
             position: entry?.position,
             team: entry?.team,
             stats: weekStats?.line(for: playerID, position: entry?.position),
-            projected: projections?.projected(for: playerID),
+            projected: projections?.projected(for: playerID, scoring: scoring),
             injury: entry?.injuryStatus
         )
     }
