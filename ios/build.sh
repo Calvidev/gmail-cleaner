@@ -91,7 +91,20 @@ actualizar() {
   if [ -n "$equipo" ]; then
     echo "$equipo" > "$ARCHIVO_EQUIPO"
     echo "▸ Equipo de firma guardado en ios/$ARCHIVO_EQUIPO ($equipo)"
-    git -C "$raiz" checkout -- "ios/$PROYECTO/project.pbxproj" 2>/dev/null || true
+  fi
+
+  # Archivos que Xcode reescribe al compilar: el proyecto (por la firma) y los
+  # catálogos de idioma (por la extracción de cadenas). Sus cambios locales no
+  # son trabajo tuyo, así que se descartan para que el pull pase.
+  local sucios
+  sucios="$(git -C "$raiz" diff --name-only -- \
+    "ios/$PROYECTO/project.pbxproj" "ios/*.xcstrings" "ios/**/*.xcstrings" 2>/dev/null)"
+  if [ -n "$sucios" ]; then
+    echo "$sucios" | while read -r archivo; do
+      [ -n "$archivo" ] && echo "▸ Descartado (lo reescribe Xcode): $archivo"
+    done
+    # shellcheck disable=SC2086
+    git -C "$raiz" checkout -- $sucios 2>/dev/null || true
   fi
 
   echo "▸ Trayendo cambios"

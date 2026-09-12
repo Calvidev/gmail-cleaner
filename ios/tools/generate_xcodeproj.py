@@ -278,7 +278,11 @@ APP_SETTINGS = {
     "MARKETING_VERSION": "1.0",
     "PRODUCT_BUNDLE_IDENTIFIER": BUNDLE_ID,
     "PRODUCT_NAME": "$(TARGET_NAME)",
-    "SWIFT_EMIT_LOC_STRINGS": "YES",
+    # NO a propósito: con YES, Xcode reescribe Localizable.xcstrings en cada
+    # compilación para meterle las cadenas que encuentra, y entonces cada
+    # `git pull` choca con el archivo. Las traducciones se mantienen en el
+    # repositorio, no desde el editor de Xcode.
+    "SWIFT_EMIT_LOC_STRINGS": "NO",
     "TARGETED_DEVICE_FAMILY": "1,2",
 }
 
@@ -300,7 +304,7 @@ WIDGET_SETTINGS = {
     "PRODUCT_BUNDLE_IDENTIFIER": f"{BUNDLE_ID}.widget",
     "PRODUCT_NAME": "$(TARGET_NAME)",
     "SKIP_INSTALL": "YES",
-    "SWIFT_EMIT_LOC_STRINGS": "YES",
+    "SWIFT_EMIT_LOC_STRINGS": "NO",
     "TARGETED_DEVICE_FAMILY": "1,2",
 }
 

@@ -41,11 +41,22 @@ Para no pelearse con `xcodebuild`:
 ./ios/build.sh abrir        # abre el proyecto en Xcode
 ```
 
-**Por qué existe `actualizar`**: Xcode escribe tu equipo de firma dentro del
-`project.pbxproj`, que está versionado, así que cada `git pull` choca con él.
-`actualizar` rescata ese Team ID a `ios/.team` (que git ignora), descarta el
-cambio y hace el pull. A partir de ahí `iphone` firma con lo que haya en
-`.team` y ya nadie se pisa.
+**Por qué existe `actualizar`**: hay archivos versionados que Xcode reescribe al
+compilar, y cada uno hacía chocar el `git pull`.
+
+| Archivo | Por qué lo toca Xcode |
+| --- | --- |
+| `project.pbxproj` | Te guarda ahí el equipo de firma |
+| `Localizable.xcstrings` | Le mete las cadenas nuevas que encuentra en el código |
+
+`actualizar` rescata el Team ID a `ios/.team` (que git ignora), descarta esos
+cambios diciéndote cuáles, y hace el pull.
+
+Además, los objetivos llevan `SWIFT_EMIT_LOC_STRINGS = NO` a propósito: con
+`YES`, Xcode reescribe los catálogos de idioma en cada compilación. Las
+traducciones se mantienen desde el repositorio, así que esa extracción
+automática solo daba guerra. Si añades cadenas nuevas al código, hay que
+meterlas también en `Localizable.xcstrings`.
 
 Por pantalla salen solo los errores y el resultado; el log entero queda en
 `/tmp/sleeperscore-build.log`.
