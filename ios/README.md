@@ -213,6 +213,24 @@ Aun así es una estimación, no un oráculo: no sabe de lesiones en directo ni d
 reparto de balón. Para lo que sirve —saber si hay que seguir mirando— aguanta
 bien.
 
+## Los sonidos
+
+Tres sonidos propios, sintetizados con `tools/generate_sounds.py` para no
+depender de un banco de sonidos con licencia:
+
+| Sonido | Cuándo | Cómo suena |
+| --- | --- | --- |
+| `anotacion.wav` | Anota uno de los tuyos | Tres notas subiendo (do-mi-do), alegre |
+| `alerta.wav` | Te pasan o vuelves a pasar | Dos golpes iguales, secos |
+| `aviso.wav` | Lesión o noticia | Dos notas bajando, apagado |
+
+iOS solo admite WAV, CAF o AIFF de menos de 30 segundos, dentro del paquete de
+la app. El timbre es de marimba —la fundamental más dos armónicos que se apagan
+antes— porque un seno puro suena a pitido de microondas.
+
+Para cambiarlos, se tocan las frecuencias y los tiempos en el generador y se
+vuelve a ejecutar. No hace falta ningún programa de audio.
+
 ## Cuando anota uno de los tuyos
 
 La app lanza una explosión de confeti verde con un golpe de vibración, y los

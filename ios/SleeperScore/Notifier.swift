@@ -8,6 +8,18 @@ import Foundation
 import UserNotifications
 
 enum Notifier {
+    /// Sonidos propios, dentro del paquete de la app. iOS solo admite WAV, CAF
+    /// o AIFF de menos de 30 segundos, y hay que nombrarlos con su extensión.
+    /// Se generan con `tools/generate_sounds.py`.
+    private enum Sonido {
+        /// Tres notas subiendo: anotó uno de los tuyos.
+        static let anotacion = UNNotificationSound(named: UNNotificationSoundName("anotacion.wav"))
+        /// Dos notas bajando: una lesión o una noticia, nada que celebrar.
+        static let aviso = UNNotificationSound(named: UNNotificationSoundName("aviso.wav"))
+        /// Dos golpes iguales: te han pasado (o has vuelto a pasar tú).
+        static let alerta = UNNotificationSound(named: UNNotificationSoundName("alerta.wav"))
+    }
+
     static func requestPermission() async {
         _ = try? await UNUserNotificationCenter.current()
             .requestAuthorization(options: [.alert, .sound])
@@ -33,7 +45,7 @@ enum Notifier {
         )
         let detalle = play.stats ?? play.subtitle
         contenido.body = detalle.isEmpty ? play.name : "\(play.name) — \(detalle)"
-        contenido.sound = .default
+        contenido.sound = Sonido.anotacion
         contenido.interruptionLevel = .timeSensitive
 
         if let adjunto = await attachment(
@@ -55,7 +67,7 @@ enum Notifier {
             ?? String(localized: "Noticia de tu equipo")
         contenido.body = item.headline
         if let resumen = item.summary, !resumen.isEmpty { contenido.subtitle = resumen }
-        contenido.sound = .default
+        contenido.sound = Sonido.aviso
         // Una noticia no interrumpe: no es una jugada en directo.
         contenido.interruptionLevel = .active
         await add(contenido, id: "news-\(item.id.hashValue)")
@@ -73,7 +85,7 @@ enum Notifier {
         contenido.body = tookLead
             ? String(localized: "Vas por delante de \(opponent) por \(abs(difference).fantasyPoints).")
             : String(localized: "\(opponent) se pone por delante por \(abs(difference).fantasyPoints).")
-        contenido.sound = .default
+        contenido.sound = Sonido.alerta
         contenido.interruptionLevel = .timeSensitive
         await add(contenido, id: "lead-\(Int(Date().timeIntervalSince1970))")
     }
@@ -90,7 +102,7 @@ enum Notifier {
         contenido.body = change.headline
         let posicion = [change.position, change.team].compactMap { $0 }.joined(separator: " ")
         if !posicion.isEmpty { contenido.subtitle = posicion }
-        contenido.sound = .default
+        contenido.sound = Sonido.aviso
         // Un cambio a peor el domingo por la mañana sí interrumpe.
         contenido.interruptionLevel = change.isWorse ? .timeSensitive : .active
 

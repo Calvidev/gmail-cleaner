@@ -86,6 +86,7 @@ FILE_TYPES = {
     ".plist": "text.plist.xml",
     ".xcprivacy": "text.plist.xml",
     ".xcstrings": "text.json.xcstrings",
+    ".wav": "audio.wav",
     ".entitlements": "text.plist.entitlements",
 }
 
@@ -332,6 +333,7 @@ def build() -> str:
     shared_refs = [file_ref("Shared", name) for name in SHARED_SOURCES]
     app_file_names = APP_SOURCES + [
         "Assets.xcassets", "Localizable.xcstrings", "InfoPlist.xcstrings",
+        "anotacion.wav", "aviso.wav", "alerta.wav",
         "PrivacyInfo.xcprivacy", "Info.plist", "SleeperScore.entitlements"
     ]
     app_refs = [file_ref("SleeperScore", name) for name in app_file_names]
@@ -379,6 +381,9 @@ def build() -> str:
         build_file(APP_TARGET, "SleeperScore", "PrivacyInfo.xcprivacy"),
         build_file(APP_TARGET, "SleeperScore", "Localizable.xcstrings"),
         build_file(APP_TARGET, "SleeperScore", "InfoPlist.xcstrings"),
+        build_file(APP_TARGET, "SleeperScore", "anotacion.wav"),
+        build_file(APP_TARGET, "SleeperScore", "aviso.wav"),
+        build_file(APP_TARGET, "SleeperScore", "alerta.wav"),
     ]
     widget_resources = [
         build_file(WIDGET_TARGET, "ScoreWidget", "Assets.xcassets"),

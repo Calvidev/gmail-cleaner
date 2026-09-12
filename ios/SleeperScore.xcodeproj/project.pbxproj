@@ -80,6 +80,10 @@
 			path = StandingsView.swift;
 			sourceTree = "<group>";
 		};
+		1104BC5E55F1D7F10B15C2CF = {
+			isa = PBXBuildFile;
+			fileRef = FB186008A42C688E172D6622 /* aviso.wav */;
+		};
 		11EF39465FB5B37CF41E367D = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -636,6 +640,12 @@
 			path = PlayerNews.swift;
 			sourceTree = "<group>";
 		};
+		823A0265C951931984329E59 = {
+			isa = PBXFileReference;
+			lastKnownFileType = audio.wav;
+			path = anotacion.wav;
+			sourceTree = "<group>";
+		};
 		82606A21EEF631F7A0CCE86C = {
 			isa = PBXBuildFile;
 			fileRef = 76D85F12774713AC80C39647 /* SleeperSettingsView.swift */;
@@ -669,6 +679,9 @@
 				931226496DCE20872776D15D /* Assets.xcassets */,
 				B041D0F408A86A2673A4E9C4 /* Localizable.xcstrings */,
 				17506FF4BE1E0916C2A31EEE /* InfoPlist.xcstrings */,
+				823A0265C951931984329E59 /* anotacion.wav */,
+				FB186008A42C688E172D6622 /* aviso.wav */,
+				98F5A391AECABD35F952E9E0 /* alerta.wav */,
 				908BC9110B5449E87359BFDE /* PrivacyInfo.xcprivacy */,
 				36CBBEEECA3A305005C30BB5 /* Info.plist */,
 				024892A436DE54D2493F20CE /* SleeperScore.entitlements */,
@@ -754,6 +767,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = folder.assetcatalog;
 			path = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+		98F5A391AECABD35F952E9E0 = {
+			isa = PBXFileReference;
+			lastKnownFileType = audio.wav;
+			path = alerta.wav;
 			sourceTree = "<group>";
 		};
 		99E6A51DA0B86FE48AEB34ED = {
@@ -951,6 +970,10 @@
 			path = ScoreWidgetViews.swift;
 			sourceTree = "<group>";
 		};
+		C85DCF59C372E23E8E6A02AD = {
+			isa = PBXBuildFile;
+			fileRef = 98F5A391AECABD35F952E9E0 /* alerta.wav */;
+		};
 		CAADC64843CA3C3E7BED06BD = {
 			isa = PBXBuildFile;
 			fileRef = 368E8DA1F8408B5A9BB46F2F /* WinProbability.swift */;
@@ -1097,6 +1120,10 @@
 			isa = PBXBuildFile;
 			fileRef = 0A3AFB51459A2B0FB41234F0 /* InjuryWatcher.swift */;
 		};
+		E90B0C5A07E810698420A374 = {
+			isa = PBXBuildFile;
+			fileRef = 823A0265C951931984329E59 /* anotacion.wav */;
+		};
 		E97658E1132B2D311B4060A1 = {
 			isa = PBXBuildFile;
 			fileRef = C7B8CEEB7B179A9C9CD3B8D8 /* ScoreWidgetViews.swift */;
@@ -1166,6 +1193,9 @@
 				D9CB6B243E001BECBFFFF30F /* PrivacyInfo.xcprivacy in SleeperScore */,
 				B4E85E2EE51ABBA5FDFE36FA /* Localizable.xcstrings in SleeperScore */,
 				F87D179DA1A4D3804601548F /* InfoPlist.xcstrings in SleeperScore */,
+				E90B0C5A07E810698420A374 /* anotacion.wav in SleeperScore */,
+				1104BC5E55F1D7F10B15C2CF /* aviso.wav in SleeperScore */,
+				C85DCF59C372E23E8E6A02AD /* alerta.wav in SleeperScore */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1181,6 +1211,12 @@
 		FAEBD90CE12952F4FBC920AC = {
 			isa = PBXBuildFile;
 			fileRef = C6ADDF882A06872F0A8E4C06 /* PlayerCatalog.swift */;
+		};
+		FB186008A42C688E172D6622 = {
+			isa = PBXFileReference;
+			lastKnownFileType = audio.wav;
+			path = aviso.wav;
+			sourceTree = "<group>";
 		};
 		FD2DD70200319FF7456A87FC = {
 			isa = XCBuildConfiguration;
