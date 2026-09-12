@@ -101,6 +101,7 @@ struct LeaguePage: View {
                     }
                     if !snapshot.plays.isEmpty {
                         RecentPlaysSection(plays: snapshot.plays)
+                            .transition(.move(edge: .top).combined(with: .opacity))
                     }
                     if esLaActiva, !model.news.isEmpty {
                         NewsCard(items: model.news)
@@ -123,6 +124,7 @@ struct LeaguePage: View {
 
             }
             .padding(16)
+            .animation(.snappy, value: snapshot?.plays.first?.id)
         }
         .scrollIndicators(.hidden)
         .refreshable {

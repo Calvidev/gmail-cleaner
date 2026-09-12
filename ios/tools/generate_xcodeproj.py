@@ -63,6 +63,7 @@ APP_SOURCES = [
     "ScoreboardView.swift",
     "AccountsView.swift",
     "PaywallView.swift",
+    "Celebration.swift",
     "StandingsView.swift",
     "SeasonView.swift",
     "FreeAgentsView.swift",

@@ -16,6 +16,10 @@ struct RootView: View {
                     ScoreboardView()
                 }
             }
+            .overlay {
+                // Encima de todo y sin capturar toques.
+                CelebrationOverlay(trigger: model.celebrationID)
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {

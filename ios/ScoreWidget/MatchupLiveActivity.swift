@@ -57,11 +57,13 @@ struct MatchupLiveActivity: Widget {
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(Theme.accent)
+                    .contentTransition(.numericText(value: context.state.myPoints))
             } compactTrailing: {
                 Text(context.state.opponentPoints.fantasyPoints)
                     .font(.system(size: 13, weight: .semibold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(.white)
+                    .contentTransition(.numericText(value: context.state.opponentPoints))
             } minimal: {
                 Text(context.state.difference.signedFantasyPoints)
                     .font(.system(size: 11, weight: .bold, design: .rounded))
@@ -88,6 +90,8 @@ struct LockScreenLiveView: View {
             ScoreBar(share: state.share, height: 5)
             if let play = state.lastPlay {
                 PlayBanner(play: play, compact: false)
+                    .id(play.id)
+                    .transition(.push(from: .bottom).combined(with: .opacity))
             }
         }
         .padding(.horizontal, 14)
@@ -179,6 +183,9 @@ struct TeamLine: View {
                         .foregroundStyle(.white)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
+                        // Lo único que el sistema deja animar aquí: que los
+                        // dígitos rueden cuando llega una actualización.
+                        .contentTransition(.numericText(value: points))
                     if esIzquierda, let projection {
                         proyeccion(projection)
                     }

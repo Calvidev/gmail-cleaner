@@ -21,6 +21,9 @@ final class ScoreboardModel: ObservableObject {
     @Published private(set) var pendingSimulation = false
     /// Noticias de tus jugadores, las últimas primero.
     @Published private(set) var news: [NewsItem] = []
+    /// Identificador de la última anotación tuya. Al cambiar, la pantalla
+    /// lanza la celebración.
+    @Published private(set) var celebrationID: String?
 
     private let service = MatchupService()
     private let live = LiveActivityController.shared
@@ -112,6 +115,11 @@ final class ScoreboardModel: ObservableObject {
                 difference: actualizado.difference,
                 opponent: actualizado.opponent?.name ?? "el rival"
             )
+        }
+
+        // Celebrar solo lo tuyo: que anote el rival no se festeja.
+        if let mia = anotaciones.first(where: { $0.isMine }) {
+            celebrationID = mia.id
         }
 
         // Si el partido ya se mueve y no hay actividad encendida, se enciende

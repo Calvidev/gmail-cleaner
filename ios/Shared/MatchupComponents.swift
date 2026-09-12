@@ -95,6 +95,9 @@ struct TeamColumn: View {
                 .foregroundStyle(.white)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
+                // Los dígitos ruedan al cambiar en vez de saltar de golpe.
+                .contentTransition(.numericText())
+                .animation(.snappy, value: team?.points ?? 0)
         }
     }
 }

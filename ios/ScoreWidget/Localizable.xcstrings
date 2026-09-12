@@ -1300,6 +1300,16 @@
           }
         }
       }
+    },
+    "Celebrar las anotaciones": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Celebrate scoring plays"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

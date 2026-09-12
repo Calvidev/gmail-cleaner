@@ -50,6 +50,10 @@
 			isa = PBXBuildFile;
 			fileRef = B4AD56D7B721690BB178E897 /* LeagueIntent.swift */;
 		};
+		082E0BBC2EB49DF0D45A01DF = {
+			isa = PBXBuildFile;
+			fileRef = CE3F3A392E626E3E77781822 /* Celebration.swift */;
+		};
 		0A3AFB51459A2B0FB41234F0 = {
 			isa = PBXFileReference;
 			lastKnownFileType = sourcecode.swift;
@@ -400,6 +404,7 @@
 				71F6B29CF9FE0FE20B3C9AD5 /* ScoreboardView.swift in SleeperScore */,
 				5BB1FFBCF225159ABC9A8FE6 /* AccountsView.swift in SleeperScore */,
 				50BE8AE4816B3EE031CEB93D /* PaywallView.swift in SleeperScore */,
+				082E0BBC2EB49DF0D45A01DF /* Celebration.swift in SleeperScore */,
 				904AB9B259C5D8083B7B4DA3 /* StandingsView.swift in SleeperScore */,
 				135690DDA1A4229C7D65F29F /* SeasonView.swift in SleeperScore */,
 				4D995A0783A2C090C2175455 /* FreeAgentsView.swift in SleeperScore */,
@@ -653,6 +658,7 @@
 				B7A4709E6FA19CE45B277C8B /* ScoreboardView.swift */,
 				F5E4EB23F502600ABFDA7CF7 /* AccountsView.swift */,
 				EA428F9B7B2AC331FC76A403 /* PaywallView.swift */,
+				CE3F3A392E626E3E77781822 /* Celebration.swift */,
 				105E01A849C6AC17353F5BFB /* StandingsView.swift */,
 				AA51B72FDC0256F52E46C66F /* SeasonView.swift */,
 				D19C259EB90F6308128CB7DF /* FreeAgentsView.swift */,
@@ -988,6 +994,12 @@
 			isa = PBXFileReference;
 			lastKnownFileType = text.plist.xml;
 			path = Info.plist;
+			sourceTree = "<group>";
+		};
+		CE3F3A392E626E3E77781822 = {
+			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.swift;
+			path = Celebration.swift;
 			sourceTree = "<group>";
 		};
 		D0143AE3927E5100A6257CF1 = {

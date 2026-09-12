@@ -202,6 +202,20 @@ Aun así es una estimación, no un oráculo: no sabe de lesiones en directo ni d
 reparto de balón. Para lo que sirve —saber si hay que seguir mirando— aguanta
 bien.
 
+## Cuando anota uno de los tuyos
+
+La app lanza una explosión de confeti verde con un golpe de vibración, y los
+dígitos del marcador ruedan en vez de saltar. Se dibuja en un `Canvas` y no con
+vistas: son treinta partículas a sesenta fotogramas por segundo, y con vistas de
+SwiftUI eso se nota en la batería. Respeta "Reducir movimiento" de Ajustes: con
+esa opción activada solo hay un destello.
+
+Solo celebra **lo tuyo**: que anote el rival no se festeja.
+
+En el widget y en la Live Activity no se puede animar nada continuo —el sistema
+no ejecuta código ahí—, así que lo que hacen es rodar los números al llegar una
+actualización y deslizar la tarjeta de la jugada nueva.
+
 ## Probar sin esperar al domingo
 
 En compilaciones de depuración (las que hace `./ios/build.sh iphone`), el menú
